@@ -19,7 +19,7 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * @invar	The amount of actionpoints each worm has is valid.
  * 			| isValidActionPoints(getActionPoints())
  * 
- * @author Niels Claes
+ * @author Niels Claes, Martijn Vermaut
  * 
  */
 public class Worm {
@@ -39,13 +39,13 @@ public class Worm {
 
 	
 	/**
-	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
-	 * coördinate in meters, a direction in radians, a radius in meters and a name.
+	 * Constructor for the Worm class. Receives an x coordinate in meters, a y
+	 * coordinate in meters, a direction in radians, a radius in meters and a name.
 	 * 
 	 * @param 	x
-	 * 			The x coördinate expressed in meters.
+	 * 			The x coordinate expressed in meters.
 	 * @param 	y
-	 * 			The y coördinate expressed in meters.
+	 * 			The y coordinate expressed in meters.
 	 * @param 	direction
 	 * 			The direction expressed in radians.
 	 * @param 	radius
@@ -53,7 +53,7 @@ public class Worm {
 	 * @param 	name
 	 * 			The name of the worm.
 	 * 
-	 * @pre		The given X and Y coördinates must be a valid position.
+	 * @pre		The given X and Y coordinates must be a valid position.
 	 * 			| isValidX(x)
 	 * 			| isValidY(y)
 	 * @pre		The given direction is valid.
@@ -62,7 +62,7 @@ public class Worm {
 	 * 			| isValidRadius(radius)
 	 * @pre		The given name is valid.
 	 * 			| isValidName(name)
-	 * @effect 	The X and Y coördinates of the worm are set to the given values.
+	 * @effect 	The X and Y coordinates of the worm are set to the given values.
 	 * 			| new.getX() == x && new.getY() == y
 	 * @effect 	The direction of the worm is set to the given value.
 	 * 			| new.getDirection() == direction
@@ -83,9 +83,9 @@ public class Worm {
 	}
 
 	/**
-	 * Basic inspector that returns the x coördinate of the worm.
+	 * Basic inspector that returns the x coordinate of the worm.
 	 * 
-	 * @return The x coördinate of the worm.
+	 * @return The x coordinate of the worm.
 	 */
 	@Basic
 	public double getX() {
@@ -93,9 +93,9 @@ public class Worm {
 	}
 
 	/**
-	 * Basic inspector that returns the y coördinate of the worm.
+	 * Basic inspector that returns the y coordinate of the worm.
 	 * 
-	 * @return The y coördinate of the worm.
+	 * @return The y coordinate of the worm.
 	 */
 	@Basic
 	public double getY() {
@@ -196,24 +196,24 @@ public class Worm {
 	/**
 	 * Method that sets the position of the worm to the requested x and y
 	 * coordinates. This method throws a ModelException when the x or
-	 * y coördinate are invalid numbers or when the new coördinates would result
+	 * y coordinate are invalid numbers or when the new coordinates would result
 	 * in the worm being outside of the boundaries of the playing field.
 	 * 
 	 * @param 	x
-	 * 			The requested x coördinate of the worm expressed in meters.
+	 * 			The requested x coordinate of the worm expressed in meters.
 	 * @param 	y
-	 *          The requested y coördinate of the worm expressed in meters.
+	 *          The requested y coordinate of the worm expressed in meters.
 	 *          
-	 * @post	The x-coördinate of the worm is changed to the given value.
+	 * @post	The x-coordinate of the worm is changed to the given value.
 	 * 			| new.getX() == x
-	 * @post	The y-coördinate of the worm is changed to the given value.
+	 * @post	The y-coordinate of the worm is changed to the given value.
 	 * 			| new.getY() == y
 	 * @throws	ModelException
-	 *          Throws a ModelException if the x coördinate is invalid.
+	 *          Throws a ModelException if the x coordinate is invalid.
 	 *          | if ( ! isValidX( x ) )
 	 *          |		then throw new ModelException
 	 * @throws 	ModelException
-	 *          Throws a ModelException if the y coördinate is invalid.
+	 *          Throws a ModelException if the y coordinate is invalid.
 	 *          | if ( ! isValidY( y ) )
 	 *          |		then throw new ModelException
 	 */
@@ -332,10 +332,10 @@ public class Worm {
 	}
 
 	/**
-	 * Checks the validity of the specified x coördinate.
+	 * Checks the validity of the specified x coordinate.
 	 * 
 	 * @param 	x
-	 * 			The specified x coördinate expressed in meters.
+	 * 			The specified x coordinate expressed in meters.
 	 * 
 	 * @return 	False if x is NaN. True otherwise.
 	 * 			| result = ( ! Double.isNaN(x) )
@@ -345,10 +345,10 @@ public class Worm {
 	}
 
 	/**
-	 * Checks the validity of the specified y coördinate.
+	 * Checks the validity of the specified y coordinate.
 	 * 
 	 * @param 	y
-	 *          The specified y coördinate expressed in meters.
+	 *          The specified y coordinate expressed in meters.
 	 *          
 	 * @return 	False if y is NaN. True otherwise.
 	 * 			| result = ( ! Double.isNaN(y) )
@@ -463,7 +463,7 @@ public class Worm {
 	/**
 	 * Moves the worm a single step.
 	 * 
-	 * @effect	The position of the worm is set to it's new coördinates.
+	 * @effect	The position of the worm is set to it's new coordinates.
 	 * 			| setPosition( getRadius() * Math.cos(getDirection()), getRadius() * Math.sin(getDirection()) )
 	 * @effect	The amount of actionpoints diminishes when moving the worm.
 	 * 			| setActionPoints( getActionPoints() - getActionPointsCostMove(1) )
@@ -524,7 +524,7 @@ public class Worm {
 	 * 			| setActionPoints(getActionPoints() - getActionPointCostTurn(additionalDirection))
 	 * @effect	The direction of the worm has changed.
 	 * 			| setDirection(  (((getDirection() + additionalDirection) % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI)  )
-	 * @note	The last line of code prefents an assertion error.
+	 * @note	The last line of code prevents an assertion error.
 	 * 			If only (getDirection() + additionalDirection) % (2*Math.PI) is used,
 	 * 			it is possible that a negative argument is passed to setDirection. This is in conflict with the assertion of setDirection.
 	 * 			To prevent this, 2*pi is added to the result and modulo 2*pi is taken again.
@@ -557,7 +557,7 @@ public class Worm {
 	 * @param	direction
 	 * 			The direction of the worm.
 	 * 
-	 * @return	False if the given direcion is invalid, or if there are not enough actionpoints available.
+	 * @return	False if the given direction is invalid, or if there are not enough actionpoints available.
 	 */
 	public boolean canTurn(double additionalDirection) {
 		if ( Double.isNaN(additionalDirection) )
@@ -572,8 +572,8 @@ public class Worm {
 	 * 
 	 * @effect	The amount of actionpoints is set to zero after performing the jump.
 	 * 			| setActionPoints(0)
-	 * @effect	The position of the worm is set to it's new coördinates, with newPos[0] the new x-coördinate.
-	 * 			newPos[1] is the new y-coördinate. These points are calculated in jumpStep and jumpTime.
+	 * @effect	The position of the worm is set to it's new coordinates, with newPos[0] the new x-coordinate.
+	 * 			newPos[1] is the new y-coordinate. These points are calculated in jumpStep and jumpTime.
 	 * 			| setPosition( newPos[0], newPos[1] )
 	 * @note	The code "if (canJump())" prevents unnecessary calculations if the worm can't jump.
 	 * @note	If the player tries to jump when it's not possible he will get "punished" for trying.
