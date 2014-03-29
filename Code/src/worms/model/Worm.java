@@ -19,7 +19,7 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * @invar	The amount of actionpoints each worm has is valid.
  * 			| isValidActionPoints(getActionPoints())
  * 
- * @author Niels Claes, Martijn Vermaut
+ * @author Niels Claes
  * 
  */
 public class Worm {
@@ -36,16 +36,20 @@ public class Worm {
 
 	private int actionPoints;
 	private int maxActionPoints;
-
+	private int hitPoints;
+	private int maxHitPoints;
 	
+	private World world;
+	private Projectile projectile;
+
 	/**
-	 * Constructor for the Worm class. Receives an x coordinate in meters, a y
-	 * coordinate in meters, a direction in radians, a radius in meters and a name.
+	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
+	 * coördinate in meters, a direction in radians, a radius in meters and a name.
 	 * 
 	 * @param 	x
-	 * 			The x coordinate expressed in meters.
+	 * 			The x coördinate expressed in meters.
 	 * @param 	y
-	 * 			The y coordinate expressed in meters.
+	 * 			The y coördinate expressed in meters.
 	 * @param 	direction
 	 * 			The direction expressed in radians.
 	 * @param 	radius
@@ -53,7 +57,7 @@ public class Worm {
 	 * @param 	name
 	 * 			The name of the worm.
 	 * 
-	 * @pre		The given X and Y coordinates must be a valid position.
+	 * @pre		The given X and Y coördinates must be a valid position.
 	 * 			| isValidX(x)
 	 * 			| isValidY(y)
 	 * @pre		The given direction is valid.
@@ -62,30 +66,30 @@ public class Worm {
 	 * 			| isValidRadius(radius)
 	 * @pre		The given name is valid.
 	 * 			| isValidName(name)
-	 * @effect 	The X and Y coordinates of the worm are set to the given values.
-	 * 			| new.getX() == x && new.getY() == y
+	 * @effect 	The X and Y coördinates of the worm are set to the given values.
+	 * 			| setPosition(x, y)
 	 * @effect 	The direction of the worm is set to the given value.
-	 * 			| new.getDirection() == direction
+	 * 			| setDirection(direction)
 	 * @effect 	The radius of the worm is equal to the given value.
-	 * 			| new.getRadius() == radius
+	 * 			| setRadius(radius)
 	 * @effect 	The name of the worm is equal to the given string if it is valid.
-	 * 			| new.getName() == name
+	 * 			| setName(name)
 	 * @effect	The amount of action points is set to the maximum number of actionpoints.
 	 * 			This is done in the method setRadius, by the method resetMaxActionPoints.
 	 * 			| new.getActionPoints() == maxActionPoints;
 	 * @note	The setters will throw an exception if the given value is not valid.
 	 */
-	public Worm(double x, double y, double direction, double radius, String name) {
+	public Worm(World world, double x, double y, double direction, double radius, String name) {
 		setPosition(x, y);
 		setDirection(direction);
 		setRadius(radius);
-		setName(name);
+		setName(name);	
 	}
 
 	/**
-	 * Basic inspector that returns the x coordinate of the worm.
+	 * Basic inspector that returns the x coördinate of the worm.
 	 * 
-	 * @return The x coordinate of the worm.
+	 * @return The x coördinate of the worm.
 	 */
 	@Basic
 	public double getX() {
@@ -93,9 +97,9 @@ public class Worm {
 	}
 
 	/**
-	 * Basic inspector that returns the y coordinate of the worm.
+	 * Basic inspector that returns the y coördinate of the worm.
 	 * 
-	 * @return The y coordinate of the worm.
+	 * @return The y coördinate of the worm.
 	 */
 	@Basic
 	public double getY() {
@@ -136,7 +140,8 @@ public class Worm {
 	/**
 	 * Inspector that calculates and returns the mass of the worm.
 	 * 
-	 * @return The mass of the worm.
+	 * @return	The mass of the worm.
+	 * 			| (4 * getDensity() * Math.PI * Math.pow(getRadius(), 3) / 3)
 	 */
 	public double getMass() {
 		return (4 * getDensity() * Math.PI * Math.pow(getRadius(), 3) / 3);
@@ -161,6 +166,15 @@ public class Worm {
 	public int getActionPoints() {
 		return actionPoints;
 	}
+	
+	/**
+	 * Basic inspector that returns the hitpoints of the worm.
+	 * @return	The hitpoints of the worm.
+	 */
+	@Basic
+	public int getHitPoints() {
+		return hitPoints;
+	}
 
 	/**
 	 * Basic inspector that returns the maximum amount of action points of the worm.
@@ -172,6 +186,14 @@ public class Worm {
 		return maxActionPoints;
 	}
 
+	/**
+	 * Basic inspector that returns the maximum amount of hitpoints of the worm.
+	 * @return
+	 */
+	@Basic
+	public int getMaxHitPoints() {
+		return maxHitPoints;
+	}
 	/**
 	 * Basic inspector that returns the density of worms.
 	 * 
@@ -196,24 +218,24 @@ public class Worm {
 	/**
 	 * Method that sets the position of the worm to the requested x and y
 	 * coordinates. This method throws a ModelException when the x or
-	 * y coordinate are invalid numbers or when the new coordinates would result
+	 * y coördinate are invalid numbers or when the new coördinates would result
 	 * in the worm being outside of the boundaries of the playing field.
 	 * 
 	 * @param 	x
-	 * 			The requested x coordinate of the worm expressed in meters.
+	 * 			The requested x coördinate of the worm expressed in meters.
 	 * @param 	y
-	 *          The requested y coordinate of the worm expressed in meters.
+	 *          The requested y coördinate of the worm expressed in meters.
 	 *          
-	 * @post	The x-coordinate of the worm is changed to the given value.
+	 * @post	The x-coördinate of the worm is changed to the given value.
 	 * 			| new.getX() == x
-	 * @post	The y-coordinate of the worm is changed to the given value.
+	 * @post	The y-coördinate of the worm is changed to the given value.
 	 * 			| new.getY() == y
 	 * @throws	ModelException
-	 *          Throws a ModelException if the x coordinate is invalid.
+	 *          Throws a ModelException if the x coördinate is invalid.
 	 *          | if ( ! isValidX( x ) )
 	 *          |		then throw new ModelException
 	 * @throws 	ModelException
-	 *          Throws a ModelException if the y coordinate is invalid.
+	 *          Throws a ModelException if the y coördinate is invalid.
 	 *          | if ( ! isValidY( y ) )
 	 *          |		then throw new ModelException
 	 */
@@ -264,7 +286,8 @@ public class Worm {
 		if (!isValidRadius(radius))
 			throw new ModelException("Invalid radius.");
 		this.radius = radius;
-		resetMaxActionPoints();
+		updateMaxActionPoints();
+		updateMaxHitPoints();
 	}
 
 
@@ -282,13 +305,33 @@ public class Worm {
 	 * 			During the rest of the game, apfrac is equal to the fraction of actionpoints the worm currently has left.
 	 * 			This is necessary to maintain control over how the actionpoints are displayed when changing the worm's radius.
 	 * 			Without this method the green bar of actionpoints would exceed the white bar of actionpoints when the radius is lowered.
+	 * @note	The second if-loop is implemented to prevent loss of numbers when typecasting to an integer.
+	 * 			If the value of getMass() is larger than the maximum value of an integer, all the numbers greater than that maximum will be lost.
+	 * 			As everything related to actionpoints has to be implemented in a total manner is the usage of exceptions out of the question.
+	 * 			The problem is solved by setting the maximum amount of actionpoints to the highest possible integer value in case the mass is
+	 * 			greater than Integer.MAX_VALUE.
 	 */
-	private void resetMaxActionPoints() {
+	private void updateMaxActionPoints() {
 		double apFrac = 1;
 		if ( ! (getMaxActionPoints() == 0) )
 			apFrac = ( (double) getActionPoints() ) / ( (double) getMaxActionPoints() );
-		maxActionPoints = (int) Math.round(getMass());
+		if ( getMass() > Integer.MAX_VALUE)
+			maxActionPoints = Integer.MAX_VALUE;
+		else
+			maxActionPoints = (int) Math.round(getMass());
 		setActionPoints( (int) Math.floor( getMaxActionPoints() * apFrac ) );
+	}
+	
+	//TODO
+	private void updateMaxHitPoints() {
+		double hpFrac = 1;
+		if (! (getMaxHitPoints() == 0) )
+			hpFrac = ( (double) getHitPoints() ) / ( (double) getMaxHitPoints() );
+		if (getMass() > Integer.MAX_VALUE)
+			maxHitPoints = Integer.MAX_VALUE;
+		else
+			maxHitPoints = (int) Math.round(getMass());
+		setHitPoints ( (int) Math.floor( getMaxHitPoints() * hpFrac ) );
 	}
 
 	/**
@@ -318,24 +361,56 @@ public class Worm {
 	 * @param 	actionPoints
 	 * 			The amount of actionpoints of the worm.
 	 * 
-	 * @post	The amount of actionpoints is set to the given value (if it is valid).
-	 * 			| new.getActionPoints() == actionPoints
-	 * @throws	ModelException
-	 * 			Throws a ModelException if the specified number of actionPoints is not valid.
-	 * 			| if ( ! isValidActionPoints(actionPoints) )
-	 *          | 	then throw new ModelException
+	 * @post	The amount of actionpoints is set to the given value.
+	 * 			| if (actionPoints < 0)
+	 * 			|		new.getActionPoints() == 0
+	 * 			| if (actionPoints > getMaxActionPoints())
+	 * 			|		new.getActionPoints() == getMaxActionPoints
+	 * 			| else
+	 * 			| 		new.getActionPoints() == actionPoints
 	 */
-	public void setActionPoints(int actionPoints) throws ModelException {
-		if ( ! isValidActionPoints(actionPoints) )
-			throw new ModelException("Invalid action points specified.");
-		this.actionPoints = actionPoints;
+	public void setActionPoints(int actionPoints) {
+		if ( ! isValidActionPoints(actionPoints) ) {
+			if (actionPoints < 0)
+				this.actionPoints = 0;
+			if (actionPoints > getMaxActionPoints())
+				this.actionPoints = getMaxActionPoints();
+		}
+		else
+			this.actionPoints = actionPoints;
+	}
+	
+	
+	/**
+	 * Method that sets the amount of hitpoints of the worm.
+	 * 
+	 * @param	hitPoints
+	 * 			The amount of hitpoints of the worm.
+	 * 
+	 * @post	The amount of hitpoints is set to the given value.
+	 * 			| if (hitPoints < 0)
+	 * 			|		new.getHitPoints() == 0
+	 * 			| if (hitPoints > getMaxHitPoints()
+	 * 			|		new.getHitPoints() == getMaxHitPoints()
+	 * 			| else
+	 * 			|		new.getHitPoints() == hitPoints
+	 */
+	public void setHitPoints(int hitPoints) {
+		if (! isValidHitPoints(hitPoints)) {
+			if (hitPoints < 0)
+				this.hitPoints = 0;
+			if (hitPoints > getMaxActionPoints())
+				this.hitPoints = getMaxHitPoints();
+		}
+		else
+			this.hitPoints = hitPoints;
 	}
 
 	/**
-	 * Checks the validity of the specified x coordinate.
+	 * Checks the validity of the specified x coördinate.
 	 * 
 	 * @param 	x
-	 * 			The specified x coordinate expressed in meters.
+	 * 			The specified x coördinate expressed in meters.
 	 * 
 	 * @return 	False if x is NaN. True otherwise.
 	 * 			| result = ( ! Double.isNaN(x) )
@@ -345,10 +420,10 @@ public class Worm {
 	}
 
 	/**
-	 * Checks the validity of the specified y coordinate.
+	 * Checks the validity of the specified y coördinate.
 	 * 
 	 * @param 	y
-	 *          The specified y coordinate expressed in meters.
+	 *          The specified y coördinate expressed in meters.
 	 *          
 	 * @return 	False if y is NaN. True otherwise.
 	 * 			| result = ( ! Double.isNaN(y) )
@@ -409,7 +484,7 @@ public class Worm {
 	 *         	|     return false
 	 */
 	public static boolean isValidName(String name) {
-		if (!name.matches("[a-zA-Z\"\' ]*"))
+		if (!name.matches("[a-zA-Z0-9\"\' ]*"))
 			return false;
 		if (!Character.isUpperCase(name.charAt(0)))
 			return false;
@@ -429,44 +504,42 @@ public class Worm {
 	public boolean isValidActionPoints(int actionPoints) {
 		return ( actionPoints >= 0 && actionPoints <= getMaxActionPoints() );
 	}
+	
+	/**
+	 * Checks the validity of the specified number of hitpoints.
+	 * 
+	 * @param 	hitPoints
+	 * 			The number of hitpoints of the worm.
+	 * @return	True if the number of hitpoints lays between 0 and the maximum amount.
+	 */
+	public boolean isValidHitPoints(int hitPoints) {
+		return (hitPoints >= 0 && hitPoints <= getMaxHitPoints()) ;
+	}
 
 	/**
 	 * Moves the selected worm to the given coordinates.
 	 * 
-	 * @param	steps
-	 * 			The amount of steps the worm should move.
-	 * 
-	 * @effect	The worm moves with the given amount of steps through the method activeMoveSingleStep
-	 * 			if the number of steps is valid.
-	 * 			| activeMoveSingleStep()
+	 * @effect	The worm moves through the method activeMoveSingleStep if it can move.
+	 * 			| activeMove()
 	 * @throws 	ModelException
-	 * 			Throws a ModelException if the number of steps is less than or
-	 * 			equal to zero, or when the worm can not move.
-	 * 			| if (steps <= 0)
+	 * 			Throws a ModelException if the worm can not move.
+	 * 			| if (!canMove())
 	 * 			|		throw new ModelException
-	 * 			| if (!canMove(steps))
-	 * 			|		throw new ModelException
-	 * @note	The assignment says that movement has to occur in steps. It is possible to modify this method so the worm
-	 * 			can move with more than one step at the same time.
 	 */
-	public void activeMove(int steps) throws ModelException {
-		if ( steps <= 0 )
-			throw new ModelException("The amount of steps must be larger than zero.");
-		if ( ! canMove(steps) )
+	public void activeMove() throws ModelException {
+		if ( ! canMove() )
 			throw new ModelException("Not enough action points.");
-		for(int i=1; i<=steps; i++) {
-			activeMoveSingleStep();
-		}
+		activeMoveSingleStep();
 	}
 	
 
 	/**
 	 * Moves the worm a single step.
 	 * 
-	 * @effect	The position of the worm is set to it's new coordinates.
+	 * @effect	The position of the worm is set to it's new coördinates.
 	 * 			| setPosition( getRadius() * Math.cos(getDirection()), getRadius() * Math.sin(getDirection()) )
 	 * @effect	The amount of actionpoints diminishes when moving the worm.
-	 * 			| setActionPoints( getActionPoints() - getActionPointsCostMove(1) )
+	 * 			| setActionPoints( getActionPoints() - getActionPointsCostMove() )
 	 * @note	This method should be implemented in a defensive manner,
 	 * 			but the methods "setActionPoints" and "setposition" already throw an error for an invalid value.
 	 * 			No need to use double code for this exceptionhandling.
@@ -476,36 +549,28 @@ public class Worm {
 		double deltaY = getRadius() * Math.sin(getDirection());
 			
 		setPosition( getX()+deltaX, getY()+deltaY );
-		setActionPoints( getActionPoints() - getActionPointCostMove(1) );
+		setActionPoints( getActionPoints() - getActionPointCostMove() );
 	}
 	
 	/**
 	 * Calculates the total amount of actionpoints it takes to perform a move.
 	 * 
-	 * @param 	nbSteps
-	 * 			The number of steps the worm moves.
-	 * 
 	 * @return	The total cost of actionpoints to perform the move.
+	 * 			| return (int) ( Math.abs(Math.cos(getDirection())) + Math.abs(4*Math.sin(getDirection())) )
 	 * @note	The cost of actionpoints is rather low, especially in comparison with the cost for turning.
 	 */
-	public int getActionPointCostMove(int nbSteps) {
-		return nbSteps * (int) ( Math.abs(Math.cos(getDirection())) + Math.abs(4*Math.sin(getDirection())) );
+	public int getActionPointCostMove() {
+		return (int) ( Math.abs(Math.cos(getDirection())) + Math.abs(4*Math.sin(getDirection())) );
 	}
 
 	/**
 	 * Checks if a worm can perform the move.
 	 * 
-	 * @param	nbSteps
-	 * 			The amount of steps the worm will move.
-	 * 
 	 * @return	True if there are enough actionpoints left to perform the move.
-	 * @note	There are two lines of code, one is set into comments.
-	 * 			The first line of code gives a better actionpoint-cost calculation.
-	 * 			The second line can be used when an implementation is required in which
-	 * 			the worm can move with more than 1 step at a time.
 	 */
-	public boolean canMove(int nbSteps) {
-		if ( ! isValidActionPoints( getActionPoints() - (nbSteps*getActionPointCostMove(1)) ) )
+	//TODO implement impassable terrain
+	public boolean canMove() {
+		if ( ! isValidActionPoints( getActionPoints() - getActionPointCostMove() ) )
 			return false;
 		return true;
 	}
@@ -524,7 +589,7 @@ public class Worm {
 	 * 			| setActionPoints(getActionPoints() - getActionPointCostTurn(additionalDirection))
 	 * @effect	The direction of the worm has changed.
 	 * 			| setDirection(  (((getDirection() + additionalDirection) % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI)  )
-	 * @note	The last line of code prevents an assertion error.
+	 * @note	The last line of code prefents an assertion error.
 	 * 			If only (getDirection() + additionalDirection) % (2*Math.PI) is used,
 	 * 			it is possible that a negative argument is passed to setDirection. This is in conflict with the assertion of setDirection.
 	 * 			To prevent this, 2*pi is added to the result and modulo 2*pi is taken again.
@@ -557,10 +622,12 @@ public class Worm {
 	 * @param	direction
 	 * 			The direction of the worm.
 	 * 
-	 * @return	False if the given direction is invalid, or if there are not enough actionpoints available.
+	 * @return	False if the given direcion is invalid, or if there are not enough actionpoints available.
 	 */
 	public boolean canTurn(double additionalDirection) {
 		if ( Double.isNaN(additionalDirection) )
+			return false;
+		if ( additionalDirection > Double.MAX_VALUE)
 			return false;
 		if ( ! (isValidActionPoints(getActionPoints() - getActionPointCostTurn(additionalDirection)) ) )
 			return false;
@@ -572,8 +639,8 @@ public class Worm {
 	 * 
 	 * @effect	The amount of actionpoints is set to zero after performing the jump.
 	 * 			| setActionPoints(0)
-	 * @effect	The position of the worm is set to it's new coordinates, with newPos[0] the new x-coordinate.
-	 * 			newPos[1] is the new y-coordinate. These points are calculated in jumpStep and jumpTime.
+	 * @effect	The position of the worm is set to it's new coördinates, with newPos[0] the new x-coördinate.
+	 * 			newPos[1] is the new y-coördinate. These points are calculated in jumpStep and jumpTime.
 	 * 			| setPosition( newPos[0], newPos[1] )
 	 * @note	The code "if (canJump())" prevents unnecessary calculations if the worm can't jump.
 	 * @note	If the player tries to jump when it's not possible he will get "punished" for trying.
@@ -636,6 +703,7 @@ public class Worm {
 	 * Calculates and returns the time needed to perform the jump of the worm.
 	 * 
 	 * @return 	The time needed to perform the jump.
+	 * 			| distance / (v0*Math.cos(getDirection()))
 	 * @note	The first if-loop prevents a division by zero in the standard formula.
 	 */
 	public double jumpTime() {
@@ -670,5 +738,55 @@ public class Worm {
 		}
 		return true;
 	}
-
+	
+	/**
+	 * Verifies whether a worm is alive, i.e. when it's amount of hitpoints is greater than zero.
+	 * 
+	 * @return	True if the amount of hitpoints is greater than zero.
+	 * 			| return ( !(getHitPoints() == 0))
+	 */
+	public boolean wormIsAlive() {
+		return ( ! (getHitPoints() == 0));
+	}
+	
+	public void fall() {
+		if (canFall()) {
+			for (int i = (int) getY(); i <= world.getHeight(); i++) {
+				if (i == world.getHeight()) {
+					world.removeWorm();
+					break;
+				}
+				if (world.isImpassable(getX(), i, getRadius())) {
+					setPosition(getX(), i);
+					double metersFallen = i - getY();
+					int hitPointsLost = (int) Math.floor(metersFallen * 3);
+					setHitPoints(getHitPoints() - hitPointsLost);
+					if (!wormIsAlive()) {
+						world.removeWorm();
+					}
+					break;				
+				}
+			}
+		}
+	}
+	
+	public boolean canFall() {
+		if (world.isAdjacent(getX(), getY(), getRadius()))
+			return false;
+		return true;		
+	}
+	
+	public void Shoot(int propulsionYield) {
+		if (!canShoot())
+			throw new ModelException("This worm can not shoot.");
+		projectile.Shoot(propulsionYield);
+	}
+	
+	public boolean canShoot() {
+		if (!isValidActionPoints(getActionPoints()))
+			return false;
+		if (world.isImpassable(getX(), getY(), getRadius()))
+			return false;
+		return true;
+	}
 }
