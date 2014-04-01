@@ -29,6 +29,7 @@ public class Worm {
 	private double direction;
 	private double radius;
 	private String name;
+	private String teamName;
 
 	private final double minimalRadius = 0.25;
 	private static final double density = 1062;
@@ -788,5 +789,9 @@ public class Worm {
 		if (world.isImpassable(getX(), getY(), getRadius()))
 			return false;
 		return true;
+	}
+	
+	public String getTeamName() {
+		return teamName;
 	}
 }

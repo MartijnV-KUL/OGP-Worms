@@ -4,11 +4,9 @@ import java.util.ArrayList;
 
 public class Teams {
 
-	Worm worm;
-	
 	private String teamName;
 	
-	public ArrayList<Teams> teamCollection;
+	public ArrayList<String> teamCollection;
 	
 	public void setTeamName(String newName) {
 		if (!Worm.isValidName(newName))
@@ -16,7 +14,16 @@ public class Teams {
 		teamName = newName;
 	}
 	
-	public String getTeamName() {
-		return teamName;
+	public String getTeamNameAt(int index) {
+		return teamCollection.get(index);
+	}
+	
+	public ArrayList<String> returnAllTeams() {
+		return teamCollection;
+	}
+	
+	public void addTeam(String newName) {
+		setTeamName(newName);
+		teamCollection.add(teamName);
 	}
 }

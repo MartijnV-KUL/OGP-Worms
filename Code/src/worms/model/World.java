@@ -9,13 +9,11 @@ public class World{
 	private double height;
 	private boolean[][] passableMap;
 	
+	private Teams team;
+	private Worm worm;
+	
 	public ArrayList<Worm> wormCollection;
 
-	Worm worm;
-	Teams team;
-	Projectile projectile;
-	Food food;
-	
 	public World(double width, double height, boolean[][] passableMap, Random random) {
 		setPassableMap(passableMap);
 		setHeight(height);
@@ -97,6 +95,16 @@ public class World{
 	
 	//TODO
 	public void removeWorm() {
+	}
+	
+	//TODO
+	//Nu is worm nog null, hoe associeer je de wormobjecten uit de Worm-klasse met dit object?
+	public void addNewWorm() {
+		wormCollection.add(worm);
+	}
+
+	public void addNewTeam(String newName) {
+		team.addTeam(newName);
 	}
 }
 	

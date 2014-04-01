@@ -106,8 +106,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void addEmptyTeam(World world, String newName) {
-		// TODO Auto-generated method stub
-		
+		world.addNewTeam(newName);
 	}
 
 
@@ -120,7 +119,8 @@ public class Facade implements IFacade {
 
 	@Override
 	public void addNewWorm(World world) {
-		// TODO Auto-generated method stub
+		world.addNewWorm();
+		
 	}
 
 
@@ -262,29 +262,25 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getX(Food food) {
-		// TODO Auto-generated method stub
-		return 0;
+		return food.getX();
 	}
 
 
 	@Override
 	public double getX(Projectile projectile) {
-		// TODO Auto-generated method stub
-		return 0;
+		return projectile.getX();
 	}
 
 
 	@Override
 	public double getY(Food food) {
-		// TODO Auto-generated method stub
-		return 0;
+		return food.getY();
 	}
 
 
 	@Override
 	public double getY(Projectile projectile) {
-		// TODO Auto-generated method stub
-		return 0;
+		return projectile.getY();
 	}
 
 

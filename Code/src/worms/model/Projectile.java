@@ -1,5 +1,8 @@
 package worms.model;
 
+import java.util.ArrayList;
+
+@SuppressWarnings("unused")
 public class Projectile {
 	
 	private double x;
@@ -15,8 +18,7 @@ public class Projectile {
 	
 	private final double massBazookaProjectile = 0.300;
 	
-	
-	
+	private ArrayList<String> projectileCollection;
 	
 	private Worm worm;
 	
