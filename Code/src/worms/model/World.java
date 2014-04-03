@@ -11,9 +11,8 @@ public class World{
 	
 	private Teams team;
 	private Worm worm;
+	private Food food;
 	
-	public ArrayList<Worm> wormCollection;
-
 	public World(double width, double height, boolean[][] passableMap, Random random) {
 		setPassableMap(passableMap);
 		setHeight(height);
@@ -97,14 +96,31 @@ public class World{
 	public void removeWorm() {
 	}
 	
+	//TODO werkt zo'n setter om te voorkomen dat het aangemaakte worm-object in deze klasse null is?
+	public void setWorm(Worm worm) {
+		this.worm = worm;
+	}
+	
 	//TODO
-	//Nu is worm nog null, hoe associeer je de wormobjecten uit de Worm-klasse met dit object?
+	//Aangemaakte worm-object is null, setter voorkomt dit (hopelijk)...
 	public void addNewWorm() {
-		wormCollection.add(worm);
+		(worm.getAllWorms()).add(worm);
 	}
 
 	public void addNewTeam(String newName) {
 		team.addTeam(newName);
+	}
+	
+	public void setFood(Food food) {
+		this.food = food;
+	}
+	
+	public void addNewFood() {
+		(food.getAllFood()).add(food);
+	}
+	
+	public ArrayList<Food> getFood() {
+		return food.getAllFood();
 	}
 }
 	

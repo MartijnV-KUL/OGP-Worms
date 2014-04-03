@@ -18,7 +18,7 @@ public class Projectile {
 	
 	private final double massBazookaProjectile = 0.300;
 	
-	private ArrayList<String> projectileCollection;
+	private ArrayList<Projectile> projectileCollection;
 	
 	private Worm worm;
 	
@@ -103,11 +103,4 @@ public class Projectile {
 			return false;
 		return true;
 	}
-	
-	
-	
-	
-
-	
-
 }

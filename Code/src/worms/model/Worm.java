@@ -1,5 +1,7 @@
 package worms.model;
 
+import java.util.ArrayList;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 
@@ -42,6 +44,8 @@ public class Worm {
 	
 	private World world;
 	private Projectile projectile;
+	
+	private ArrayList<Worm> wormCollection;
 
 	/**
 	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
@@ -84,7 +88,13 @@ public class Worm {
 		setPosition(x, y);
 		setDirection(direction);
 		setRadius(radius);
-		setName(name);	
+		setName(name);
+		wormCollection.add(this);
+		world.setWorm(this);
+	}
+	
+	public ArrayList<Worm> getAllWorms() {
+		return wormCollection;
 	}
 
 	/**
@@ -686,6 +696,8 @@ public class Worm {
 		double [] output = {getX(), getY()};
 		return output;
 	}
+	
+	
 
 	/**
 	 * Calculates and returns the initial velocity of a jump of the worm.
@@ -699,7 +711,8 @@ public class Worm {
 		return ( (force/getMass()) * 0.5 );
 	}
 
-	
+
+
 	/**
 	 * Calculates and returns the time needed to perform the jump of the worm.
 	 * 
@@ -717,6 +730,19 @@ public class Worm {
 		double distance = (Math.pow(v0, 2)*Math.sin(2*getDirection())) / getGravitationalAcceleration();
 		return ( distance / (v0*Math.cos(getDirection())) );
 	}
+	
+	
+	/*
+	public double JumpTime(double timeStep) {
+		double v0 = getJumpInitVel();
+		
+		if (Math.cos(getDirection()) == 0) {
+			
+		}
+		return 0;
+	}*/
+	
+	
 	
 	/**
 	 * Verifies whether a worm can jump in its current state. As of now, the 
@@ -750,6 +776,10 @@ public class Worm {
 		return ( ! (getHitPoints() == 0));
 	}
 	
+	/* TODO Note: Does the pixels count up or down when you move from top to bottom?
+	 * Right now it's implemented that pixels count up when you move from top to bottom. (So 0 on top and max on bottom).
+	 * If it is reversed the if-loops have to be modified for i--.
+	 */
 	public void fall() {
 		if (canFall()) {
 			for (int i = (int) getY(); i <= world.getHeight(); i++) {

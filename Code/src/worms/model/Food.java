@@ -1,10 +1,27 @@
 package worms.model;
 
+import java.util.ArrayList;
+
+import be.kuleuven.cs.som.annotate.*;
+
+@SuppressWarnings("unused")
 public class Food {
 	
 	private double x;
 	private double y;
+	private final double radius = 0.20;
 	
+	private ArrayList<Food> foodCollection;
+	
+	private World world;
+	
+	public Food(World world, double x, double y) {
+		setX(x);
+		setY(y);
+		foodCollection.add(this);
+		world.setFood(this);
+	}
+
 	public double getX() {
 		return this.x;
 	}
@@ -31,6 +48,19 @@ public class Food {
 		if (!isValidY(y))
 			throw new ModelException("Invalid y-coordinate");
 		this.y = y;
+	}
+	
+	@Immutable
+	public double getRadius() {
+		return radius;
+	}
+	
+	public Food getFoodAt(int index) {
+		return foodCollection.get(index);
+	}
+	
+	public ArrayList<Food> getAllFood() {
+		return foodCollection;
 	}
 
 
