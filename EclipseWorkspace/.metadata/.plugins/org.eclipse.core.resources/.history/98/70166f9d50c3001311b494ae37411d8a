@@ -1,0 +1,11 @@
+package worms.model;
+
+public class Rifle extends Weapon {
+
+	@Override
+	public double getForce(double propulsionYield) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

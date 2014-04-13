@@ -1,0 +1,75 @@
+package worms.model;
+
+import be.kuleuven.cs.som.annotate.Basic;
+
+public abstract class Weapon {
+
+// {{ Projectile Mass
+	
+	protected double projectileMass;
+	
+	@Basic
+	public double getProjectileMass() {
+		return projectileMass;
+	}
+	
+	// }}
+	
+// {{ Force
+
+	protected double baseForce;
+	
+	@Basic
+	public double getBaseForce() {
+		return baseForce;
+	}
+	
+	public abstract double getForce( int propulsionYield );
+	
+	// }}
+	
+// {{ Hit Points Damage
+
+	protected double hitPointsDamage;
+	
+	public double getHitPointsDamage() {
+		return hitPointsDamage;
+	}
+	
+	// }}
+	
+// {{ Action Points Cost
+
+	protected double actionPointsCost;
+	
+	public double getActionPointsCost() {
+		return actionPointsCost;
+	}
+	
+	// }}
+	
+// {{ Ammunition
+
+	private int ammunition;
+	
+	public int getAmmunition() {
+		return ammunition;
+	}
+	
+	
+	// }}
+	
+// {{ Worm Association
+	
+	private Worm worm;
+	
+	
+	
+	
+	// }}
+	
+	
+	
+	
+
+}

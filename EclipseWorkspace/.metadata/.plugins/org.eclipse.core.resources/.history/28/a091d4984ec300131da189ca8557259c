@@ -1,0 +1,9 @@
+package worms.model;
+
+public class Rifle extends Weapon {
+	
+	public Rifle() {
+		
+	}
+
+}

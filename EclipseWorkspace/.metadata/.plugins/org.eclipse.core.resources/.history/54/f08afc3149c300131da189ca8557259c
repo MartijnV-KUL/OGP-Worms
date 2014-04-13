@@ -1,0 +1,369 @@
+package worms.model;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import be.kuleuven.cs.som.annotate.Basic;
+
+public class World{
+
+	
+	public World(double width, double height, boolean[][] passableMap, Random random) {
+		setPassableMap(passableMap);
+		setHeight(height);
+		setWidth(width);
+	}
+	
+// {{ Width
+
+	private double width;
+
+	@Basic
+	public double getWidth() {
+		return this.width;
+	}
+	
+	public final void setWidth(double width) {
+		if (! isValidWidth(width))
+			throw new ModelException("Width is invalid.");
+		this.width = width;
+	}
+	
+	public boolean isValidWidth(double width) {
+		if (width < 0 || width > Double.MAX_VALUE)
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// {{ Height
+
+	private double height;
+	
+	@Basic
+	public double getHeight() {
+		return this.height;
+	}
+	
+	public final void setHeight(double height) {
+		if (! isValidHeight(height))
+			throw new ModelException("Height is invalid.");
+		this.height = height;
+	}
+	
+	public boolean isValidHeight(double height) {
+		if (height < 0 || height > Double.MAX_VALUE)
+			return false;
+		return true;
+	}
+	
+	// }}
+
+// {{ PassableMap
+
+	private boolean[][] passableMap;
+	private int horizontalPixels;
+	private int verticalPixels;
+	
+	@Basic
+	public boolean[][] getPassableMap() {
+		return passableMap;
+	}
+	
+	public void setPassableMap(boolean[][] passableMap) {
+		this.passableMap = passableMap;
+		this.horizontalPixels  = passableMap.length;
+		this.verticalPixels = passableMap[0].length;
+	}
+	
+	public boolean isPassable(int pixelX, int pixelY) {
+		return getPassableMap()[pixelX][pixelY];
+	}
+	
+	public boolean isPassable(double x, double y) {
+		return isPassable(World.positionToPixel(x),World.positionToPixel(y));
+	}
+	
+	public boolean isPassable(double x, double y, double radius) {
+		// Define a resolution
+		double resolution = 360;
+		// Loop over the entire resolution
+		for (int i=0; i<resolution; i++) {
+			// Calculate the current angle to be evaluated
+			double angle = 2*Math.PI * (i/resolution);
+			
+			// Calculate the x- and y-offsets at the current angle
+			double deltaX = radius*Math.cos(angle);
+			double deltaY = radius*Math.sin(angle);
+			
+			// Convert the x- and y-coordinates to pixels
+			int pixelX = World.positionToPixel(x + deltaX);
+			int pixelY = World.positionToPixel(y + deltaY);
+			
+			// Check if the pixels are passable or not
+			if ( !isPassable(pixelX,pixelY) )
+				return false;
+		}
+		return true;
+	}
+	
+	// }}
+	
+// {{ Other position-related methods
+	
+	/**
+	 * Converts a position expressed as a double to its corresponding pixel.
+	 * @param position
+	 * @return
+	 */
+	public static int positionToPixel(double position) {
+		return (int) Math.floor(position);
+	}
+	
+	public boolean isBorderPixel(int pixelX, int pixelY) {
+		if ( pixelX==0 )
+			return true;
+		if ( pixelX==(positionToPixel(getWidth())-1) )
+			return true;
+		if ( pixelY==0 )
+			return true;
+		if ( pixelY==(positionToPixel(getHeight())-1) )
+			return true;
+		return false;
+	}
+	
+	//Location is adjacent if: location itself is passable + impassable at pixel next to it
+	public boolean isAdjacent(double x, double y) {
+		int pixelX = World.positionToPixel(x);
+		int pixelY = World.positionToPixel(y);
+		if ( isBorderPixel(pixelX,pixelY) )
+			return false;
+		if ( isPassable(pixelX,pixelY) ) {
+			if ( ! isPassable( pixelX+1, pixelY   ) ) { return true; }
+			if ( ! isPassable( pixelX-1, pixelY   ) ) { return true; }
+			if ( ! isPassable( pixelX,   pixelY+1 ) ) { return true; }
+			if ( ! isPassable( pixelX,   pixelY-1 ) ) { return true; }
+		}
+		return true;
+	}
+	
+	// }}
+
+// {{ Terminated
+	
+	private boolean terminated;
+	
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	public void terminate() {
+		removeAllWorms();
+		removeAllTeams();
+		removeAllFood();
+		removeProjectile();
+		terminated = true;
+	}
+	
+	// }}
+	
+// {{ Worm Association
+
+	private ArrayList<Worm> worms = new ArrayList<Worm>();
+	
+	
+	
+	
+	
+	
+	
+	// }}
+	
+// {{ Team Association
+	
+	private final int maxTeams = 10;
+	private ArrayList<Team> teams = new ArrayList<Team>();
+	
+	public ArrayList<Team> getTeams() {
+		return teams;
+	}
+	
+	public void addTeam(Team newTeam) {
+		if (!canHaveAsTeam(newTeam))
+			throw new ModelException("Invalid team specified");
+		if (hasAsTeam(newTeam))
+			throw new ModelException("Team already in world.");
+		if (teams.size()>=maxTeams)
+			throw new ModelException("Maximum amount of teams reached");
+		teams.add(newTeam);
+	}
+	
+	public boolean canHaveAsTeam(Team newTeam) {
+		if (newTeam==null)
+			return false;
+		if (newTeam.isTerminated())
+			return false;
+		return true;
+	}
+	
+	public boolean hasAsTeam(Team team) {
+		return teams.contains(team);
+	}
+	
+	public void removeTeam(Team team) {
+		if (!hasAsTeam(team))
+			throw new ModelException("Team not found.");
+		team.removeWorld();
+		teams.remove(team);
+	}
+	
+	public void removeAllTeams() {
+		for ( Team team : teams ) {
+			removeTeam(team);
+		}
+	}
+	
+	//}}
+	
+// {{ Food Association
+
+	private ArrayList<Food> food = new ArrayList<Food>();
+	
+	public ArrayList<Food> getFood() {
+		return food;
+	}
+	
+	/**
+	 * Method to add a food object to the world.
+	 * @param newFood
+	 * @throws ModelException
+	 */
+	public void addFood(Food newFood) throws ModelException {
+		if (!canHaveAsFood(newFood))
+			throw new ModelException("Invalid food");
+		if (hasAsFood(newFood))
+			throw new ModelException("Food already in world.");
+		newFood.setWorld(this);
+		food.add(newFood);
+	}
+	
+	public boolean canHaveAsFood(Food newFood) {
+		if (newFood==null)
+			return false;
+		if (newFood.isTerminated())
+			return false;
+		return true;
+	}
+	
+	public boolean hasAsFood(Food food) {
+		return this.food.contains(food);
+	}
+	
+	public void removeFood(Food food) throws ModelException {
+		if (!hasAsFood(food))
+			throw new ModelException("Food not found in world");
+		food.removeWorld();
+		this.food.remove(food);
+	}
+	
+	public void removeAllFood() {
+		for ( Food loopFood : food ) {
+			removeFood(loopFood);
+		}
+	}
+	
+	/**
+	 * Checks if a worm and food overlap in the world.
+	 * @param worm
+	 * @param food
+	 * @return
+	 */
+	public static boolean overlapWormFood(Worm worm, Food food) {
+		double wormX = worm.getX();
+		double wormY = worm.getY();
+		double wormR = worm.getRadius();
+		double foodX = food.getX();
+		double foodY = food.getY();
+		double foodR = food.getRadius();
+		
+		double deltaX = foodX - wormX;
+		double deltaY = foodY - wormY;
+		
+		double normDelta = Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
+		double sumRadii = wormR + foodR;
+		
+		return (normDelta < sumRadii);
+	}
+	
+// }}
+	
+// {{ Projectile Association
+
+	private Projectile projectile;
+	
+	
+	
+	
+	// }}
+	
+	
+	
+	
+
+	
+	//TODO
+	public void addNewWorm(Worm newWorm) throws ModelException {
+		if (!isValidWorm(newWorm))
+			throw new ModelException("Invalid worm specified");
+		if (!newWorm.canHaveAsWorld(this))
+			throw new ModelException("Invalid world for specified worm.");
+		newWorm.setWorld(this);
+		worms.add(newWorm);
+	}
+	
+	public static boolean isValidWorm(Worm worm) {
+		if (worm==null)
+			return false;
+		if (worm.isTerminated())
+			return false;
+		return true;
+	}
+	
+	public void removeWorm(Worm worm) {
+		if (containsWorm(worm)) {
+			worm.removeWorld(this);
+			worms.remove(worm);
+		}
+		//TODO
+	}
+	
+	public boolean containsWorm(Worm worm) {
+		return worms.contains(worm);
+	}
+	
+	
+	
+	
+	
+	
+	
+	public void setProjectile(Projectile projectile) throws ModelException {
+		if (!isValidProjectile(projectile))
+			throw new ModelException("Invalid projectile");
+		if (!projectile.canHavAsWorld(this))
+			throw new ModelException("Invalid world for specified projectile");
+		projectile.setWorld(this);
+		this.projectile = projectile;
+	}
+	
+	public boolean isValidProjectile(Projectile projectile) {
+		if (projectile==null)
+			return false;
+		if (projectile.isTerminated())
+			return false;
+		return true;
+	}
+	
+}
+	

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="be.kuleuven.cs.som.annotate.Basic"/>
+<fullyQualifiedTypeName name="worms.model.Bazooka"/>
+<fullyQualifiedTypeName name="worms.model.ModelException"/>
+<fullyQualifiedTypeName name="java.lang.NullPointerException"/>
+</qualifiedTypeNameHistroy>

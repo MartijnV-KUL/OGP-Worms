@@ -1,0 +1,64 @@
+package worms.model;
+
+import java.util.ArrayList;
+
+public class Team {
+	
+	public Team(String name) {
+		setName(name);
+	}
+	
+	// {{ name related
+	
+	private String name;
+	
+	public String getName() {
+		return name;
+	}
+	
+	public static boolean isValidName(String name) {
+		if (!name.matches("[a-zA-Z]*"))
+			return false;
+		if (!Character.isUpperCase(name.charAt(0)))
+			return false;
+		if (name.length() < 2)
+			return false;
+		return true;
+	}
+	
+	public void setName(String name) {
+		if (!isValidName(name))
+			throw new ModelException("Invalid team name.");
+		this.name = name;
+	}
+	
+	// }}
+	
+	// {{ association related
+	
+	private ArrayList<Worm> worms = new ArrayList<Worm>();
+	
+	public void addWorm(Worm worm) {
+		
+	}
+	
+	public ArrayList<Worm> getLiveWorms() {
+		ArrayList<Worm> liveWorms = new ArrayList<Worm>();
+		for ( Worm worm : worms ) {
+			if (worm.isAlive())
+				liveWorms.add(worm);
+		}
+		return liveWorms;
+	}
+	
+	
+	
+	
+	// }}
+	
+	
+	
+	
+	
+	
+}
