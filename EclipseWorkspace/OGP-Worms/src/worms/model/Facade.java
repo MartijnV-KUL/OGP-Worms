@@ -7,22 +7,6 @@ public class Facade implements IFacade {
 
 	public Facade() {}
 
-	
-	/**@Override
-	public Worm createWorm(double x, double y, double direction, double radius, String name) {
-		return new Worm(x, y, direction, radius, name);
-	}
-
-	@Override
-	public boolean canMove(Worm worm, int nbSteps) {
-		return worm.canMove(nbSteps);
-	}
-
-	@Override
-	public void move(Worm worm, int nbSteps) {
-		worm.activeMove(nbSteps);
-	}*/
-
 	@Override
 	public boolean canTurn(Worm worm, double angle) {
 		return worm.canTurn(angle);
@@ -33,16 +17,6 @@ public class Facade implements IFacade {
 		worm.turn(angle);
 	}
 
-	/**@Override
-	public void jump(Worm worm) {
-		worm.jump();
-	}
-
-	@Override
-	public double getJumpTime(Worm worm) {
-		return worm.jumpTime();
-	}*/
-
 	@Override
 	public double[] getJumpStep(Worm worm, double t) {
 		return worm.jumpStep(t);
@@ -50,17 +24,17 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getX(Worm worm) {
-		return worm.getX();
+		return worm.getPosition().getX();
 	}
 
 	@Override
 	public double getY(Worm worm) {
-		return worm.getY();
+		return worm.getPosition().getY();
 	}
 
 	@Override
 	public double getOrientation(Worm worm) {
-		return worm.getDirection();
+		return worm.getPosition().getDirection();
 	}
 
 	@Override
@@ -106,7 +80,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void addEmptyTeam(World world, String newName) {
-		world.addNewTeam(newName);
+		world.addTeam(new Team(newName));
 	}
 
 
@@ -137,7 +111,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Food createFood(World world, double x, double y) {
-		return new Food(world, x, y);
+		return world.addNewFood(x, y);
 	}
 
 
@@ -151,7 +125,7 @@ public class Facade implements IFacade {
 	@Override
 	public Worm createWorm(World world, double x, double y, double direction,
 			double radius, String name) {
-		return new Worm(world, x, y, direction, radius, name);
+		return world.addNewWorm(x, y, direction, radius, name);
 	}
 
 
@@ -163,15 +137,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public Projectile getActiveProjectile(World world) {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getProjectile();
 	}
 
 
 	@Override
 	public Worm getCurrentWorm(World world) {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getActiveWorm();
 	}
 
 
@@ -195,15 +167,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getJumpTime(Projectile projectile, double timeStep) {
-		// TODO Auto-generated method stub
-		return 0;
+		return projectile.jumpTime(timeStep);
 	}
 
 
 	@Override
 	public double getJumpTime(Worm worm, double timeStep) {
-		// TODO Auto-generated method stub
-		return 0;
+		return worm.jumpTime(timeStep);
 	}
 
 
@@ -221,22 +191,19 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getRadius(Projectile projectile) {
-		// TODO Auto-generated method stub
-		return 0;
+		return projectile.getRadius();
 	}
 
 
 	@Override
 	public String getSelectedWeapon(Worm worm) {
-		// TODO Auto-generated method stub
-		return null;
+		return worm.getEquippedWeapon().getName();
 	}
 
 
 	@Override
 	public String getTeamName(Worm worm) {
-		// TODO Auto-generated method stub
-		return null;
+		return worm.getTeam().getName();
 	}
 
 
@@ -249,8 +216,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Collection<Worm> getWorms(World world) {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getWorms();
 	}
 
 
@@ -262,7 +228,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getX(Projectile projectile) {
-		return projectile.getX();
+		return projectile.getPosition().getX();
 	}
 
 
@@ -274,21 +240,20 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getY(Projectile projectile) {
-		return projectile.getY();
+		return projectile.getPosition().getY();
 	}
 
 
 	@Override
 	public boolean isActive(Food food) {
 		// TODO Auto-generated method stub
-		return false;
+		return (!food.isTerminated());
 	}
 
 
 	@Override
 	public boolean isActive(Projectile projectile) {
-		// TODO Auto-generated method stub
-		return false;
+		return (!projectile.isTerminated());
 	}
 
 
@@ -300,34 +265,31 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isAlive(Worm worm) {
-		return worm.wormIsAlive();
+		return worm.isAlive();
 	}
 
 
 	@Override
 	public boolean isGameFinished(World world) {
-		// TODO Auto-generated method stub
-		return false;
+		return world.isGameFinished();
 	}
 
 
 	@Override
 	public boolean isImpassable(World world, double x, double y, double radius) {
-		return world.isImpassable(x, y, radius);
+		return !world.isPassable(x, y, radius);
 	}
 
 
 	@Override
 	public void jump(Projectile projectile, double timeStep) {
-		// TODO Auto-generated method stub
-		
+		projectile.jump(timeStep);
 	}
 
 
 	@Override
 	public void jump(Worm worm, double timeStep) {
-		// TODO Auto-generated method stub
-		
+		worm.jump(timeStep);
 	}
 
 
@@ -339,28 +301,25 @@ public class Facade implements IFacade {
 
 	@Override
 	public void selectNextWeapon(Worm worm) {
-		// TODO Auto-generated method stub
-		
+		worm.equipNextWeapon();
 	}
 
 
 	@Override
 	public void shoot(Worm worm, int yield) {
-		// TODO Auto-generated method stub
-		
+		worm.shoot(yield);
 	}
 
 
 	@Override
 	public void startGame(World world) {
 		// TODO Auto-generated method stub
-		
+		world.startGame();
 	}
 
 
 	@Override
 	public void startNextTurn(World world) {
-		// TODO Auto-generated method stub
-		
+		world.nextTurn();
 	}
 }

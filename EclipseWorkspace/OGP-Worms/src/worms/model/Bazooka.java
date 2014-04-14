@@ -3,16 +3,17 @@ package worms.model;
 public class Bazooka extends Weapon {
 	
 	public Bazooka() {
-		projectileMass   = 0.300;
-		baseForce        = 2.5;
-		hitPointsDamage  = 80;
-		actionPointsCost = 50;
+		setProjectileMass(0.300);
+		setHitPointsDamage(80);
+		setActionPointsCost(50);
+		setName("Bazooka");
 	}
 
 	@Override
 	public double getForce(int propulsionYield) {
+		// Linear scaling
 		double p = ((double)propulsionYield)/100;
-		return baseForce + p*7;
+		return 2.5 + 7*p;
 	}
 
 }

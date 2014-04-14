@@ -8,12 +8,42 @@ import be.kuleuven.cs.som.annotate.Immutable;
 
 public class World{
 
+// {{ Constructors
+	
+	public World() {
+		setHeight(1);
+		setWidth(1);
+		setPassableMap(new boolean[10][10]);
+		maxTeams = 10;
+		setRandomSeed(new Random());
+	}
 	
 	public World(double width, double height, boolean[][] passableMap, Random random) {
-		setPassableMap(passableMap);
 		setHeight(height);
 		setWidth(width);
+		setPassableMap(passableMap);
+		maxTeams = 10;
+		setRandomSeed(random);
 	}
+	
+	// }}
+	
+// {{ Attributes and their Getters, Setters and Checkers
+
+// {{ Constants
+
+	private static final double gravitationalAcceleration = 9.80665;
+
+	/**
+	 * Basic inspector that returns the gravitational acceleration.
+	 * 
+	 * @return Returns the gravitational acceleration.
+	 */
+	@Basic @Immutable
+	public static double getGravitationalAcceleration() {
+		return gravitationalAcceleration;
+	}
+	// }}
 	
 // {{ Width
 
@@ -85,9 +115,38 @@ public class World{
 	}
 	
 	public void setPassableMap(boolean[][] passableMap) {
-		this.passableMap = passableMap;
-		this.horizontalPixels  = passableMap.length;
-		this.verticalPixels = passableMap[0].length;
+		if (isValidPassableMap(passableMap)) {
+			this.passableMap = passableMap;
+			this.horizontalPixels  = passableMap.length;
+			this.verticalPixels = passableMap[0].length;
+		}
+	}
+	
+	public boolean isValidPassableMap(boolean[][] passableMap) {
+		if (passableMap==null)
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// }}
+	
+// {{ Map-related methods
+	
+	/**
+	 * Converts a position expressed as a double to its corresponding pixel.
+	 * @param position
+	 * @return
+	 */
+	public int[] positionToPixel(double x, double y) {
+		//TODO is this the correct implementation?
+		int pixelX = (int) Math.round( x * ((double)getHorizontalPixels()-1)/getWidth() );
+		int pixelY = (int) Math.round( x * ((double)  getVerticalPixels()-1)/getHeight() );
+		int[] pixelPosition = new int[2];
+		pixelPosition[0] = pixelX;
+		pixelPosition[1] = pixelY;
+		return pixelPosition;
 	}
 	
 	public boolean isPassable(int pixelX, int pixelY) {
@@ -95,8 +154,10 @@ public class World{
 	}
 	
 	public boolean isPassable(double x, double y) {
-		if (isWithinBoundaries(x,y))
-			return isPassable(World.positionToPixel(x),World.positionToPixel(y));
+		if (isWithinBoundaries(x,y)) {
+			int[] pixelXY = positionToPixel(x,y);
+			return isPassable(pixelXY[0],pixelXY[1]);
+		}
 		return false;
 	}
 	
@@ -125,20 +186,6 @@ public class World{
 		return true;
 	}
 	
-	// }}
-	
-// {{ Other position-related methods
-	
-	/**
-	 * Converts a position expressed as a double to its corresponding pixel.
-	 * @param position
-	 * @return
-	 */
-	public static int positionToPixel(double position) {
-		//TODO is this the correct implementation?
-		return (int) Math.floor(position);
-	}
-	
 	public boolean isBorderPixel(int pixelX, int pixelY) {
 		//TODO check if this implementation is correct.
 		if ( pixelX==0 )
@@ -152,10 +199,33 @@ public class World{
 		return false;
 	}
 	
-	//Location is adjacent if: location itself is passable + impassable at pixel next to it
+
+	
+	public boolean isAdjacent(double x, double y, double radius) {
+//TODO use a mathematical formula instead of sampling numerically.
+		// Loop over the entire resolution
+		for (int i=0; i<passabilityAngleResolution; i++) {
+			for (int j=0; j<passabilityRadiusResolution; j++) {
+				// Calculate the current radius and angle to be evaluated
+				double testRadius = radius * (j/passabilityRadiusResolution);
+				double testAngle = 2*Math.PI * (i/passabilityAngleResolution);
+				
+				// Calculate the x- and y-offsets at the current angle
+				double deltaX = testRadius * Math.cos(testAngle);
+				double deltaY = testRadius * Math.sin(testAngle);
+				
+				// Convert the x- and y-coordinates to pixels
+				isAdjacent(x+deltaX,y+deltaY);
+			}
+		}
+		return true;
+	}
+	
 	public boolean isAdjacent(double x, double y) {
-		int pixelX = World.positionToPixel(x);
-		int pixelY = World.positionToPixel(y);
+		int[] pixelXY = positionToPixel(x,y);
+		int pixelX = pixelXY[0];
+		int pixelY = pixelXY[1];
+
 		if ( isBorderPixel(pixelX,pixelY) )
 			return false;
 		if ( isPassable(pixelX,pixelY) ) {
@@ -164,48 +234,182 @@ public class World{
 			if ( ! isPassable( pixelX,   pixelY+1 ) ) { return true; }
 			if ( ! isPassable( pixelX,   pixelY-1 ) ) { return true; }
 		}
-		return true;
+		return false;
 	}
 	
 	public boolean isWithinBoundaries(double x,double y) {
 		return ( x>=0 && x<=getWidth() && y>=0 && y<=getHeight() );
 	}
 	
+	public static boolean isOverlapping(double x1, double y1, double r1, double x2, double y2, double r2) {
+		double deltaX = x2 - x1;
+		double deltaY = y2 - y1;
+		
+		double normDelta = Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
+		double sumRadii = r1 + r2;
+		
+		return (normDelta < sumRadii);
+	}
+	
+	// }}
+	
+// {{ New food/worm stuff
+	
+	public double[] getRandomXY() {
+		double xMin = 0;
+		double xMax = getWidth();
+		double yMin = 0;
+		double yMax = getHeight();
+		double[] output = new double[2];
+		output[0] = xMin + (xMax-xMin) * getRandomSeed().nextDouble();
+		output[1] = yMin + (yMax-yMin) * getRandomSeed().nextDouble();
+		return output;
+	}
+	
+	public void addNewFood() {
+		double randX = 0;
+		double randY = 0;
+		do {
+			double[] randomXY = getRandomXY();
+			randX = randomXY[0];
+			randY = randomXY[1];
+		} while( false ); // don't check anything
+		//} while( !isPassable(randX,randY) ); // check if x&y is passable
+		//} while( !isAdjacent(randX,randY) ); // check if x&y is adjacent
+		
+		//TODO check if x&y is passable? or adjacent?
+		
+		addFood( new Food( randX, randY ) );
+	}
+	
+	public Food addNewFood(double x,double y) {
+		Food newFood = new Food(x,y);
+		addFood(newFood);
+		return newFood;
+	}
+	
+	public void addNewWorm() {
+		double randX = 0;
+		double randY = 0;
+		do {
+			double[] randomXY = getRandomXY();
+			randX = randomXY[0];
+			randY = randomXY[1];
+		//} while( false ); // don't check anything
+		//} while( !isPassable(randX,randY) ); // check if x&y is passable
+		} while( !isAdjacent(randX,randY) ); // check if x&y is adjacent
+		
+		addWorm(new Worm(randX,randY,0,1,"JohnDoe"));
+	}
+	
+	 public Worm addNewWorm(double x, double y, double direction, double radius, String name) {
+		 Worm newWorm = new Worm(x,y,direction,radius,name);
+		 addWorm(newWorm);
+		 return newWorm;
+	 }
+	
 	// }}
 
-// {{ Terminated
+// {{ runtime stuff
 	
-	private boolean terminated;
+	private Worm activeWorm;
 	
-	public boolean isTerminated() {
-		return terminated;
+	@Basic
+	public Worm getActiveWorm() {
+		return activeWorm;
 	}
 	
-	public void terminate() {
-		removeAllWorms();
-		removeAllTeams();
-		removeAllFood();
-		removeProjectile();
-		terminated = true;
+	public void setActiveWorm(Worm worm) throws ModelException {
+		if (!isValidActiveWorm(worm))
+			throw new ModelException("Invalid worm.");
+		activeWorm = worm;
+	}
+	
+	public boolean isValidActiveWorm(Worm worm) {
+		if (!hasAsWorm(worm))
+			// note: this automatically verifies null and isTerminated()
+			return false;
+		return true;
+	}
+	
+	public boolean isGameFinished() {
+		Worm aliveWorm = null;
+		for ( Worm testWorm : getWorms() ) {
+			if (testWorm.isAlive()) {
+				aliveWorm = testWorm;
+				break;
+			}
+		}
+		for ( Worm testWorm : getWorms() ) {
+			if (testWorm!=aliveWorm && testWorm.isAlive()) {
+				try {
+					if (!(aliveWorm.getTeam()==testWorm.getTeam()))
+						return false; // A second worm of a different team is still alive as well. 
+				} catch (NullPointerException e) {};
+			}
+		}
+		return true; // Default
+	}
+	
+	public void startGame() {
+		//TODO should worms still be added?
+		setActiveWorm(getWorms().get(0));
+	}
+	
+	public void nextTurn() {
+		int index = getWorms().indexOf(getActiveWorm());
+		if (index==(getWorms().size()-1))
+			index = 0;
+		else
+			index += 1;
+		setActiveWorm(getWorms().get(index));
+	}
+	
+	
+// }}
+
+
+// {{ Random Seed
+	
+	private Random randomSeed;
+	
+	@Basic
+	public Random getRandomSeed() {
+		return randomSeed;
+	}
+	
+	public void setRandomSeed(Random random) {
+		if (!isValidRandomSeed(random))
+			throw new ModelException("Invalid random seed.");
+		randomSeed = random;
+	}
+	
+	public boolean isValidRandomSeed(Random random) {
+		if (random==null)
+			return false;
+		return true;
 	}
 	
 	// }}
+	
+// {{ Associations
 	
 // {{ Worm Association
 
-	private ArrayList<Worm> worms = new ArrayList<Worm>();
+	private final ArrayList<Worm> wormCollection = new ArrayList<Worm>();
 	
+	@Basic
 	public ArrayList<Worm> getWorms() {
-		return worms;
+		return wormCollection;
 	}
 	
-	public void addNewWorm(Worm newWorm) throws ModelException {
+	public void addWorm(Worm newWorm) throws ModelException {
 		if (!isValidWorm(newWorm))
-			throw new ModelException("Invalid worm specified");
+			throw new ModelException("Invalid worm specified.");
 		if (hasAsWorm(newWorm))
 			throw new ModelException("Worm already in world.");
 		newWorm.setWorld(this);
-		worms.add(newWorm);
+		wormCollection.add(newWorm);
 	}
 	
 	public static boolean isValidWorm(Worm worm) {
@@ -216,44 +420,51 @@ public class World{
 		return true;
 	}
 	
-	public void removeWorm(Worm worm) {
+	public void removeWorm(Worm worm) throws ModelException {
 		if (!hasAsWorm(worm)) {
 			throw new ModelException("Worm not found.");
 		}
 		worm.removeWorld();
-		worms.remove(worm);
+		wormCollection.remove(worm);
 	}
 	
 	public void removeAllWorms() {
-		for ( Worm worm : worms ) {
+		for ( Worm worm : wormCollection ) {
 			removeWorm(worm);
 		}
 	}
 	
 	public boolean hasAsWorm(Worm worm) {
-		return worms.contains(worm);
+		return wormCollection.contains(worm);
 	}
 	
 	// }}
 	
 // {{ Team Association
 	
-	private final int maxTeams = 10;
-	private ArrayList<Team> teams = new ArrayList<Team>();
+	private final ArrayList<Team> teamCollection = new ArrayList<Team>();
 	
+	@Basic
 	public ArrayList<Team> getTeams() {
-		return teams;
+		return teamCollection;
+	}
+
+	private final int maxTeams;
+	
+	@Basic
+	public int getMaxTeams() {
+		return maxTeams;
 	}
 	
-	public void addTeam(Team newTeam) {
+	public void addTeam(Team newTeam) throws ModelException {
 		if (!canHaveAsTeam(newTeam))
-			throw new ModelException("Invalid team specified");
+			throw new ModelException("Invalid team specified.");
 		if (hasAsTeam(newTeam))
 			throw new ModelException("Team already in world.");
-		if (teams.size()>=maxTeams)
-			throw new ModelException("Maximum amount of teams reached");
+		if (teamCollection.size()>=getMaxTeams())
+			throw new ModelException("Maximum amount of teams reached.");
 		newTeam.setWorld(this);
-		teams.add(newTeam);
+		teamCollection.add(newTeam);
 	}
 	
 	public boolean canHaveAsTeam(Team newTeam) {
@@ -265,18 +476,18 @@ public class World{
 	}
 	
 	public boolean hasAsTeam(Team team) {
-		return teams.contains(team);
+		return teamCollection.contains(team);
 	}
 	
-	public void removeTeam(Team team) {
+	public void removeTeam(Team team) throws ModelException {
 		if (!hasAsTeam(team))
 			throw new ModelException("Team not found.");
 		team.removeWorld();
-		teams.remove(team);
+		teamCollection.remove(team);
 	}
 	
 	public void removeAllTeams() {
-		for ( Team team : teams ) {
+		for ( Team team : teamCollection ) {
 			removeTeam(team);
 		}
 	}
@@ -285,10 +496,11 @@ public class World{
 	
 // {{ Food Association
 
-	private ArrayList<Food> food = new ArrayList<Food>();
+	private final ArrayList<Food> foodCollection = new ArrayList<Food>();
 	
+	@Basic
 	public ArrayList<Food> getFood() {
-		return food;
+		return foodCollection;
 	}
 	
 	/**
@@ -298,59 +510,36 @@ public class World{
 	 */
 	public void addFood(Food newFood) throws ModelException {
 		if (!canHaveAsFood(newFood))
-			throw new ModelException("Invalid food");
+			throw new ModelException("Invalid food specified.");
 		if (hasAsFood(newFood))
 			throw new ModelException("Food already in world.");
 		newFood.setWorld(this);
-		food.add(newFood);
+		foodCollection.add(newFood);
 	}
 	
-	public boolean canHaveAsFood(Food newFood) {
-		if (newFood==null)
+	public boolean canHaveAsFood(Food food) {
+		if (food==null)
 			return false;
-		if (newFood.isTerminated())
+		if (food.isTerminated())
 			return false;
 		return true;
 	}
 	
 	public boolean hasAsFood(Food food) {
-		return this.food.contains(food);
+		return this.foodCollection.contains(food);
 	}
 	
 	public void removeFood(Food food) throws ModelException {
 		if (!hasAsFood(food))
-			throw new ModelException("Food not found in world");
+			throw new ModelException("Food not found.");
 		food.removeWorld();
-		this.food.remove(food);
+		foodCollection.remove(food);
 	}
 	
 	public void removeAllFood() {
-		for ( Food loopFood : food ) {
+		for ( Food loopFood : foodCollection ) {
 			removeFood(loopFood);
 		}
-	}
-	
-	/**
-	 * Checks if a worm and food overlap in the world.
-	 * @param worm
-	 * @param food
-	 * @return
-	 */
-	public static boolean overlapWormFood(Worm worm, Food food) {
-		double wormX = worm.getPosition().getX();
-		double wormY = worm.getPosition().getY();
-		double wormR = worm.getRadius();
-		double foodX = food.getX();
-		double foodY = food.getY();
-		double foodR = food.getRadius();
-		
-		double deltaX = foodX - wormX;
-		double deltaY = foodY - wormY;
-		
-		double normDelta = Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
-		double sumRadii = wormR + foodR;
-		
-		return (normDelta < sumRadii);
 	}
 	
 // }}
@@ -359,15 +548,16 @@ public class World{
 
 	private Projectile projectile;
 	
+	@Basic
 	public Projectile getProjectile() {
 		return projectile;
 	}
 	
 	public void setProjectile(Projectile projectile) throws ModelException {
 		if (!canHaveAsProjectile(projectile))
-			throw new ModelException("Invalid world specified");
+			throw new ModelException("Invalid projectile specified.");
 		if (hasAProjectile())
-			throw new ModelException("Already has a world.");
+			throw new ModelException("Already has a projectile.");
 		projectile.setWorld(this);
 		this.projectile = projectile;
 	}
@@ -401,21 +591,26 @@ public class World{
 	
 	// }}
 	
-	
-// {{ Constants
-
-	private static final double gravitationalAcceleration = 9.80665;
-
-	/**
-	 * Basic inspector that returns the gravitational acceleration.
-	 * 
-	 * @return Returns the gravitational acceleration.
-	 */
-	@Basic @Immutable
-	public static double getGravitationalAcceleration() {
-		return gravitationalAcceleration;
-	}
 	// }}
+
+// {{ Terminated
 	
+	private boolean terminated;
+	
+	@Basic
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	public void terminate() {
+		removeAllWorms();
+		removeAllTeams();
+		removeAllFood();
+		removeProjectile();
+		terminated = true;
+	}
+	
+	// }}
+
 }
 	

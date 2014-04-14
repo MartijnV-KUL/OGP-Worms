@@ -4,15 +4,15 @@ public class Rifle extends Weapon {
 	
 	
 	public Rifle() {
-		projectileMass   = 0.010;
-		baseForce        = 1.5;
-		hitPointsDamage  = 20;
-		actionPointsCost = 10;
+		setProjectileMass(0.010);
+		setHitPointsDamage(20);
+		setActionPointsCost(10);
+		setName("Rifle");
 	}
 
 	@Override
 	public double getForce(int propulsionYield) {
-		return baseForce;
+		return 1.5;
 	}
 
 }

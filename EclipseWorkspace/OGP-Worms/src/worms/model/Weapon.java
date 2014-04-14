@@ -13,49 +13,119 @@ public abstract class Weapon {
 		return projectileMass;
 	}
 	
+	public void setProjectileMass(double projectileMass)throws ModelException {
+		if (!isValidProjectileMass(projectileMass))
+			throw new ModelException("Invalid projectile mass.");
+		this.projectileMass = projectileMass;	
+	}
+	
+	public boolean isValidProjectileMass(double projectileMass) {
+		if (Double.isNaN(projectileMass))
+			return false;
+		if (projectileMass<=0)
+			return false;
+		if (projectileMass==Double.POSITIVE_INFINITY)
+			return false;
+		return true;
+	}
+	
 	// }}
+	
+// {{ Name
+	
+	private String name;
+	
+	public String getName() {
+		return name;
+	}
+	
+	protected void setName(String name) throws ModelException {
+		if (!isValidName(name))
+			throw new ModelException("Invalid name.");
+		this.name = name;
+	}
+	
+	public boolean isValidName(String name) {
+		if (!name.matches("[a-zA-Z0-9- ]*"))
+			return false;
+		if (!Character.isUpperCase(name.charAt(0)))
+			return false;
+		if (name.length() < 2)
+			return false;
+		return true;
+	}
+	
+// }}
 	
 // {{ Force
 
-	protected double baseForce;
-	
-	@Basic
-	public double getBaseForce() {
-		return baseForce;
-	}
-	
 	public abstract double getForce( int propulsionYield );
 	
 	// }}
 	
 // {{ Hit Points Damage
 
-	protected double hitPointsDamage;
+	protected int hitPointsDamage;
 	
-	public double getHitPointsDamage() {
+	public int getHitPointsDamage() {
 		return hitPointsDamage;
+	}
+	
+	public void setHitPointsDamage(int hitPointsDamage) throws ModelException {
+		if (!isValidHitPointsDamage(hitPointsDamage))
+			throw new ModelException("Invalid hit points damage");
+		this.hitPointsDamage = hitPointsDamage;
+	}
+	
+	public boolean isValidHitPointsDamage(int hitPointsDamage) {
+		if (hitPointsDamage<0)
+			return false;
+		return true;
 	}
 	
 	// }}
 	
 // {{ Action Points Cost
 
-	protected double actionPointsCost;
+	protected int actionPointsCost;
 	
-	public double getActionPointsCost() {
+	public int getActionPointsCost() {
 		return actionPointsCost;
+	}
+	
+	public void setActionPointsCost(int actionPointsCost) throws ModelException {
+		if (!isValidActionPointsCost(actionPointsCost))
+			throw new ModelException("Invalid action points cost.");
+		this.actionPointsCost = actionPointsCost;
+	}
+	
+	public boolean isValidActionPointsCost(int actionPointsCost) {
+		if (actionPointsCost<0)
+			return false;
+		return true;
 	}
 	
 	// }}
 	
 // {{ Ammunition
 
-	private int ammunition;
+	private int ammunition = 0;
 	
 	public int getAmmunition() {
 		return ammunition;
 	}
 	
+	public void setAmmunition(int ammunition) throws ModelException {
+		if (!isValidAmmunition(ammunition))
+			throw new ModelException("Invalid ammunition.");
+		this.ammunition = ammunition;
+	}
+	
+	public boolean isValidAmmunition(int ammunition) {
+		if (ammunition<0)
+			return false;
+		return true;
+	}
 	
 	// }}
 
@@ -63,21 +133,16 @@ public abstract class Weapon {
 	
 	private boolean terminated;
 	
+	@Basic
 	public boolean isTerminated() {
 		return terminated;
 	}
 	
 	public void terminate() {
-		try {
+		if (hasAWorm())
 			worm.removeWeapon(this);
-		} catch (NullPointerException e) {
-			// do nothing
-		}
-		try {
+		if (hasAProjectile())
 			removeProjectile();
-		} catch (NullPointerException e) {
-			// do nothing
-		}
 		terminated = true;
 	}
 	
@@ -87,15 +152,16 @@ public abstract class Weapon {
 	
 	private Worm worm;
 	
+	@Basic
 	public Worm getWorm() {
 		return worm;
 	}
 	
 	public void setWorm(Worm worm) throws ModelException {
 		if (!canHaveAsWorm(worm))
-			throw new ModelException("Invalid world specified");
+			throw new ModelException("Invalid worm specified.");
 		if (hasAWorm())
-			throw new ModelException("Already has a world.");
+			throw new ModelException("Already has a worm.");
 		this.worm = worm;
 	}
 	
@@ -111,7 +177,7 @@ public abstract class Weapon {
 		return(!(worm==null));
 	}
 	
-	public boolean hasAsWorld(Worm worm) {
+	public boolean hasAsWorm(Worm worm) {
 		return (this.worm==worm);
 	}
 	
@@ -125,13 +191,14 @@ public abstract class Weapon {
 	
 	private Projectile projectile;
 	
+	@Basic
 	public Projectile getProjectile() {
 		return projectile;
 	}
 	
 	public void setProjectile(Projectile projectile) throws ModelException {
 		if (!canHaveAsProjectile(projectile))
-			throw new ModelException("Invalid world specified");
+			throw new ModelException("Invalid projectile specified.");
 		if (hasAProjectile())
 			throw new ModelException("Already has a world.");
 		projectile.setWeapon(this);
@@ -165,13 +232,20 @@ public abstract class Weapon {
 	
 	
 	
-	public void shoot( int propulsionYield ) {
-		if (worm.getWorld().hasAProjectile())
+	public void shoot( int propulsionYield ) throws ModelException {
+		if (getWorm().getWorld().hasAProjectile())
 			throw new ModelException("There is already a projectile in the world.");
+
+		double projectileX = getWorm().getPosition().getX() + getWorm().getRadius() * Math.cos(getWorm().getPosition().getDirection());
+		double projectileY = getWorm().getPosition().getX() + getWorm().getRadius() * Math.sin(getWorm().getPosition().getDirection());
+		double projectileDirection = getWorm().getPosition().getDirection();
+		Projectile newProjectile = new Projectile(projectileX, projectileY, projectileDirection, propulsionYield);
 		
-		Projectile newProjectile = new Projectile();
 		setProjectile(newProjectile);
-		worm.getWorld().setProjectile(newProjectile);
+		getWorm().getWorld().setProjectile(newProjectile);
+		
+		newProjectile.shoot();
+		
 	}
 	
 	

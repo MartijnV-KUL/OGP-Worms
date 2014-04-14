@@ -1,13 +1,22 @@
 package worms.model;
 
+import java.util.Random;
+
 import be.kuleuven.cs.som.annotate.*;
 
 public class Food {
+	
+	public Food() {
+				
+		this(randX,randY);
+	}
 	
 	public Food(double x, double y) {
 		setX(x);
 		setY(y);
 	}
+	
+
 
 // {{ x 
 
@@ -110,12 +119,8 @@ public class Food {
 	 * Method to terminate the object.
 	 */
 	public void terminate() {
-		try {
-			// if world is still "null" (because a food object can have 0 or 1 worlds, this throws a nullpointerexception
+		if (hasAWorld())
 			world.removeFood(this);
-		} catch (NullPointerException e) {
-			// do nothing
-		}
 		terminated = true;
 	}
 	// }}
@@ -129,36 +134,28 @@ public class Food {
 		return world;
 	}
 	
-	/**
-	 * Method to set the world.
-	 * @param newWorld
-	 * @throws ModelException
-	 */
-	public void setWorld(World newWorld) throws ModelException {
-		if (!canHaveAsWorld(newWorld))
-			throw new ModelException("Invalid world specified");
+	public void setWorld(World world) throws ModelException {
+		if (!canHaveAsWorld(world))
+			throw new ModelException("Invalid world specified.");
 		if (hasAWorld())
-			throw new ModelException("Already has a team.");
-		world = newWorld;
+			throw new ModelException("Already has a world.");
+		this.world = world;
 	}
 	
-	/**
-	 * Method to check whether the object can have a certain world as world.
-	 * @param world
-	 * @return
-	 */
 	public boolean canHaveAsWorld(World world) {
 		if (world==null)
+			return false;
+		if (world.isTerminated())
 			return false;
 		return true;
 	}
 	
-	public boolean hasAsWorld(World world) {
-		return (this.world == world);
+	public boolean hasAWorld() {
+		return(!(world==null));
 	}
 	
-	public boolean hasAWorld() {
-		return (!(world==null));
+	public boolean hasAsWorld(World world) {
+		return (this.world==world);
 	}
 	
 	public void removeWorld() {
