@@ -210,7 +210,7 @@ public class Facade implements IFacade {
 	@Override
 	public String getWinner(World world) {
 		// TODO Auto-generated method stub
-		return null;
+		return world.getWinner();
 	}
 
 
@@ -246,7 +246,6 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isActive(Food food) {
-		// TODO Auto-generated method stub
 		return (!food.isTerminated());
 	}
 
@@ -313,7 +312,6 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startGame(World world) {
-		// TODO Auto-generated method stub
 		world.startGame();
 	}
 

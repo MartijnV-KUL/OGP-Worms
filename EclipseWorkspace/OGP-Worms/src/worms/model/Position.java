@@ -8,6 +8,20 @@ import be.kuleuven.cs.som.annotate.Basic;
  */
 public class Position {
 	
+	/**
+	 * Constructor for the Position class.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * @param 	direction
+	 * 			The direction.
+	 * 
+	 * @effect	| setX(x)
+	 * @effect	| setY(y)
+	 * @effect	| setDirection(direction)
+	 */
 	public Position(double x, double y, double direction) {
 		setX(x);
 		setY(y);
@@ -19,20 +33,27 @@ public class Position {
 	private double x;
 
 	@Basic
+	/**
+	 * Returns the x-coordinate.
+	 * 
+	 * @return	The x-coordinate
+	 */
 	public double getX() {
 		return x;
 	}
 
 	/**
+	 * Method to set the x-coordinate.
 	 * 
 	 * @param 	x
 	 *          The requested x coordinate of the worm expressed in meters.
+	 *          
 	 * @post	The x-coordinate of the worm is changed to the given value.
 	 * 			| new.getX() == x
 	 * @throws 	ModelException
 	 *          Throws a ModelException if the x coordinate is invalid.
 	 *          | if ( ! isValidX( x ) )
-	 *          |		then throw new ModelException
+	 *          |		throw new ModelException
 	 */
 	public void setX(double x) {
 		if (!isValidX(x))
@@ -60,20 +81,27 @@ public class Position {
 	private double y;
 
 	@Basic
+	/**
+	 * Returns the y-coordinate
+	 * 
+	 * @return	The y-coordinate
+	 */
 	public double getY() {
 		return y;
 	}
 	
 	/**
+	 * Method to set the y-coordinate.
 	 * 
 	 * @param 	y
 	 *          The requested y coordinate of the worm expressed in meters.
+	 *          
 	 * @post	The y-coordinate of the worm is changed to the given value.
 	 * 			| new.getY() == y
 	 * @throws 	ModelException
 	 *          Throws a ModelException if the y coordinate is invalid.
 	 *          | if ( ! isValidY( y ) )
-	 *          |		then throw new ModelException
+	 *          |		throw new ModelException
 	 */
 	public void setY(double y) {
 		if (!isValidX(y))
@@ -101,6 +129,11 @@ public class Position {
 	private double direction;
 	
 	@Basic
+	/**
+	 * Returns the direction.
+	 * 
+	 * @return	The direction.
+	 */
 	public double getDirection() {
 		return direction;
 	}
@@ -147,14 +180,20 @@ public class Position {
 	/**
 	 * 
 	 * Calculates and returns the x and y position of a trajectory at a specified time.
-	 * @param force
-	 * @param duration
-	 * @param mass
-	 * @param g
+	 * 
+	 * @param 	force
+	 * 			The force of the weapon that is fired.
+	 * @param 	duration
+	 * 			The duration of the exerted force.
+	 * @param 	mass
+	 * 			The mass of the projectile.
+	 * @param 	g
+	 * 			The gravitational accelleration.
 	 * @param 	time
 	 * 			The time at which the trajectory should be evaluated.
 	 * 
 	 * @return 	The x and y positions of the trajectory at a specified time.
+	 * 
 	 * @throws	ModelException
 	 * 			Throws a ModelException if the time given is less than zero.
 	 * 			| time < 0
@@ -173,6 +212,22 @@ public class Position {
 		
 	}
 	
+	/**
+	 * Method to calculate the time it takes to perform the ballistic trajectory.
+	 * 
+	 * @param 	world
+	 * 			The world the trajectory is calculated in.
+	 * @param 	force
+	 * 			The force of the weapon fired.
+	 * @param 	duration
+	 * 			The duration of the exerted force.
+	 * @param 	mass
+	 * 			The mass of the projectile.
+	 * @param 	timeStep
+	 * 			The timestep with which the trajectory is calculated.
+	 * 
+	 * @return	The time it takes to perform the ballistic trajectory.
+	 */
 	public double ballisticTrajectoryTime(World world, double force, double duration, double mass, double timeStep) {
 		double time = 0;
 		Position newPosition = new Position(getX(),getY(),getDirection());

@@ -1,16 +1,25 @@
 package worms.model;
 
-import java.util.Random;
-
 import be.kuleuven.cs.som.annotate.*;
 
 public class Food {
 	
-	public Food() {
+	/*public Food() {
 				
 		this(randX,randY);
-	}
+	}*/
 	
+	/**
+	 * Constructor for the food class.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate of the food.
+	 * @param 	y
+	 * 			The y-coordinate of the food.
+	 * 
+	 * @effect	| setX(x)
+	 * @effect	| setY(y)
+	 */
 	public Food(double x, double y) {
 		setX(x);
 		setY(y);
@@ -24,6 +33,7 @@ public class Food {
 	
 	/**
 	 * Basic inspector for the x coordinate. 
+	 * 
 	 * @return this.x
 	 */
 	@Basic
@@ -33,18 +43,23 @@ public class Food {
 	
 	/**
 	 * Checker for the x-coordinate.
-	 * @param x x-coordinate
-	 * @return !isNaN(x)
+	 * 
+	 * @param 	x 
+	 * 			The x-coordinate.
+	 * 
+	 * @return 	!isNaN(x)
 	 */
 	public boolean isValidX(double x) {
 		return (!Double.isNaN(x));
 	}
 	
 	/**
-	 * Setter for the x-coordinate
-	 * @param x x-coordinate
-	 * @throws ModelException
-	 * 		| !isValid(x)
+	 * Setter for the x-coordinate.
+	 * 
+	 * @param 	x
+	 * 			x-coordinate.
+	 * @throws 	ModelException
+	 * 			| !isValid(x)
 	 */
 	public void setX(double x) throws ModelException {
 		if (!isValidX(x))
@@ -58,7 +73,8 @@ public class Food {
 	private double y;
 	
 	/**
-	 * Basic inspector for the y coordinate. 
+	 * Basic inspector for the y coordinate.
+	 *  
 	 * @return this.y
 	 */
 	@Basic
@@ -68,18 +84,23 @@ public class Food {
 	
 	/**
 	 * Checker for the y-coordinate.
-	 * @param y y-coordinate
-	 * @return !isNaN(y)
+	 * 
+	 * @param 	y 
+	 * 			y-coordinate.
+	 * 
+	 * @return 	!isNaN(y)
 	 */
 	public boolean isValidY(double y) {
 		return (!Double.isNaN(y));
 	}
 	
 	/**
-	 * Setter for the y-coordinate
-	 * @param y y-coordinate
-	 * @throws ModelException
-	 * 		| !isValid(y)
+	 * Setter for the y-coordinate.
+	 * 
+	 * @param 	y
+	 * 			y-coordinate.
+	 * @throws 	ModelException
+	 * 			| !isValid(y)
 	 */
 	public void setY(double y) throws ModelException {
 		if (!isValidY(y))
@@ -94,6 +115,7 @@ public class Food {
 	
 	/**
 	 * Basic inspector for the radius.
+	 * 
 	 * @return this.radius
 	 */
 	@Basic @Immutable
@@ -108,6 +130,7 @@ public class Food {
 	
 	/**
 	 * Basic inspector for the terminated attribute.
+	 * 
 	 * @return this.terminated
 	 */
 	@Basic
@@ -130,10 +153,26 @@ public class Food {
 	private World world;
 	
 	@Basic
+	/**
+	 * Method to return the world.
+	 * 
+	 * @return	this.world
+	 */
 	public World getWorld() {
 		return world;
 	}
 	
+	/**
+	 * Method to set the world.
+	 * 
+	 * @param 	world
+	 * 			The given world.
+	 * 
+	 * @post	|new.getWorld() == world
+	 * @throws 	ModelException
+	 * 			| if (!canHaveAsWorld(world))
+	 *			| if (hasAWorld())
+	 */
 	public void setWorld(World world) throws ModelException {
 		if (!canHaveAsWorld(world))
 			throw new ModelException("Invalid world specified.");
@@ -142,6 +181,19 @@ public class Food {
 		this.world = world;
 	}
 	
+	/**
+	 * Checks if the given world is valid.
+	 * 
+	 * @param 	world
+	 * 			The given world.
+	 * 
+	 * @return	| if (world == null)
+	 * 			|	return false
+	 * 			| if (world.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			| 	return true
+	 */
 	public boolean canHaveAsWorld(World world) {
 		if (world==null)
 			return false;
@@ -150,14 +202,32 @@ public class Food {
 		return true;
 	}
 	
+	/**
+	 * Checks if the world is not null.
+	 * 
+	 * @return	| return (!(world == null))
+	 */
 	public boolean hasAWorld() {
 		return(!(world==null));
 	}
 	
+	/**
+	 * Checks if the given world is already set.
+	 * 
+	 * @param 	world
+	 * 			The given world.
+	 * 
+	 * @return	| return (this.world == world)
+	 */
 	public boolean hasAsWorld(World world) {
 		return (this.world==world);
 	}
 	
+	/**
+	 * Removes the current world.
+	 * 
+	 * @post	| new.getWorld() == null
+	 */
 	public void removeWorld() {
 		world = null;
 	}
