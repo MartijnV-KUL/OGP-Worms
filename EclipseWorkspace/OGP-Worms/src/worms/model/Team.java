@@ -201,7 +201,7 @@ public class Team {
 	 * 			| if (hasAsWorm(worm)
 	 */
 	public void addWorm(Worm worm) throws ModelException {
-		if (canHaveAsWorm(worm))
+		if (!canHaveAsWorm(worm))
 			throw new ModelException("Invalid worm specified.");
 		if (hasAsWorm(worm))
 			throw new ModelException("Worm already in team.");

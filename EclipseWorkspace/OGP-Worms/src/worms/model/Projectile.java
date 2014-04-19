@@ -2,28 +2,35 @@ package worms.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
 
-public class Projectile {
+public class Projectile extends BallisticBody {
 	
 	
-	//TODO
-	public boolean wormIsHit() {
-		return false;
+	public Worm wormHit(double x, double y) {
+		for ( Worm worm : getWorld().getAliveWorms() ) {
+			if ( World.isOverlapping(worm.getX(), worm.getY(), worm.getRadius(), x, y, getRadius()) )
+				return worm;
+		}
+		return null;
 	}
 	
-	//TODO
-	public void shoot() {
-		
+	@Override
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {
+		Worm worm = wormHit(x,y);
+		if (worm!=null)
+			return true;
+		return super.ballisticTrajectoryHasEnded(x, y);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	@Override
+	protected double getJumpForce() {
+		return getWeapon().getForce(getPropulsionYield());
+	}
+
+
+	@Override
+	public double getMass() {
+		return getWeapon().getProjectileMass();
+	}
 	
 	
 	
@@ -55,97 +62,22 @@ public class Projectile {
 	 * @effect	| setPropulsionYield(propulsionYield)
 	 */
 	public Projectile(double x, double y, double direction, int propulsionYield) {
-		setPosition(new Position(x, y, direction));
+		setPosition(x, y, direction);
 		setPropulsionYield(propulsionYield);
 	}
 	
 	// }}
 	
-	/**
-	 * Method to jump.
-	 * 
-	 * @param 	timeStep
-	 * 			The timestep with which the jump is evaluated.
-	 */
-	public void jump(double timeStep) {
-		double[] newPos = jumpStep(jumpTime(timeStep));
-		getPosition().setX( newPos[0] );
-		getPosition().setY( newPos[1] );
+	@Override
+	public void jump(double timeStep) throws ModelException {//TODO update documentation
+		super.jump(timeStep);
+		terminate();
 	}
 	
-	/**
-	 * Method to calculate the time it takes to perform the jump.
-	 * 
-	 * @param 	timeStep
-	 * 			The timestep with which the time is calculated.
-	 * 
-	 * @return	The time it takes to perform the jump.
-	 */
-	public double jumpTime(double timeStep) {
-		double force = getWeapon().getForce(getPropulsionYield());
-		return getPosition().ballisticTrajectoryTime(getWorld(), force, 0.5, getWeapon().getProjectileMass(), timeStep);
-	}
-	
-	/**
-	 * Calculates and returns the x and y position of the projectile during the jump at a specified time.
-	 * 
-	 * @param 	time
-	 * 			The time at which the jump should be evaluated.
-	 * 
-	 * @return 	The x and y positions of the projectile during the jump at a specified time, returned in an array of doubles.
-	 */
-	public double[] jumpStep(double time) {
-		double force = getWeapon().getForce(getPropulsionYield());
-		return getPosition().ballisticTrajectory(force, 0.5, getWeapon().getProjectileMass(), time);
-	}
-	
-	
-// {{ Position
-	
-	private Position position;
-	
-	/**
-	 * Basic inspector that returns the position object of the projectile. 
-	 * 
-	 * @return 	The position object of the projectile.
-	 */
-	@Basic
-	public Position getPosition() {
-		return position;
-	}
-	
-	/**
-	 * Method to set the position of a projectile (if it is valid).
-	 * 
-	 * @param 	position
-	 * 			The position of a projectile
-	 * 
-	 * @post	| new.getPosition() == position
-	 * @throws	ModelException
-	 * 			| (!isValidPosition(position))
-	 */
-	public void setPosition(Position position) throws ModelException{
-		if (!isValidPosition(position))
-			throw new ModelException("Invalid position specified");
-		this.position = position;
-	}
-	
-	/**
-	 * Method to check whether a position is valid or not.
-	 * 
-	 * @param 	position
-	 * 			The position to check.7
-	 * 
-	 * @return	| return (position != null)
-	 */
-	public boolean isValidPosition(Position position) {
-		if (position==null)
-			return false;
+	@Override
+	public boolean canJump() {
 		return true;
 	}
-	
-	
-	// }}
 	
 // {{ Propulsion Yield
 	
@@ -216,7 +148,7 @@ public class Projectile {
 		// m = rho*V
 		// V = (4/3)*pi*r^3
 		// r = ((m/rho)*(3/4)/pi)^(1/3)
-		double m = weapon.getProjectileMass();
+		double m = getMass();
 		double rho = 7800;
 		double pi = Math.PI;
 		return Math.pow((m/rho)*(3/4)*(1/pi), 1/3);
@@ -243,7 +175,9 @@ public class Projectile {
 	 */
 	public void terminate() {
 		if (hasAWorld())
-			world.removeProjectile();
+			getWorld().removeProjectile();
+		if (hasAWeapon())
+			getWeapon().removeProjectile();
 		terminated = true;
 	}
 	

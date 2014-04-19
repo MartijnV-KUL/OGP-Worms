@@ -24,17 +24,17 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getX(Worm worm) {
-		return worm.getPosition().getX();
+		return worm.getX();
 	}
 
 	@Override
 	public double getY(Worm worm) {
-		return worm.getPosition().getY();
+		return worm.getY();
 	}
 
 	@Override
 	public double getOrientation(Worm worm) {
-		return worm.getPosition().getDirection();
+		return worm.getDirection();
 	}
 
 	@Override
@@ -77,43 +77,35 @@ public class Facade implements IFacade {
 		return worm.getMass();
 	}
 
-
 	@Override
 	public void addEmptyTeam(World world, String newName) {
 		world.addTeam(new Team(newName));
 	}
-
 
 	@Override
 	public void addNewFood(World world) {
 		world.addNewFood();
 	}
 
-
 	@Override
 	public void addNewWorm(World world) {
 		world.addNewWorm();
-		
 	}
-
 
 	@Override
 	public boolean canFall(Worm worm) {
 		return worm.canFall();
 	}
 
-
 	@Override
 	public boolean canMove(Worm worm) {
 		return worm.canMove();
 	}
 
-
 	@Override
 	public Food createFood(World world, double x, double y) {
 		return world.addNewFood(x, y);
 	}
-
 
 	@Override
 	public World createWorld(double width, double height,
@@ -121,200 +113,166 @@ public class Facade implements IFacade {
 		return new World(width, height, passableMap, random);
 	}
 
-
 	@Override
 	public Worm createWorm(World world, double x, double y, double direction,
 			double radius, String name) {
 		return world.addNewWorm(x, y, direction, radius, name);
 	}
 
-
 	@Override
 	public void fall(Worm worm) {
 		worm.fall();
 	}
-
 
 	@Override
 	public Projectile getActiveProjectile(World world) {
 		return world.getProjectile();
 	}
 
-
 	@Override
 	public Worm getCurrentWorm(World world) {
 		return world.getActiveWorm();
 	}
-
 
 	@Override
 	public Collection<Food> getFood(World world) {
 		return world.getFood();
 	}
 
-
 	@Override
 	public int getHitPoints(Worm worm) {
 		return worm.getHitPoints();
 	}
-
 
 	@Override
 	public double[] getJumpStep(Projectile projectile, double t) {
 		return projectile.jumpStep(t);
 	}
 
-
 	@Override
 	public double getJumpTime(Projectile projectile, double timeStep) {
 		return projectile.jumpTime(timeStep);
 	}
-
 
 	@Override
 	public double getJumpTime(Worm worm, double timeStep) {
 		return worm.jumpTime(timeStep);
 	}
 
-
 	@Override
 	public int getMaxHitPoints(Worm worm) {
 		return worm.getMaxHitPoints();
 	}
 
-
 	@Override
 	public double getRadius(Food food) {
-		return food.getRadius();
+		return Food.getRadius();
 	}
-
 
 	@Override
 	public double getRadius(Projectile projectile) {
 		return projectile.getRadius();
 	}
 
-
 	@Override
 	public String getSelectedWeapon(Worm worm) {
 		return worm.getEquippedWeapon().getName();
 	}
 
-
 	@Override
 	public String getTeamName(Worm worm) {
-		return worm.getTeam().getName();
+		return worm.getTeamName();
 	}
-
 
 	@Override
 	public String getWinner(World world) {
-		// TODO Auto-generated method stub
 		return world.getWinner();
 	}
-
 
 	@Override
 	public Collection<Worm> getWorms(World world) {
 		return world.getWorms();
 	}
 
-
 	@Override
 	public double getX(Food food) {
 		return food.getX();
 	}
 
-
 	@Override
 	public double getX(Projectile projectile) {
-		return projectile.getPosition().getX();
+		return projectile.getX();
 	}
-
 
 	@Override
 	public double getY(Food food) {
 		return food.getY();
 	}
 
-
 	@Override
 	public double getY(Projectile projectile) {
-		return projectile.getPosition().getY();
+		return projectile.getY();
 	}
-
 
 	@Override
 	public boolean isActive(Food food) {
 		return (!food.isTerminated());
 	}
 
-
 	@Override
 	public boolean isActive(Projectile projectile) {
 		return (!projectile.isTerminated());
 	}
-
 
 	@Override
 	public boolean isAdjacent(World world, double x, double y, double radius) {
 		return world.isAdjacent(x, y, radius);
 	}
 
-
 	@Override
 	public boolean isAlive(Worm worm) {
 		return worm.isAlive();
 	}
-
 
 	@Override
 	public boolean isGameFinished(World world) {
 		return world.isGameFinished();
 	}
 
-
 	@Override
 	public boolean isImpassable(World world, double x, double y, double radius) {
 		return !world.isPassable(x, y, radius);
 	}
-
 
 	@Override
 	public void jump(Projectile projectile, double timeStep) {
 		projectile.jump(timeStep);
 	}
 
-
 	@Override
 	public void jump(Worm worm, double timeStep) {
 		worm.jump(timeStep);
 	}
 
-
 	@Override
 	public void move(Worm worm) {
-		worm.activeMove();
+		worm.move();
 	}
-
 
 	@Override
 	public void selectNextWeapon(Worm worm) {
 		worm.equipNextWeapon();
 	}
 
-
 	@Override
 	public void shoot(Worm worm, int yield) {
 		worm.shoot(yield);
 	}
 
-
 	@Override
 	public void startGame(World world) {
 		world.startGame();
 	}
-
 
 	@Override
 	public void startNextTurn(World world) {

@@ -3,30 +3,68 @@ package worms.model;
 import be.kuleuven.cs.som.annotate.Basic;
 
 /**
- * Class that contains and handles everything that has to do with the position of a worm.
  *
  */
-public class Position {
+public abstract class BallisticBody {
 	
-	/**
-	 * Constructor for the Position class.
-	 * 
-	 * @param 	x
-	 * 			The x-coordinate.
-	 * @param 	y
-	 * 			The y-coordinate.
-	 * @param 	direction
-	 * 			The direction.
-	 * 
-	 * @effect	| setX(x)
-	 * @effect	| setY(y)
-	 * @effect	| setDirection(direction)
-	 */
-	public Position(double x, double y, double direction) {
+	public void setPosition(double x, double y, double direction) {
 		setX(x);
 		setY(y);
 		setDirection(direction);
 	}
+	
+	public void jump(double timeStep) throws ModelException {//TODO update documentation
+		if (!canJump())
+			throw new ModelException("Can't jump");
+		
+		double[] newPos = jumpStep(jumpTime(timeStep));
+		setPosition(newPos[0],newPos[1],getDirection());
+	}
+	
+	public abstract World getWorld();
+	public abstract double getRadius();
+	protected abstract double getJumpForce();
+	public abstract double getMass();
+	public abstract boolean canJump();
+	
+	/**
+	 * Method to calculate the duration of a jump.
+	 * 
+	 * @param	timeStep
+	 * 			The timestep with which the jump trajectory is calculated.
+	 * 
+	 * @return	The time needed to perform the jump.
+	 * 			| return getPosition().ballisticTrajectoryTime(getWorld(), force, 0.5, getMass, timeStep)
+	 * @note	The method "ballisticTrajectoryTime(...)" is used to calculate the ballistic trajectory of the worm while jumping.
+	 */
+	public double jumpTime(double timeStep) {
+		return ballisticTrajectoryTime(getWorld(), getRadius(), getJumpForce(), 0.5, getMass(), timeStep);
+	}
+	
+	/**
+	 * Calculates and returns the x and y position of the worm during the jump at a specified time.
+	 * 
+	 * @param 	time
+	 * 			The time at which the jump should be evaluated.
+	 * 
+	 * @return 	The x and y positions of the worm during the jump at a specified time, returned in an array of doubles.
+	 * @throws	ModelException
+	 * 			Throws a ModelException if the time given is less than zero.
+	 * 			| time < 0
+	 * @note	If the code "if (canJump())" is not present a trajectory will still be displayed by the GUI, even if the worm can't jump.
+	 * 			This line is added to prevent the GUI from getting and displaying the trajectory if the worm can not jump.
+	 */
+	public double[] jumpStep(double time) throws ModelException {
+		if (time < 0)
+			throw new ModelException("The given time is less than zero.");
+		if (canJump())
+			return ballisticTrajectory(getJumpForce(), 0.5, getMass(), time);
+		double [] output = {getX(), getY()};
+		return output;
+	}
+	
+	
+	
 	
 // {{ x
 	
@@ -55,7 +93,7 @@ public class Position {
 	 *          | if ( ! isValidX( x ) )
 	 *          |		throw new ModelException
 	 */
-	public void setX(double x) {
+	protected void setX(double x) {
 		if (!isValidX(x))
 			throw new ModelException("Invalid x coordinate.");
 		this.x = x;
@@ -103,7 +141,7 @@ public class Position {
 	 *          | if ( ! isValidY( y ) )
 	 *          |		throw new ModelException
 	 */
-	public void setY(double y) {
+	protected void setY(double y) {
 		if (!isValidX(y))
 			throw new ModelException("Invalid y coordinate.");
 		this.y = y;
@@ -202,11 +240,10 @@ public class Position {
 		if ( time < 0 )
 			throw new ModelException("Time cannot be negative.");
 		
-		double g = World.getGravitationalAcceleration();
 		double v0 = ( force / mass ) * duration;
 		double deltaX = v0*Math.cos(getDirection()) * time;
 		double deltaY = v0*Math.sin(getDirection()) * time - 
-				        0.5*g*Math.pow(time, 2);
+				        0.5*World.getGravitationalAcceleration()*Math.pow(time, 2);
 		double[] output = {getX()+deltaX, getY()+deltaY};
 		return output;
 		
@@ -228,20 +265,29 @@ public class Position {
 	 * 
 	 * @return	The time it takes to perform the ballistic trajectory.
 	 */
-	public double ballisticTrajectoryTime(World world, double force, double duration, double mass, double timeStep) {
+	public double ballisticTrajectoryTime(World world, double radius, double force, double duration, double mass, double timeStep) {
 		double time = 0;
-		Position newPosition = new Position(getX(),getY(),getDirection());
-		while ( world.isWithinBoundaries(newPosition.getX(), newPosition.getY()) && 
-				world.isPassable(        newPosition.getX(), newPosition.getY()) ) {
+		double[] pos = ballisticTrajectory(force, duration, mass, 0);
+		while ( true ) {
 			
-			time = time + timeStep;
-			double[] delta = ballisticTrajectory(force, duration, mass, time);
+			time += timeStep;
+			pos = ballisticTrajectory(force, duration, mass, time);
 			
-			newPosition.setX(getX()+delta[0]);
-			newPosition.setY(getY()+delta[1]);
-			
+			if ( (Math.abs(pos[0]-getX())>2*world.getResolutionX()) || 
+				 (Math.abs(pos[1]-getY())>2*world.getResolutionY()) ) {
+				if (ballisticTrajectoryHasEnded(pos[0],pos[1]))
+					break;
+			}
 		}
 		return (time-timeStep);
+	}
+	
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {
+		if (!getWorld().isWithinBoundaries(x, y))
+			return true;
+		if (getWorld().isAdjacent( x, y, getRadius() ))
+			return true;
+		return false;
 	}
 	
 	

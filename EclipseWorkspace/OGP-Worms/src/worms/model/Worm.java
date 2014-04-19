@@ -24,7 +24,7 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * @author Niels Claes
  * 
  */
-public class Worm {
+public class Worm extends BallisticBody {
 
 	/**
 	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
@@ -66,11 +66,29 @@ public class Worm {
 	 * @note	The setters will throw an exception if the given value is not valid.
 	 */
 	public Worm(double x, double y, double direction, double radius, String name) {
-		setPosition(new Position(x, y, direction));
+		setPosition(x, y, direction);
 		setRadius(radius);
 		setName(name);
 		addNewWeapon(new Rifle());
 		addNewWeapon(new Bazooka());
+		equipNextWeapon();
+	}
+	
+	public Worm(double x, double y, double direction, String name) {
+		setPosition(x, y, direction);
+		setRadius(getMinimalRadius());
+		setName(name);
+		addNewWeapon(new Rifle());
+		addNewWeapon(new Bazooka());
+		equipNextWeapon();
+	}
+
+	/**
+	 * The worm has died.
+	 */
+	public void die() {
+		setHitPoints(0);
+		setActionPoints(0);
 	}
 	
 // {{ Constants
@@ -103,18 +121,6 @@ public class Worm {
 	// }}
 	
 // {{ Position
-
-	private Position position;
-	
-	/**
-	 * Basic inspector that returns the position object of the worm. 
-	 * 
-	 * @return The position object of the worm.
-	 */
-	@Basic
-	public Position getPosition() {
-		return position;
-	}
 	
 	/**
 	 * Method that sets the position of the worm.
@@ -122,42 +128,13 @@ public class Worm {
 	 * @param	position
 	 * 			The position of the worm.
 	 */
-	public void setPosition(Position position) {
-		if (!isValidPosition(position))
-			throw new ModelException("Invalid position specified");
-		this.position = position;
-		if (canFall())
-			fall();
+	public void setPosition(double x, double y, double direction) {
+		super.setPosition(x, y, direction);
+
+		//if (canFall())
+		//	fall();
 		tryToEatAll();
 		//TODO other checks?
-	}
-	
-	/**
-	 * Checks the validity of the specified position as a position of a worm.
-	 * 
-	 * @param	position
-	 * 			The position that has to be checked.
-	 * @return	The new position is not "null", is within the world boundaries and is passable.
-	 * 			| if (hasAWorld()) {
-	 * 			|	if ( !getWorld().isWithinBoundaries( position.getX(), position.getY() ) )
-	 * 			|		return false
-	 * 			|	if ( !getWorld().isPassable( position.getX(), position.getY() ) )
-	 * 			|		return false
-	 * 			| }
-	 * 			| else 
-	 * 			|	return true
-	 * @note	The line "if (hasAWorld())" checks if the current world is not equal to "null".
-	 */
-	public boolean isValidPosition(Position position) {
-		if (position==null)
-			return false;
-		if (hasAWorld()) {
-			if ( !getWorld().isWithinBoundaries( position.getX(), position.getY() ) )
-				return false;
-			if ( !getWorld().isPassable( position.getX(), position.getY() ) )
-				return false;
-		}
-		return true;
 	}
 	
 	// }}
@@ -339,7 +316,7 @@ public class Worm {
 	 * 			| 		new.getActionPoints() == actionPoints
 	 */
 	public void setActionPoints(int actionPoints) {
-		if ( ! isValidActionPoints(actionPoints) ) {
+		if ( ! isValidActionPoints(actionPoints) ) {//TODO moet dit totaal uitgewerkt zijn (zoals het nu is), of defensief? (met een throw new ModelException)
 			if (actionPoints < 0)
 				this.actionPoints = 0;
 			if (actionPoints > getMaxActionPoints())
@@ -427,20 +404,12 @@ public class Worm {
 	 * 			The amount of hitpoints of the worm.
 	 * 
 	 * @post	The amount of hitpoints is set to the given value.
-	 * 			| if (hitPoints < 0)
-	 * 			|		new.getHitPoints() == 0
-	 * 			| if (hitPoints > getMaxHitPoints()
-	 * 			|		new.getHitPoints() == getMaxHitPoints()
-	 * 			| else
-	 * 			|		new.getHitPoints() == hitPoints
+	 * 			| if (isValid
+	 * @throws
 	 */
-	public void setHitPoints(int hitPoints) {
-		if (! isValidHitPoints(hitPoints)) {
-			if (hitPoints < 0)
-				this.hitPoints = 0;
-			if (hitPoints > getMaxActionPoints())
-				this.hitPoints = getMaxHitPoints();
-		}
+	public void setHitPoints(int hitPoints) throws ModelException {
+		if (! isValidHitPoints(hitPoints))
+			throw new ModelException("Invalid hit points specified");//TODO of moest dit totaal uitgewerkt worden? vergelijkbaar met setActionPoints dan?
 		else
 			this.hitPoints = hitPoints;
 	}
@@ -504,23 +473,6 @@ public class Worm {
 	
 // {{ Move
 
-	/**
-	 * Moves the selected worm.
-	 * 
-	 * @effect	The worm moves through the method activeMoveSingleStep if it can move.
-	 * 			| activeMoveSingleStep()
-	 * @throws 	ModelException
-	 * 			Throws a ModelException if the worm can not move.
-	 * 			| if (!canMove())
-	 * 			|		throw new ModelException
-	 */
-	public void activeMove() throws ModelException {
-		if ( ! canMove() )
-			throw new ModelException("Not enough action points.");
-		activeMoveSingleStep();
-	}
-	
-
 	//TODO implement divergence
 	/**
 	 * Moves the worm a single step.
@@ -535,13 +487,68 @@ public class Worm {
 	 * 			but the methods "setActionPoints", "setX" and "setY" already throw an error for an invalid value.
 	 * 			No need to use double code for this exceptionhandling.
 	 */
-	public void activeMoveSingleStep() {
-		double deltaX = getRadius() * Math.cos(getPosition().getDirection());
-		double deltaY = getRadius() * Math.sin(getPosition().getDirection());
+	public void move() throws ModelException {
+		if ( ! canMove() )
+			throw new ModelException("Can't move.");
+		
+		double[] delta = getMoveDistance();
 
-		getPosition().setX(getPosition().getX()+deltaX);
-		getPosition().setY(getPosition().getY()+deltaY);
-		setActionPoints( getActionPoints() - getActionPointCostMove() );
+		setActionPoints( getActionPoints() - getActionPointCostMove(delta) );
+		setPosition(getX()+delta[0],getY()+delta[1],getDirection());
+	}
+	
+	public double[] getMoveDistance() {
+		
+		double testX = getX();
+		double testY = getY();
+		double testDivergence = Math.abs(getDirection()-Math.atan2(testY-getY(), testX-getX()));
+		
+		double optimRadius = 0;
+		double optimX = testX;
+		double optimY = testY;
+		double optimDivergence = testDivergence;
+		
+		double testRadiusInterval = Math.min(getWorld().getResolutionX(), getWorld().getResolutionY());
+		double scaleDivergence = 1;
+		double scaleRadius = 1;
+		
+		boolean adjacentFound = false;
+		for (double testRadius=getRadius(); testRadius>=0.1; testRadius-=testRadiusInterval) { // Loop over possible radii
+			for ( double testAngle=-0.7875; testAngle<=0.7875; testAngle+=0.0175) { // Loop over possible angles
+				// Calculate the coordinates to test and the corresponding divergence.
+				testX = getX() + testRadius*Math.cos(getDirection()+testAngle);
+				testY = getY() + testRadius*Math.sin(getDirection()+testAngle);
+				testDivergence = Math.abs(getDirection()-Math.atan2(testY-getY(), testX-getX()));
+				// The comparison takes less time to compute, so test this first.
+				if ( scaleDivergence * ( testDivergence - optimDivergence ) +
+					 scaleRadius     * ( optimRadius    - testRadius      ) < 0 ) { //Test if a more optimal divergence/radius combination is found.
+					if ( getWorld().isAdjacent(testX,testY,getRadius()) ) { // Test if the location is adjacent to impassable terrain.
+						adjacentFound = true;
+						optimRadius = testRadius;
+						optimX = testX;
+						optimY = testY;
+						optimDivergence = testDivergence;
+					}
+				}
+			}
+		}
+		
+		if (!adjacentFound) {
+			for (double testRadius=getRadius(); testRadius>=0.1; testRadius-=testRadiusInterval) { // Loop over possible radii
+				testX = getX() + testRadius*Math.cos(getDirection());
+				testY = getY() + testRadius*Math.sin(getDirection());
+				if (getWorld().isPassable(testX, testY, getRadius())) {
+					optimX = testX;
+					optimY = testY;
+					break;
+				}
+			}
+		}
+		
+		double[] output = new double[2];
+		output[0] = optimX-getX();
+		output[1] = optimY-getY();
+		return output;
 	}
 	
 	/**
@@ -551,8 +558,9 @@ public class Worm {
 	 * 			| return (int) ( Math.abs(Math.cos(getDirection())) + Math.abs(4*Math.sin(getDirection())) )
 	 * @note	The cost of actionpoints is rather low, especially in comparison with the cost for turning.
 	 */
-	public int getActionPointCostMove() {
-		return (int) ( Math.abs(Math.cos(getPosition().getDirection())) + Math.abs(4*Math.sin(getPosition().getDirection())) );
+	public int getActionPointCostMove(double[] delta) {
+		double slope = Math.atan2(delta[1], delta[0]);
+		return (int) Math.ceil( Math.abs(Math.cos(slope)) + Math.abs(4*Math.sin(slope)) );
 	}
 
 	/**
@@ -566,9 +574,8 @@ public class Worm {
 	 */
 	//TODO implement impassable terrain
 	public boolean canMove() {
-		if ( ! isValidActionPoints( getActionPoints() - getActionPointCostMove() ) )
-			return false;
-		return true;
+		double[] delta = getMoveDistance(); //TODO avoid computing this multiple times?
+		return ( isValidActionPoints( getActionPoints() - getActionPointCostMove(delta) ) );
 	}
 	
 	// }}
@@ -599,7 +606,7 @@ public class Worm {
 	public void turn(double additionalDirection) {
 		assert ( canTurn(additionalDirection) );		
 		setActionPoints(getActionPoints() - getActionPointCostTurn(additionalDirection));		
-		getPosition().setDirection( (((getPosition().getDirection() + additionalDirection) % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI) );
+		setDirection( (((getDirection() + additionalDirection) % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI) );
 	}
 
 	/**
@@ -645,6 +652,11 @@ public class Worm {
 	// }}
 	
 // {{ Jump
+	
+	@Override
+	protected double getJumpForce() {
+		return ((double)5*getActionPoints()) + (getMass()*World.getGravitationalAcceleration());
+	}
 
 	/**
 	 * Makes the selected worm jump.
@@ -662,53 +674,18 @@ public class Worm {
 	 * 			The amount of actionpoints will always be set to 0, whether the worm actually jumps or not.
 	 * 			This is a choice of implementation.
 	 */
-	public void jump(double timeStep) {
-		double[] newPos = jumpStep(jumpTime(timeStep));
-		getPosition().setX( newPos[0] );
-		getPosition().setY( newPos[1] );
+	@Override
+	public void jump(double timeStep) throws ModelException {//TODO update documentation
+		super.jump(timeStep);
+		
+		//TODO should worms take damage from the height? Implement extra method to calculate max height - new y position * 3hp damage
 		
 		setActionPoints(0);
-	}
-	
-	/**
-	 * Method to calculate the duration of a jump.
-	 * 
-	 * @param	timeStep
-	 * 			The timestep with which the jump trajectory is calculated.
-	 * 
-	 * @return	The time needed to perform the jump.
-	 * 			| return getPosition().ballisticTrajectoryTime(getWorld(), force, 0.5, getMass, timeStep)
-	 * @note	The method "ballisticTrajectoryTime(...)" is used to calculate the ballistic trajectory of the worm while jumping.
-	 */
-	public double jumpTime(double timeStep) {
-		double force = ((double)5*getActionPoints()) + (getMass()*World.getGravitationalAcceleration());
-		return getPosition().ballisticTrajectoryTime(getWorld(), force, 0.5, getMass(), timeStep);
-	}
-	
-	/**
-	 * Calculates and returns the x and y position of the worm during the jump at a specified time.
-	 * 
-	 * @param 	time
-	 * 			The time at which the jump should be evaluated.
-	 * 
-	 * @return 	The x and y positions of the worm during the jump at a specified time, returned in an array of doubles.
-	 * @throws	ModelException
-	 * 			Throws a ModelException if the time given is less than zero.
-	 * 			| time < 0
-	 * @note	If the code "if (canJump())" is not present a trajectory will still be displayed by the GUI, even if the worm can't jump.
-	 * 			This line is added to prevent the GUI from getting and displaying the trajectory if the worm can not jump.
-	 */
-	public double[] jumpStep(double time) throws ModelException {
-		if (time < 0)
-			throw new ModelException("The given time is less than zero.");
-		if (canJump()) {
-			double force = ((double)5*getActionPoints()) + (getMass()*World.getGravitationalAcceleration());
-			return getPosition().ballisticTrajectory(force, 0.5, getMass(), time);
-		}
-		double [] output = {getPosition().getX(), getPosition().getY()};
-		return output;
-	}
 		
+		if (canFall())
+			fall();
+	}
+	
 	/**
 	 * Verifies whether a worm can jump in its current state. As of now, the 
 	 * worm only has to be facing upwards.
@@ -727,17 +704,18 @@ public class Worm {
 	 * @note	This method can easily be adapted in the future to include other conditions.
 	 */
 	public boolean canJump() {
-		if (getActionPoints() == 0) {
+		if (getActionPoints() == 0)
 			return false;
-		}
-		if (getPosition().getDirection() < 0) {
+		if (getDirection() < 0)
 			return false;
-		}
-		if (getPosition().getDirection() > Math.PI) {
+		if (getDirection() > Math.PI)
 			return false;
-		}
 		return true;
 	}
+	
+	
+	
+	
 	
 	// }}	
 
@@ -748,21 +726,24 @@ public class Worm {
 	 */
 	public void fall() {
 		if (canFall()) {
-			for (int i = (int) getPosition().getY(); i <= getWorld().getHeight(); i++) {
-				if (i == getWorld().getHeight()) {
-					getWorld().removeWorm(this);
+			double y = getY();
+			for ( double distanceFallen = 0; distanceFallen<=getWorld().getHeight(); distanceFallen+=getWorld().getResolutionY()) { // perform checks per pixel moved downwards.
+				y = getY() - distanceFallen;
+				if (!getWorld().isWithinBoundaries(getX(),y)) {
+					// Fell out of world.
+						setPosition(getX(),y,getDirection());
+						die();
 					break;
 				}
-				if (!getWorld().isPassable(getPosition().getX(), i, getRadius())) {
-					getPosition().setX(getPosition().getX());
-					getPosition().setY(i);
-					double metersFallen = i - getPosition().getY();
-					int hitPointsLost = (int) Math.floor(metersFallen * 3);
-					setHitPoints(getHitPoints() - hitPointsLost);
-					if (!isAlive()) {
-						getWorld().removeWorm(this);
-					}
-					break;				
+				if ( getWorld().isOnSolidGround( getX(), y, getRadius() ) ) {
+					// Can't fall anymore --> Worm has hit the ground.
+					setPosition(getX(), y, getDirection());
+					int newHitPoints = getHitPoints() - (int) Math.floor(distanceFallen * 3);
+					if (newHitPoints>0)
+						setHitPoints(newHitPoints);
+					else
+						die();
+					break;
 				}
 			}
 		}
@@ -777,10 +758,10 @@ public class Worm {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canFall() {
-		if (world.isAdjacent(getPosition().getX(), getPosition().getY()))
+	public boolean canFall() {//TODO update documentation
+		if (!hasAWorld())
 			return false;
-		return true;		
+		return ( !getWorld().isOnSolidGround( getX(), getY(), getRadius() ) );	
 	}
 	
 	// }}
@@ -823,11 +804,14 @@ public class Worm {
 	 * @note	The index is equal to the corresponding place in the array the weapon has.
 	 */
 	public void equipNextWeapon() {
-		int index = getWeapons().indexOf(getEquippedWeapon());
-		if (index==(getWeapons().size()-1))
-			index = 0;
-		else
-			index += 1;
+		int index = 0;
+		if (getEquippedWeapon()!=null) {
+			index = getWeapons().indexOf(getEquippedWeapon());
+			if (index==(getWeapons().size()-1))
+				index = 0;
+			else
+				index += 1;
+		}
 		equipWeapon(getWeapons().get(index));
 	}
 	
@@ -843,6 +827,7 @@ public class Worm {
 	public void shoot(int propulsionYield) throws ModelException {
 		if (!canShoot())
 			throw new ModelException("This worm can not shoot.");
+		setActionPoints(getActionPoints()-getEquippedWeapon().getActionPointsCost());
 		getEquippedWeapon().shoot(propulsionYield);
 	}
 	
@@ -859,9 +844,7 @@ public class Worm {
 	 * 			|	return true
 	 */
 	public boolean canShoot() {
-		if (!isValidActionPoints(getActionPoints()))
-			return false;
-		if (!isValidPosition(getPosition()))
+		if (!isValidActionPoints(getActionPoints()-getEquippedWeapon().getActionPointsCost()))
 			return false;
 		return true;
 	}
@@ -876,11 +859,14 @@ public class Worm {
 	 * @note	A worm is able to eat a foodobject if the two objects (worm and food) are overlapping.
 	 */
 	public void tryToEatAll() {
-		for ( Food food : getWorld().getFood() ) {
-			if (World.isOverlapping( getPosition().getX(), getPosition().getY(),      getRadius(), 
-					                          food.getX(),          food.getY(), food.getRadius() )) {
-				eat(food);
-			}	
+		if (hasAWorld()) {
+			ArrayList<Food> oldFood = new ArrayList<Food>(getWorld().getFood());
+			for ( Food food : oldFood ) {
+				if (World.isOverlapping( 	  getX(), 				getY(),      getRadius(), 
+										 food.getX(),          food.getY(), Food.getRadius() )) {
+					eat(food);
+				}	
+			}
 		}
 	}
 	
@@ -1224,6 +1210,14 @@ public class Worm {
 	
 	// }}
 	
+	
+
+
+	public String getTeamName() {
+		if (getTeam()==null)
+			return "";
+		return getTeam().getName();
+	}
 	
 	
 }

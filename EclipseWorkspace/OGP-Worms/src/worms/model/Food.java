@@ -111,7 +111,7 @@ public class Food {
 
 // {{ Radius
 
-	private final double radius = 0.20;
+	private static final double radius = 0.20;
 	
 	/**
 	 * Basic inspector for the radius.
@@ -119,7 +119,7 @@ public class Food {
 	 * @return this.radius
 	 */
 	@Basic @Immutable
-	public double getRadius() {
+	public static double getRadius() {
 		return radius;
 	}
 	// }}

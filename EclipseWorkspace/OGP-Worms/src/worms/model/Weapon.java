@@ -486,15 +486,13 @@ public abstract class Weapon {
 		if (getWorm().getWorld().hasAProjectile())
 			throw new ModelException("There is already a projectile in the world.");
 
-		double projectileX = getWorm().getPosition().getX() + getWorm().getRadius() * Math.cos(getWorm().getPosition().getDirection());
-		double projectileY = getWorm().getPosition().getX() + getWorm().getRadius() * Math.sin(getWorm().getPosition().getDirection());
-		double projectileDirection = getWorm().getPosition().getDirection();
+		double projectileX = getWorm().getX() + getWorm().getRadius() * Math.cos(getWorm().getDirection());
+		double projectileY = getWorm().getY() + getWorm().getRadius() * Math.sin(getWorm().getDirection());
+		double projectileDirection = getWorm().getDirection();
 		Projectile newProjectile = new Projectile(projectileX, projectileY, projectileDirection, propulsionYield);
 		
 		setProjectile(newProjectile);
 		getWorm().getWorld().setProjectile(newProjectile);
-		
-		newProjectile.shoot();
 		
 	}
 	
