@@ -1,19 +1,20 @@
 package worms.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
 
 public abstract class Weapon {
 
 // {{ Projectile Mass
 	
-	protected double projectileMass;
+	private double projectileMass;
 	
-	@Basic
 	/**
 	 * Returns the mass of projectiles.
 	 * 
 	 * @return	The mass of projectiles.
 	 */
+	@Basic
 	public double getProjectileMass() {
 		return projectileMass;
 	}
@@ -27,7 +28,7 @@ public abstract class Weapon {
 	 * @throws 	ModelException
 	 * 			| ( !isValidProjectileMass(projectileMass))
 	 */
-	public void setProjectileMass(double projectileMass) throws ModelException {
+	protected void setProjectileMass(double projectileMass) throws ModelException {
 		if (!isValidProjectileMass(projectileMass))
 			throw new ModelException("Invalid projectile mass.");
 		this.projectileMass = projectileMass;	
@@ -47,7 +48,7 @@ public abstract class Weapon {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean isValidProjectileMass(double projectileMass) {
+	private static boolean isValidProjectileMass(double projectileMass) {
 		if (Double.isNaN(projectileMass))
 			return false;
 		if (projectileMass<=0)
@@ -103,7 +104,7 @@ public abstract class Weapon {
 	 *			| else
 	 *			| 	return true
 	 */
-	public boolean isValidName(String name) {
+	private static boolean isValidName(String name) {
 		if (!name.matches("[a-zA-Z0-9- ]*"))
 			return false;
 		if (!Character.isUpperCase(name.charAt(0)))
@@ -131,7 +132,7 @@ public abstract class Weapon {
 	
 // {{ Hit Points Damage
 
-	protected int hitPointsDamage;
+	private int hitPointsDamage;
 	
 	/**
 	 * Returns the amount of damage.
@@ -152,7 +153,7 @@ public abstract class Weapon {
 	 * @throws 	ModelException
 	 * 			| if (!isValidHitPointsDamage(hitPointsDamage))
 	 */
-	public void setHitPointsDamage(int hitPointsDamage) throws ModelException {
+	protected void setHitPointsDamage(int hitPointsDamage) throws ModelException {
 		if (!isValidHitPointsDamage(hitPointsDamage))
 			throw new ModelException("Invalid hit points damage");
 		this.hitPointsDamage = hitPointsDamage;
@@ -166,7 +167,7 @@ public abstract class Weapon {
 	 * 
 	 * @return	| return (hitPointsDamage > 0)
 	 */
-	public boolean isValidHitPointsDamage(int hitPointsDamage) {
+	private static boolean isValidHitPointsDamage(int hitPointsDamage) {
 		if (hitPointsDamage<0)
 			return false;
 		return true;
@@ -176,7 +177,7 @@ public abstract class Weapon {
 	
 // {{ Action Points Cost
 
-	protected int actionPointsCost;
+	private int actionPointsCost;
 	
 	/**
 	 * Returns the cost of actionpoints for firing the weapon.
@@ -197,7 +198,7 @@ public abstract class Weapon {
 	 * @throws 	ModelException
 	 * 			| if (!isValidActionPointsCost(actionPointsCost))
 	 */
-	public void setActionPointsCost(int actionPointsCost) throws ModelException {
+	protected void setActionPointsCost(int actionPointsCost) throws ModelException {
 		if (!isValidActionPointsCost(actionPointsCost))
 			throw new ModelException("Invalid action points cost.");
 		this.actionPointsCost = actionPointsCost;
@@ -211,7 +212,7 @@ public abstract class Weapon {
 	 * 
 	 * @return	| return (actionPointsCost > 0)
 	 */
-	public boolean isValidActionPointsCost(int actionPointsCost) {
+	private static boolean isValidActionPointsCost(int actionPointsCost) {
 		if (actionPointsCost<0)
 			return false;
 		return true;
@@ -242,7 +243,7 @@ public abstract class Weapon {
 	 * @throws 	ModelException
 	 * 			| if (!isValidAmmunition(ammunition))
 	 */
-	public void setAmmunition(int ammunition) throws ModelException {
+	protected void setAmmunition(int ammunition) throws ModelException {
 		if (!isValidAmmunition(ammunition))
 			throw new ModelException("Invalid ammunition.");
 		this.ammunition = ammunition;
@@ -255,7 +256,7 @@ public abstract class Weapon {
 	 * 			The given ammunition.
 	 * @return	| return (ammunition > 0)
 	 */
-	public boolean isValidAmmunition(int ammunition) {
+	private static boolean isValidAmmunition(int ammunition) {
 		if (ammunition<0)
 			return false;
 		return true;
@@ -267,12 +268,12 @@ public abstract class Weapon {
 	
 	private boolean terminated;
 	
-	@Basic
 	/**
 	 * Returns the boolean-type terminated.
 	 * 
 	 * @return	The boolean-type terminated.
 	 */
+	@Basic
 	public boolean isTerminated() {
 		return terminated;
 	}
@@ -294,12 +295,12 @@ public abstract class Weapon {
 	
 	private Worm worm;
 	
-	@Basic
 	/**
 	 * Returns the worm the weapon belongs to.
 	 * 
 	 * @return	The worm the weapon belongs to.
 	 */
+	@Basic
 	public Worm getWorm() {
 		return worm;
 	}
@@ -317,7 +318,8 @@ public abstract class Weapon {
 	 * 			| if (hasAWorm())
 	 * 			|	throw new ModelException
 	 */
-	public void setWorm(Worm worm) throws ModelException {
+	@Raw
+	void setWorm(Worm worm) throws ModelException {
 		if (!canHaveAsWorm(worm))
 			throw new ModelException("Invalid worm specified.");
 		if (hasAWorm())
@@ -338,7 +340,7 @@ public abstract class Weapon {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canHaveAsWorm(Worm worm) {
+	private static boolean canHaveAsWorm(Worm worm) {
 		if (worm==null)
 			return false;
 		if (worm.isTerminated())
@@ -351,20 +353,8 @@ public abstract class Weapon {
 	 * 
 	 * @return	(!(worm == null))
 	 */
-	public boolean hasAWorm() {
+	private boolean hasAWorm() {
 		return(!(worm==null));
-	}
-	
-	/**
-	 * Checks if the given worm is equal to the current worm.
-	 * 
-	 * @param 	worm
-	 * 			The given worm.
-	 * 
-	 * @return	| return (this.worm == worm)
-	 */
-	public boolean hasAsWorm(Worm worm) {
-		return (this.worm==worm);
 	}
 	
 	/**
@@ -372,7 +362,8 @@ public abstract class Weapon {
 	 * 
 	 * @post	| new.getWorm() == null
 	 */
-	public void removeWorm() {
+	@Raw
+	void removeWorm() {
 		worm = null;
 	}
 	
@@ -382,12 +373,12 @@ public abstract class Weapon {
 	
 	private Projectile projectile;
 	
-	@Basic
 	/**
 	 * Basic inspector to return the current projectile.
 	 * 
 	 * @return	The current projectile.
 	 */
+	@Basic
 	public Projectile getProjectile() {
 		return projectile;
 	}
@@ -426,7 +417,7 @@ public abstract class Weapon {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canHaveAsProjectile(Projectile projectile) {
+	private static boolean canHaveAsProjectile(Projectile projectile) {
 		if (projectile==null)
 			return false;
 		if (projectile.isTerminated())
@@ -439,20 +430,8 @@ public abstract class Weapon {
 	 * 
 	 * @return	| return (!(projectile == null))
 	 */
-	public boolean hasAProjectile() {
+	private boolean hasAProjectile() {
 		return(!(projectile==null));
-	}
-	
-	/**
-	 * Checks if the current projectile is equal to the given projectile.
-	 * 
-	 * @param 	projectile
-	 * 			The given projectile.
-	 * 
-	 * @return	| return (this.projectile == projectile)
-	 */
-	public boolean hasAsProjectile(Projectile projectile) {
-		return (this.projectile==projectile);
 	}
 	
 	/**
@@ -479,20 +458,16 @@ public abstract class Weapon {
 	 * @effect	| setProjectile(newProjectile)
 	 * @note	The object "newProjectile" is created when the worm doesn't have a projectile yet.
 	 * @effect	| getWorm().getWorld().setProjectile(newprojectile)
-	 * @throws	ModelException
-	 * 			| if (getWorm().getWorld().hasAProjectile())
 	 */
-	public void shoot( int propulsionYield ) throws ModelException {
-		if (getWorm().getWorld().hasAProjectile())
-			throw new ModelException("There is already a projectile in the world.");
-
+	public void shoot( int propulsionYield ) {
+		
 		double projectileX = getWorm().getX() + getWorm().getRadius() * Math.cos(getWorm().getDirection());
 		double projectileY = getWorm().getY() + getWorm().getRadius() * Math.sin(getWorm().getDirection());
 		double projectileDirection = getWorm().getDirection();
 		Projectile newProjectile = new Projectile(projectileX, projectileY, projectileDirection, propulsionYield);
 		
-		setProjectile(newProjectile);
 		getWorm().getWorld().setProjectile(newProjectile);
+		setProjectile(newProjectile);
 		
 	}
 	

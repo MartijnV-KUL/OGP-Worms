@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 
 /**
  * A class with the implementation of different methods to 
@@ -189,7 +190,7 @@ public class Worm extends BallisticBody {
 	 *         	| else
 	 *         	|     return false
 	 */
-	public static boolean isValidName(String name) {
+	private static boolean isValidName(String name) {
 		if (!name.matches("[a-zA-Z0-9\"\' ]*"))
 			return false;
 		if (!Character.isUpperCase(name.charAt(0)))
@@ -252,7 +253,7 @@ public class Worm extends BallisticBody {
 	 * @return 	The radius must be at least getMinimalRadius().
 	 * 			| Return ( radius >= getMinimalRadius() )
 	 */
-	public boolean isValidRadius(double radius) {
+	private boolean isValidRadius(double radius) {
 		if (radius < getMinimalRadius())
 			return false;
 		if (Double.isNaN(radius))
@@ -270,7 +271,7 @@ public class Worm extends BallisticBody {
 	 * @return	The mass of the worm.
 	 * 			| (4 * getDensity() * Math.PI * Math.pow(getRadius(), 3) / 3)
 	 */
-	public double getMass() {
+	protected double getMass() {
 		return (4 * getDensity() * Math.PI * Math.pow(getRadius(), 3) / 3);
 	}
 	
@@ -315,7 +316,7 @@ public class Worm extends BallisticBody {
 	 * 			| else
 	 * 			| 		new.getActionPoints() == actionPoints
 	 */
-	public void setActionPoints(int actionPoints) {
+	private void setActionPoints(int actionPoints) {
 		if ( ! isValidActionPoints(actionPoints) ) {//TODO moet dit totaal uitgewerkt zijn (zoals het nu is), of defensief? (met een throw new ModelException)
 			if (actionPoints < 0)
 				this.actionPoints = 0;
@@ -324,6 +325,10 @@ public class Worm extends BallisticBody {
 		}
 		else
 			this.actionPoints = actionPoints;
+	}
+	
+	public void resetActionPoints() {//TODO documentation
+		setActionPoints(getMaxActionPoints());
 	}
 
 	/**
@@ -366,7 +371,7 @@ public class Worm extends BallisticBody {
 	 * @return 	True if the number of actionpoints lays between 0 and the maximum amount.
 	 * 			| return ( actionPoints >= 0 && actionPoints <= getMaxActionPoints() )
 	 */
-	public boolean isValidActionPoints(int actionPoints) {
+	private boolean isValidActionPoints(int actionPoints) {
 		return ( actionPoints >= 0 && actionPoints <= getMaxActionPoints() );
 	}
 	
@@ -407,7 +412,7 @@ public class Worm extends BallisticBody {
 	 * 			| if (isValid
 	 * @throws
 	 */
-	public void setHitPoints(int hitPoints) throws ModelException {
+	private void setHitPoints(int hitPoints) throws ModelException {
 		if (! isValidHitPoints(hitPoints))
 			throw new ModelException("Invalid hit points specified");//TODO of moest dit totaal uitgewerkt worden? vergelijkbaar met setActionPoints dan?
 		else
@@ -454,7 +459,7 @@ public class Worm extends BallisticBody {
 	 * @return	True if the number of hitpoints lays between 0 and the maximum amount.
 	 * 			| return (hitPoints >= 0 && hitPoints <= getMaxHitPoints())
 	 */
-	public boolean isValidHitPoints(int hitPoints) {
+	private boolean isValidHitPoints(int hitPoints) {
 		return (hitPoints >= 0 && hitPoints <= getMaxHitPoints()) ;
 	}
 
@@ -473,7 +478,6 @@ public class Worm extends BallisticBody {
 	
 // {{ Move
 
-	//TODO implement divergence
 	/**
 	 * Moves the worm a single step.
 	 * 
@@ -497,7 +501,7 @@ public class Worm extends BallisticBody {
 		setPosition(getX()+delta[0],getY()+delta[1],getDirection());
 	}
 	
-	public double[] getMoveDistance() {
+	private double[] getMoveDistance() {//TODO documentation (have fun with this one :s)
 		
 		double testX = getX();
 		double testY = getY();
@@ -558,7 +562,7 @@ public class Worm extends BallisticBody {
 	 * 			| return (int) ( Math.abs(Math.cos(getDirection())) + Math.abs(4*Math.sin(getDirection())) )
 	 * @note	The cost of actionpoints is rather low, especially in comparison with the cost for turning.
 	 */
-	public int getActionPointCostMove(double[] delta) {
+	private int getActionPointCostMove(double[] delta) {
 		double slope = Math.atan2(delta[1], delta[0]);
 		return (int) Math.ceil( Math.abs(Math.cos(slope)) + Math.abs(4*Math.sin(slope)) );
 	}
@@ -572,7 +576,6 @@ public class Worm extends BallisticBody {
 	 * 			| else
 	 * 			|		return true
 	 */
-	//TODO implement impassable terrain
 	public boolean canMove() {
 		double[] delta = getMoveDistance(); //TODO avoid computing this multiple times?
 		return ( isValidActionPoints( getActionPoints() - getActionPointCostMove(delta) ) );
@@ -618,7 +621,7 @@ public class Worm extends BallisticBody {
 	 * @return	The total amount of actionpoints it takes to perform this turn, converted to an integer.
 	 * 			| return (int) Math.ceil( 60*(Math.abs(additionalDirection)/(2*Math.PI)) )
 	 */
-	public int getActionPointCostTurn(double additionalDirection) {
+	private static int getActionPointCostTurn(double additionalDirection) {
 		return (int) Math.ceil( 60*(Math.abs(additionalDirection)/(2*Math.PI)) );
 	}
 	
@@ -761,7 +764,8 @@ public class Worm extends BallisticBody {
 	public boolean canFall() {//TODO update documentation
 		if (!hasAWorld())
 			return false;
-		return ( !getWorld().isOnSolidGround( getX(), getY(), getRadius() ) );	
+		return ( !getWorld().isAdjacent( getX(), getY(), getRadius() ) );
+		//return ( !getWorld().isOnSolidGround( getX(), getY(), getRadius() ) );//TODO better implementation for future iterations.	
 	}
 	
 	// }}
@@ -858,7 +862,7 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @note	A worm is able to eat a foodobject if the two objects (worm and food) are overlapping.
 	 */
-	public void tryToEatAll() {
+	private void tryToEatAll() {
 		if (hasAWorld()) {
 			ArrayList<Food> oldFood = new ArrayList<Food>(getWorld().getFood());
 			for ( Food food : oldFood ) {
@@ -881,7 +885,7 @@ public class Worm extends BallisticBody {
 	 * @effect	The foodobject is terminated from the game world.
 	 * 			| food.terminate()
 	 */
-	public void eat(Food food) {
+	private void eat(Food food) {
 		setRadius(1.1*getRadius());
 		food.terminate();
 	}
@@ -917,7 +921,8 @@ public class Worm extends BallisticBody {
 	 * 			| if (hasAWorld())
 	 * 			|	throw new ModelException
 	 */
-	public void setWorld(World world) throws ModelException {
+	@Raw
+	void setWorld(World world) throws ModelException {
 		if (!canHaveAsWorld(world))
 			throw new ModelException("Invalid world specified.");
 		if (hasAWorld())
@@ -937,7 +942,7 @@ public class Worm extends BallisticBody {
 	 * 			| if (world.isTerminated())
 	 * 			|	return false
 	 */
-	public boolean canHaveAsWorld(World world) {
+	private static boolean canHaveAsWorld(World world) {
 		if (world==null)
 			return false;
 		if (world.isTerminated())
@@ -951,21 +956,8 @@ public class Worm extends BallisticBody {
 	 * @return	Whether or not the world is null.
 	 * 			| return (!(world == null))
 	 */
-	public boolean hasAWorld() {
+	private boolean hasAWorld() {
 		return(!(world==null));
-	}
-	
-	/**
-	 * Checks if the given world is already set.
-	 * 
-	 * @param 	world
-	 * 			The given world.
-	 * 
-	 * @return	Whether of not the given world is equal to the current world
-	 * 			| return (this.world == world)
-	 */
-	public boolean hasAsWorld(World world) {
-		return (this.world==world);
 	}
 	
 	/**
@@ -974,7 +966,8 @@ public class Worm extends BallisticBody {
 	 * @post	The current world is removed.
 	 * 			| new.getWorld() == null
 	 */
-	public void removeWorld() {
+	@Raw
+	void removeWorld() {
 		world = null;
 	}
 	
@@ -986,12 +979,12 @@ public class Worm extends BallisticBody {
 	
 	private Team team;
 	
-	@Basic
 	/**
 	 * Returns the current team.
 	 * 
 	 * @return	The current team
 	 */
+	@Basic
 	public Team getTeam() {
 		return team;
 	}
@@ -1011,7 +1004,8 @@ public class Worm extends BallisticBody {
 	 * 			| if (hasATeam())
 	 * 			|	throw new ModelException
 	 */
-	public void setTeam(Team team) throws ModelException {
+	@Raw
+	void setTeam(Team team) throws ModelException {
 		if (!canHaveAsTeam(team))
 			throw new ModelException("Invalid team specified.");
 		if (hasATeam())
@@ -1032,7 +1026,7 @@ public class Worm extends BallisticBody {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canHaveAsTeam(Team team) {
+	private static boolean canHaveAsTeam(Team team) {
 		if (team==null)
 			return false;
 		if (team.isTerminated())
@@ -1046,21 +1040,8 @@ public class Worm extends BallisticBody {
 	 * @return	Whether or not the team is null.
 	 * 			| return (!(team == null))
 	 */
-	public boolean hasATeam() {
+	private boolean hasATeam() {
 		return(!(team==null));
-	}
-	
-	/**
-	 * Checks if the current team is equal to the given team.
-	 * 
-	 * @param 	team
-	 * 			The given team.
-	 * 
-	 * @return	Whether or not the given team is equal to the current team.
-	 * 			| return (this.team == team)
-	 */
-	public boolean hasAsTeam(Team team) {
-		return (this.team==team);
 	}
 	
 	/**
@@ -1069,7 +1050,8 @@ public class Worm extends BallisticBody {
 	 * @post	The current team is removed.
 	 * 			| new.getTeam() == null
 	 */
-	public void removeTeam() {
+	@Raw
+	void removeTeam() {
 		team = null;
 	}
 	
@@ -1080,12 +1062,12 @@ public class Worm extends BallisticBody {
 
 	private final ArrayList<Weapon> weaponCollection = new ArrayList<Weapon>();
 	
-	@Basic
 	/**
 	 * Returns the collection of weapons.
 	 * 
 	 * @return	The collection of weapons.
 	 */
+	@Basic
 	public ArrayList<Weapon> getWeapons() {
 		return weaponCollection;
 	}
@@ -1129,7 +1111,7 @@ public class Worm extends BallisticBody {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public static boolean isValidWeapon(Weapon weapon) {
+	private static boolean isValidWeapon(Weapon weapon) {
 		if (weapon==null)
 			return false;
 		if (weapon.isTerminated())
@@ -1161,7 +1143,7 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method to remove all weapons from the collection.
 	 */
-	public void removeAllWeapons() {
+	private void removeAllWeapons() {
 		for ( Weapon weapon : weaponCollection ) {
 			removeWeapon(weapon);
 		}
@@ -1176,7 +1158,7 @@ public class Worm extends BallisticBody {
 	 * @return	Whether or not the collection of weapons contains the given weapon.
 	 * 			| return weaponCollection.contains(weapon)
 	 */
-	public boolean hasAsWeapon(Weapon weapon) {
+	private boolean hasAsWeapon(Weapon weapon) {
 		return weaponCollection.contains(weapon);
 	}
 	
@@ -1186,12 +1168,12 @@ public class Worm extends BallisticBody {
 	
 	private boolean terminated;
 	
-	@Basic
 	/**
 	 * Returns the boolean-type terminated.
 	 * 
 	 * @return	The boolean-type terminated.
 	 */
+	@Basic
 	public boolean isTerminated() {
 		return terminated;
 	}

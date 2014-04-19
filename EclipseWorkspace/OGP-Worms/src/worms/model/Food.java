@@ -49,7 +49,7 @@ public class Food {
 	 * 
 	 * @return 	!isNaN(x)
 	 */
-	public boolean isValidX(double x) {
+	private static boolean isValidX(double x) {
 		return (!Double.isNaN(x));
 	}
 	
@@ -90,7 +90,7 @@ public class Food {
 	 * 
 	 * @return 	!isNaN(y)
 	 */
-	public boolean isValidY(double y) {
+	private static boolean isValidY(double y) {
 		return (!Double.isNaN(y));
 	}
 	
@@ -152,12 +152,12 @@ public class Food {
 
 	private World world;
 	
-	@Basic
 	/**
 	 * Method to return the world.
 	 * 
 	 * @return	this.world
 	 */
+	@Basic
 	public World getWorld() {
 		return world;
 	}
@@ -173,7 +173,8 @@ public class Food {
 	 * 			| if (!canHaveAsWorld(world))
 	 *			| if (hasAWorld())
 	 */
-	public void setWorld(World world) throws ModelException {
+	@Raw
+	void setWorld(World world) throws ModelException {
 		if (!canHaveAsWorld(world))
 			throw new ModelException("Invalid world specified.");
 		if (hasAWorld())
@@ -194,7 +195,7 @@ public class Food {
 	 * 			| else
 	 * 			| 	return true
 	 */
-	public boolean canHaveAsWorld(World world) {
+	private static boolean canHaveAsWorld(World world) {
 		if (world==null)
 			return false;
 		if (world.isTerminated())
@@ -212,23 +213,12 @@ public class Food {
 	}
 	
 	/**
-	 * Checks if the given world is already set.
-	 * 
-	 * @param 	world
-	 * 			The given world.
-	 * 
-	 * @return	| return (this.world == world)
-	 */
-	public boolean hasAsWorld(World world) {
-		return (this.world==world);
-	}
-	
-	/**
 	 * Removes the current world.
 	 * 
 	 * @post	| new.getWorld() == null
 	 */
-	public void removeWorld() {
+	@Raw
+	void removeWorld() {
 		world = null;
 	}
 	

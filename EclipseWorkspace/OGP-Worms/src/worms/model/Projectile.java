@@ -1,6 +1,7 @@
 package worms.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
 
 public class Projectile extends BallisticBody {
 	
@@ -28,7 +29,7 @@ public class Projectile extends BallisticBody {
 
 
 	@Override
-	public double getMass() {
+	protected double getMass() {
 		return getWeapon().getProjectileMass();
 	}
 	
@@ -89,7 +90,7 @@ public class Projectile extends BallisticBody {
 	 * 
 	 * @return	The propulsionyield.
 	 */
-	public int getPropulsionYield() {
+	private int getPropulsionYield() {
 		return propulsionYield;
 	}
 	
@@ -103,7 +104,7 @@ public class Projectile extends BallisticBody {
 	 * @throws 	ModelException
 	 * 			if (!isValidPropulsionYield(propulsionYield))
 	 */
-	public void setPropulsionYield(int propulsionYield) throws ModelException {
+	private void setPropulsionYield(int propulsionYield) throws ModelException {
 		if (!isValidPropulsionYield(propulsionYield))
 			throw new ModelException("Invalid propulsion yield.");
 		this.propulsionYield = propulsionYield;
@@ -122,7 +123,7 @@ public class Projectile extends BallisticBody {
 	 *			| else
 	 *			| 	return true
 	 */
-	public boolean isValidPropulsionYield(int propulsionYield) {
+	private static boolean isValidPropulsionYield(int propulsionYield) {
 		if (propulsionYield<0)
 			return false;
 		if (propulsionYield>100)
@@ -187,12 +188,12 @@ public class Projectile extends BallisticBody {
 	
 	private World world;
 	
-	@Basic
 	/**
 	 * Method to return the world.
 	 * 
 	 * @return	this.world
 	 */
+	@Basic
 	public World getWorld() {
 		return world;
 	}
@@ -208,7 +209,8 @@ public class Projectile extends BallisticBody {
 	 * 			| if (!canHaveAsWorld(world))
 	 *			| if (hasAWorld())
 	 */
-	public void setWorld(World world) throws ModelException {
+	@Raw
+	void setWorld(World world) throws ModelException {
 		if (!canHaveAsWorld(world))
 			throw new ModelException("Invalid world specified.");
 		if (hasAWorld())
@@ -229,7 +231,7 @@ public class Projectile extends BallisticBody {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canHaveAsWorld(World world) {
+	private static boolean canHaveAsWorld(World world) {
 		if (world==null)
 			return false;
 		if (world.isTerminated())
@@ -247,23 +249,12 @@ public class Projectile extends BallisticBody {
 	}
 	
 	/**
-	 * Checks if the given world is already set.
-	 * 
-	 * @param 	world
-	 * 			The given world.
-	 * 
-	 * @return	| return (this.world == world)
-	 */
-	public boolean hasAsWorld(World world) {
-		return (this.world==world);
-	}
-	
-	/**
 	 * Removes the current world.
 	 * 
 	 * @post	| new.getWorld() == null
 	 */
-	public void removeWorld() {
+	@Raw
+	void removeWorld() {
 		world = null;
 	}
 	
@@ -273,12 +264,12 @@ public class Projectile extends BallisticBody {
 	
 	private Weapon weapon;
 	
-	@Basic
 	/**
 	 * Returns the weapon associated with the projectile.
 	 * 
 	 * @return	this.weapon
 	 */
+	@Basic
 	public Weapon getWeapon() {
 		return weapon;
 	}
@@ -294,7 +285,8 @@ public class Projectile extends BallisticBody {
 	 * 			| if (!canHaveAsWeapon(weapon))
 	 * 			| if (hasAWeapon())
 	 */
-	public void setWeapon(Weapon weapon) throws ModelException {
+	@Raw
+	void setWeapon(Weapon weapon) throws ModelException {
 		if (!canHaveAsWeapon(weapon))
 			throw new ModelException("Invalid weapon specified.");
 		if (hasAWeapon())
@@ -314,7 +306,7 @@ public class Projectile extends BallisticBody {
 	 * 			| else
 	 * 			| return true
 	 */
-	public boolean canHaveAsWeapon(Weapon weapon) {
+	private static boolean canHaveAsWeapon(Weapon weapon) {
 		if (weapon==null)
 			return false;
 		if (weapon.isTerminated())
@@ -332,21 +324,10 @@ public class Projectile extends BallisticBody {
 	}
 	
 	/**
-	 * Checks if the current weapon is equal to the given weapon.
-	 * 
-	 * @param 	weapon
-	 * 			The given weapon.
-	 * 
-	 * @return	| (this.weapon == weapon)
-	 */
-	public boolean hasAsWeapon(Weapon weapon) {
-		return (this.weapon==weapon);
-	}
-	
-	/**
 	 * Method to remove a weapon.
 	 */
-	public void removeWeapon() {
+	@Raw
+	void removeWeapon() {
 		weapon = null;
 	}
 	

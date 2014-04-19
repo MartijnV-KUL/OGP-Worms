@@ -59,7 +59,7 @@ public class Team {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public static boolean isValidName(String name) {
+	private static boolean isValidName(String name) {
 		if (!name.matches("[a-zA-Z]*"))
 			return false;
 		if (!Character.isUpperCase(name.charAt(0)))
@@ -114,7 +114,8 @@ public class Team {
 	 * 			| if (!canHaveAsWorld(world))
 	 *			| if (hasAWorld())
 	 */
-	public void setWorld(World world) throws ModelException {
+	@Raw
+	void setWorld(World world) throws ModelException {
 		if (!canHaveAsWorld(world))
 			throw new ModelException("Invalid world specified.");
 		if (hasAWorld())
@@ -135,7 +136,7 @@ public class Team {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canHaveAsWorld(World world) {
+	private static boolean canHaveAsWorld(World world) {
 		if (world==null)
 			return false;
 		if (world.isTerminated())
@@ -148,20 +149,8 @@ public class Team {
 	 * 
 	 * @return	| return (!(world == null))
 	 */
-	public boolean hasAWorld() {
+	private boolean hasAWorld() {
 		return(!(world==null));
-	}
-	
-	/**
-	 * Checks if the given world is already set.
-	 * 
-	 * @param 	world
-	 * 			The given world.
-	 * 
-	 * @return	| return (this.world == world)
-	 */
-	public boolean hasAsWorld(World world) {
-		return (this.world==world);
 	}
 	
 	/**
@@ -169,7 +158,8 @@ public class Team {
 	 * 
 	 * @post	| new.getWorld() == null
 	 */
-	public void removeWorld() {
+	@Raw
+	void removeWorld() {
 		world = null;
 	}
 	
@@ -179,12 +169,12 @@ public class Team {
 	
 	private final ArrayList<Worm> wormCollection = new ArrayList<Worm>();
 	
-	@Basic
 	/**
 	 * Returns the collection of worms.
 	 * 
 	 * @return	The collection of worms.
 	 */
+	@Basic
 	public ArrayList<Worm> getWorms() {
 		return wormCollection;
 	}
@@ -222,7 +212,7 @@ public class Team {
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canHaveAsWorm(Worm worm) {
+	private static boolean canHaveAsWorm(Worm worm) {
 		if (worm==null)
 			return false;
 		if (worm.isTerminated())
@@ -238,7 +228,7 @@ public class Team {
 	 * 
 	 * @return	| wormCollection.contains(worm)
 	 */
-	public boolean hasAsWorm(Worm worm) {
+	private boolean hasAsWorm(Worm worm) {
 		return wormCollection.contains(worm);
 	}
 	
@@ -266,20 +256,6 @@ public class Team {
 		for ( Worm worm : wormCollection ) {
 			removeWorm(worm);
 		}
-	}
-	
-	/**
-	 * Returns an ArrayList of all worms that are alive. The ArrayList contains references to the original worms, not cloned worms.
-	 * 
-	 * @return	The collection of living worms.
-	 */
-	public ArrayList<Worm> getLiveWorms() {
-		ArrayList<Worm> liveWorms = new ArrayList<Worm>();
-		for ( Worm worm : wormCollection ) {
-			if (worm.isAlive())
-				liveWorms.add(worm);
-		}
-		return liveWorms;
 	}
 	
 	// }}

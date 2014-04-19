@@ -24,7 +24,7 @@ public abstract class BallisticBody {
 	public abstract World getWorld();
 	public abstract double getRadius();
 	protected abstract double getJumpForce();
-	public abstract double getMass();
+	protected abstract double getMass();
 	public abstract boolean canJump();
 	
 	/**
@@ -108,7 +108,7 @@ public abstract class BallisticBody {
 	 * @return 	False if x is NaN. True otherwise.
 	 * 			| result = ( ! Double.isNaN(x) )
 	 */
-	public static boolean isValidX(double x) {
+	private static boolean isValidX(double x) {
 		return (!Double.isNaN(x));
 	}
 	
@@ -142,7 +142,7 @@ public abstract class BallisticBody {
 	 *          |		throw new ModelException
 	 */
 	protected void setY(double y) {
-		if (!isValidX(y))
+		if (!isValidY(y))
 			throw new ModelException("Invalid y coordinate.");
 		this.y = y;
 	}
@@ -156,7 +156,7 @@ public abstract class BallisticBody {
 	 * @return 	False if y is NaN. True otherwise.
 	 * 			| result = ( ! Double.isNaN(y) )
 	 */
-	public static boolean isValidY(double y) {
+	private static boolean isValidY(double y) {
 		return (!Double.isNaN(y));
 	}
 	
@@ -166,12 +166,12 @@ public abstract class BallisticBody {
 
 	private double direction;
 	
-	@Basic
 	/**
 	 * Returns the direction.
 	 * 
 	 * @return	The direction.
 	 */
+	@Basic
 	public double getDirection() {
 		return direction;
 	}
@@ -203,7 +203,7 @@ public abstract class BallisticBody {
 	 *         	0 and excluding 2*pi. Otherwise return false. 
 	 *         	| return (direction >= 0 && direction < 2*Math.PI)
 	 */
-	public static boolean isValidDirection(double direction) {
+	private static boolean isValidDirection(double direction) {
 		if (direction < 0 || direction >= 2 * Math.PI)
 			return false;
 		if (Double.isNaN(direction))
