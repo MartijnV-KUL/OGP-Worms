@@ -1,5 +1,12 @@
 package worms.model;
 
+/**
+ * This class is an extension of the weapon class.
+ * All aspects related to a rifle-type weapon are defined here.
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
 public class Rifle extends Weapon {
 	
 	/**

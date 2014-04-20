@@ -3,6 +3,30 @@ package worms.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
+/**
+ * An abstract class that defines all different aspects of weapons.
+ * This includes the name, force with which they are fired, the amount of damage they do, 
+ * the amount of action points they cost to fire and the amount of ammunition each weapon has.
+ * 
+ * @invar	The mass of a projectile must be a valid mass at all times.
+ * 			| isValidProjectileMass(getProjectileMass())
+ * @invar	The name of a weapon must be a valid name at all times.
+ * 			| isValidName(getname())
+ * @invar	The amount of damage a weapon does must be a valid amount.
+ * 			| isValidHitPointsDamage(getHitPointsDamage())
+ * @invar	The amount of actionpoints it costs to fire a weapon must be a valid amount.
+ * 			| isValidActionPointsCost(getActionPointsCost())
+ * @invar	The amount of ammunition a weapon has must be a valid amount.
+ * 			| isValidAmmunition(getAmmunition())
+ * 
+ * @invar	Every weapon must can have a valid projectile as projectile.
+ * 			| canHaveAsProjectile(getProjectile())
+ * @invar	Every weapon must can have a valid worm as worm.
+ * 			| canHaveAsWorm(getWorms())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
 public abstract class Weapon {
 
 // {{ Projectile Mass
@@ -24,6 +48,7 @@ public abstract class Weapon {
 	 * 
 	 * @param 	projectileMass
 	 * 			The new mass of projectiles.
+	 * 
 	 * @post	| new.getProjectileMass() == projectileMass
 	 * @throws 	ModelException
 	 * 			| ( !isValidProjectileMass(projectileMass))
@@ -39,6 +64,7 @@ public abstract class Weapon {
 	 * 
 	 * @param 	projectileMass
 	 * 			The given mass of projectiles.
+	 * 
 	 * @return	| if (Double.isNaN(projectileMass))
 	 * 			|	return false
 	 * 			| if (projectileMass <= 0)
@@ -123,6 +149,7 @@ public abstract class Weapon {
 	 * 
 	 * @param 	propulsionYield
 	 * 			The given yield of the weapon.
+	 * 
 	 * @return	The force of the weapon.
 	 * 			No formal documentation because of abstract method.
 	 */
@@ -254,6 +281,7 @@ public abstract class Weapon {
 	 * 
 	 * @param 	ammunition
 	 * 			The given ammunition.
+	 * 
 	 * @return	| return (ammunition > 0)
 	 */
 	private static boolean isValidAmmunition(int ammunition) {
@@ -468,11 +496,5 @@ public abstract class Weapon {
 		
 		getWorm().getWorld().setProjectile(newProjectile);
 		setProjectile(newProjectile);
-		
 	}
-	
-	
-	
-	
-
 }

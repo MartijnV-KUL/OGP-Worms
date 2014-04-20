@@ -10,20 +10,16 @@ import be.kuleuven.cs.som.annotate.Raw;
  * A class with the implementation of different methods to 
  * execute the commands for each worm.
  * 
- * @invar	The position of each worm is a valid position.
- * 			| isValidX(getX())
- * 			| isValidY(getY())
- * @invar	The direction each worm is facing is a valid direction.
- * 			| isValidDirection(getDirection())
  * @invar	The radius of each worm is a valid radius.
  * 			| isValidRadius(getRadius())
  * @invar	The name of each worm is a valid name.
  * 			| isValidName(getName())
  * @invar	The amount of actionpoints each worm has is valid.
  * 			| isValidActionPoints(getActionPoints())
+ * @invar	The amount of hitPoints each worm has is valid.
+ * 			| isValidHitPoints(getHitPoints())
  * 
- * @author Niels Claes
- * 
+ * @author Martijn Vermaut, Niels Claes
  */
 public class Worm extends BallisticBody {
 
@@ -42,17 +38,10 @@ public class Worm extends BallisticBody {
 	 * @param 	name
 	 * 			The name of the worm.
 	 * 
-	 * @pre		The given X and Y coördinates must be a valid position.
-	 * 			| isValidX(x)
-	 * 			| isValidY(y)
-	 * @pre		The given direction is valid.
-	 * 			| isValidDirection(direction)
 	 * @pre		The given radius is valid.
 	 * 			| isValidRadius(radius)
-	 * @pre		The given name is valid.
-	 * 			| isValidName(name)
-	 * @effect 	The X and Y coördinates and the direction of the worm are set to the given values in the class Position.
-	 * 			| setPosition(new Position(x, y, direction))
+	 * @effect 	The X and Y coördinates and the direction of the worm are set to the given values in the class BallisticBody.
+	 * 			| setPosition(x, y, direction)
 	 * @effect 	The radius of the worm is equal to the given value.
 	 * 			| setRadius(radius)
 	 * @effect 	The name of the worm is equal to the given string if it is valid.
@@ -61,10 +50,9 @@ public class Worm extends BallisticBody {
 	 * 			| addNewWeapon(new Rifle())
 	 * @effect	A new weapon is added, as an object from the class Bazooka.
 	 * 			| addNewWeapon(new Bazooka))
-	 * @effect	The amount of action points is set to the maximum number of actionpoints.
-	 * 			This is done in the method setRadius, by the method resetMaxActionPoints.
-	 * 			| new.getActionPoints() == maxActionPoints;
-	 * @note	The setters will throw an exception if the given value is not valid.
+	 * @effect	The first possible weapon is equipped.
+	 * 			| equipNextWeapon()
+	 * @note	The setters in the corresponding classes will throw an exception if the given value is not valid.
 	 */
 	public Worm(double x, double y, double direction, double radius, String name) {
 		setPosition(x, y, direction);
@@ -75,6 +63,33 @@ public class Worm extends BallisticBody {
 		equipNextWeapon();
 	}
 	
+	/**
+	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
+	 * coördinate in meters, a direction in radians and a name.
+	 * 
+	 * @param 	x
+	 * 			The x coördinate expressed in meters.
+	 * @param 	y
+	 * 			The y coördinate expressed in meters.
+	 * @param 	direction
+	 * 			The direction expressed in radians.
+	 * @param 	name
+	 * 			The name of the worm.
+	 * 
+	 * @pre		The given radius is valid.
+	 * 			| isValidRadius(radius)
+	 * @effect 	The X and Y coördinates and the direction of the worm are set to the given values in the class BallisticBody.
+	 * 			| setPosition(x, y, direction)
+	 * @effect 	The name of the worm is equal to the given string if it is valid.
+	 * 			| setName(name)
+	 * @effect	A new weapon is added, as an object from the class Rifle.
+	 * 			| addNewWeapon(new Rifle())
+	 * @effect	A new weapon is added, as an object from the class Bazooka.
+	 * 			| addNewWeapon(new Bazooka))
+	 * @effect	The first possible weapon is equipped.
+	 * 			| equipNextWeapon()
+	 * @note	The setters in the corresponding classes will throw an exception if the given value is not valid.
+	 */
 	public Worm(double x, double y, double direction, String name) {
 		setPosition(x, y, direction);
 		setRadius(getMinimalRadius());
@@ -86,6 +101,10 @@ public class Worm extends BallisticBody {
 
 	/**
 	 * The worm has died.
+	 * 
+	 * @effect	The hitpoints are set to 0.
+	 * 			| setHitPoints(0)
+	 * 			| setActionPoints(0)
 	 */
 	public void die() {
 		setHitPoints(0);
@@ -131,11 +150,7 @@ public class Worm extends BallisticBody {
 	 */
 	public void setPosition(double x, double y, double direction) {
 		super.setPosition(x, y, direction);
-
-		//if (canFall())
-		//	fall();
 		tryToEatAll();
-		//TODO other checks?
 	}
 	
 	// }}
@@ -316,8 +331,8 @@ public class Worm extends BallisticBody {
 	 * 			| else
 	 * 			| 		new.getActionPoints() == actionPoints
 	 */
-	private void setActionPoints(int actionPoints) {
-		if ( ! isValidActionPoints(actionPoints) ) {//TODO moet dit totaal uitgewerkt zijn (zoals het nu is), of defensief? (met een throw new ModelException)
+	protected void setActionPoints(int actionPoints) {		//All aspects related to actionpoints must be worked out in a total manner.
+		if ( ! isValidActionPoints(actionPoints) ) {
 			if (actionPoints < 0)
 				this.actionPoints = 0;
 			if (actionPoints > getMaxActionPoints())
@@ -327,7 +342,13 @@ public class Worm extends BallisticBody {
 			this.actionPoints = actionPoints;
 	}
 	
-	public void resetActionPoints() {//TODO documentation
+	/**
+	 * Resets the actionpoints of a worm to the maximum number of actionpoints.
+	 * 
+	 * @effect	The amount of actionpoints is set to the maximum value.
+	 * 			| setActionPoints(getMaxActionPoints())
+	 */
+	public void resetActionPoints() {
 		setActionPoints(getMaxActionPoints());
 	}
 
@@ -412,9 +433,13 @@ public class Worm extends BallisticBody {
 	 * 			| if (isValid
 	 * @throws
 	 */
-	private void setHitPoints(int hitPoints) throws ModelException {
-		if (! isValidHitPoints(hitPoints))
-			throw new ModelException("Invalid hit points specified");//TODO of moest dit totaal uitgewerkt worden? vergelijkbaar met setActionPoints dan?
+	protected void setHitPoints(int hitPoints)				{ //All aspects related to hitpoints must be worked out in a total manner.
+		if ( ! isValidHitPoints(hitPoints) ) {
+			if (hitPoints < 0)
+				this.hitPoints = 0;
+			if (hitPoints > getMaxHitPoints())
+				this.hitPoints = getMaxHitPoints();
+		}
 		else
 			this.hitPoints = hitPoints;
 	}
@@ -479,17 +504,16 @@ public class Worm extends BallisticBody {
 // {{ Move
 
 	/**
-	 * Moves the worm a single step.
+	 * Moves the worm.
 	 * 
-	 * @effect	The X-coordinate of the worm is set to the new value.
-	 * 			| getPosition().setX(getPosition().getX() + deltaX)
-	 * @effect	The Y-coordinate of the worm is set to the new value.
-	 * 			| getPosition().setY(getPosition().getY() + deltaY)
+	 * @effect	The position is set to the calculated value.
+	 * 			| setPosition(getX() + delta [0], getY() + delta[1], getDirection())
 	 * @effect	The amount of actionpoints diminishes when moving the worm.
-	 * 			| setActionPoints( getActionPoints() - getActionPointsCostMove() )
-	 * @note	This method should be implemented in a defensive manner,
-	 * 			but the methods "setActionPoints", "setX" and "setY" already throw an error for an invalid value.
-	 * 			No need to use double code for this exceptionhandling.
+	 * 			| double [] delta = getMoveDistance()
+	 * 			| setActionPoints( getActionPoints() - getActionPointsCostMove(delta) )
+	 * @throws	ModelException
+	 * 			Throws a modelexception when the worm can not move.
+	 * 			if (!canMove())
 	 */
 	public void move() throws ModelException {
 		if ( ! canMove() )
@@ -501,7 +525,16 @@ public class Worm extends BallisticBody {
 		setPosition(getX()+delta[0],getY()+delta[1],getDirection());
 	}
 	
-	private double[] getMoveDistance() {//TODO documentation (have fun with this one :s)
+	/**
+	 * Method to calculate the distance covered in one step, taking slope into count.
+	 * 
+	 * @return	The distance a worm can move in one step.
+	 * 			If there is no slope, the distance will be equal to the worm's radius.
+	 * 			If there is a slope present, the method will calculate the highest possible distance a worm can cover.
+	 * 			The result (output) is returned as an array of doubles.
+	 * 			| return output
+	 */
+	protected double[] getMoveDistance() {//TODO documentation (have fun with this one :s)
 		
 		double testX = getX();
 		double testY = getY();
@@ -562,7 +595,7 @@ public class Worm extends BallisticBody {
 	 * 			| return (int) ( Math.abs(Math.cos(getDirection())) + Math.abs(4*Math.sin(getDirection())) )
 	 * @note	The cost of actionpoints is rather low, especially in comparison with the cost for turning.
 	 */
-	private int getActionPointCostMove(double[] delta) {
+	protected int getActionPointCostMove(double[] delta) {
 		double slope = Math.atan2(delta[1], delta[0]);
 		return (int) Math.ceil( Math.abs(Math.cos(slope)) + Math.abs(4*Math.sin(slope)) );
 	}
@@ -577,7 +610,7 @@ public class Worm extends BallisticBody {
 	 * 			|		return true
 	 */
 	public boolean canMove() {
-		double[] delta = getMoveDistance(); //TODO avoid computing this multiple times?
+		double[] delta = getMoveDistance();
 		return ( isValidActionPoints( getActionPoints() - getActionPointCostMove(delta) ) );
 	}
 	
@@ -621,7 +654,7 @@ public class Worm extends BallisticBody {
 	 * @return	The total amount of actionpoints it takes to perform this turn, converted to an integer.
 	 * 			| return (int) Math.ceil( 60*(Math.abs(additionalDirection)/(2*Math.PI)) )
 	 */
-	private static int getActionPointCostTurn(double additionalDirection) {
+	protected static int getActionPointCostTurn(double additionalDirection) {
 		return (int) Math.ceil( 60*(Math.abs(additionalDirection)/(2*Math.PI)) );
 	}
 	
@@ -669,19 +702,21 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @effect	The amount of actionpoints is set to zero after performing the jump.
 	 * 			| setActionPoints(0)
-	 * @effect	The position of the worm is set to it's new coördinates, with newPos[0] the new x-coördinate.
-	 * 			newPos[1] is the new y-coördinate. These points are calculated in jumpStep and jumpTime.
-	 * 			| getPosition().setX( newPos[0] )
-	 * 			| getPosition().setY( newPox[1] )
+	 * @effect	The position of the worm is set to it's new coördinates. This is calculated in BallisticBody, as the method
+	 * 			calls a method from the superclass.
+	 * 			| super.jump(timeStep)
+	 * @effect	After the jump, checks if a worm can fall.
+	 * 			| if (canFall())
+	 * 			|	fall()
 	 * @note	If the player tries to jump when it's not possible he will get "punished" for trying.
 	 * 			The amount of actionpoints will always be set to 0, whether the worm actually jumps or not.
 	 * 			This is a choice of implementation.
+	 * @note	A worm will not receive damage when jumping. The assignment only specifies that a worm has to take damage
+	 * 			when falling, not when jumping.
 	 */
 	@Override
-	public void jump(double timeStep) throws ModelException {//TODO update documentation
+	public void jump(double timeStep) throws ModelException {
 		super.jump(timeStep);
-		
-		//TODO should worms take damage from the height? Implement extra method to calculate max height - new y position * 3hp damage
 		
 		setActionPoints(0);
 		
@@ -755,17 +790,16 @@ public class Worm extends BallisticBody {
 	/**
 	 * Checks if a worm can fall or not.
 	 * 
-	 * @return	True if a worm is not adjacent to any terrain.
-	 * 			| if (world.isAdjacent(getPosition().getX(), getPosition().getY()))
+	 * @return	True if a worm is not adjacent to any terrain, false if the worm has no world.
+	 * 			| if (!hasAWorld())
 	 * 			|	return false
-	 * 			| else
-	 * 			|	return true
+	 * 			| return (!getWorld().isAdjacent( getX(), getY(), getRadius() ))
 	 */
-	public boolean canFall() {//TODO update documentation
+	public boolean canFall() {
 		if (!hasAWorld())
 			return false;
 		return ( !getWorld().isAdjacent( getX(), getY(), getRadius() ) );
-		//return ( !getWorld().isOnSolidGround( getX(), getY(), getRadius() ) );//TODO better implementation for future iterations.	
+		//return ( !getWorld().isOnSolidGround( getX(), getY(), getRadius() ) ); // better implementation for future iterations.	
 	}
 	
 	// }}
@@ -824,6 +858,7 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @param 	propulsionYield
 	 * 			The yield the weapon is fired with.
+	 * 
 	 * @throws	ModelException
 	 * 			Throws a modelexception if the worm can not shoot.
 	 * 			if (!canShoot())
@@ -838,11 +873,8 @@ public class Worm extends BallisticBody {
 	/**
 	 * Checks whether a worm can shoot or not.
 	 * 
-	 * @return	The worm has to have a sufficient amount of actionpoints left, and has to be
-	 * 			in a valid position.
-	 * 			| if (!isValidActionPoints(getActionPoints()))
-	 * 			|	return false
-	 * 			| if (!isValidPosition(getPosition()))
+	 * @return	The worm has to have a sufficient amount of actionpoints left.
+	 * 			| if (!isValidActionPoints(getActionPoints() - getEquippedWeapon().getActionPointsCost()))
 	 * 			|	return false
 	 * 			| else
 	 * 			|	return true
@@ -885,7 +917,7 @@ public class Worm extends BallisticBody {
 	 * @effect	The foodobject is terminated from the game world.
 	 * 			| food.terminate()
 	 */
-	private void eat(Food food) {
+	protected void eat(Food food) {
 		setRadius(1.1*getRadius());
 		food.terminate();
 	}
@@ -1158,7 +1190,7 @@ public class Worm extends BallisticBody {
 	 * @return	Whether or not the collection of weapons contains the given weapon.
 	 * 			| return weaponCollection.contains(weapon)
 	 */
-	private boolean hasAsWeapon(Weapon weapon) {
+	protected boolean hasAsWeapon(Weapon weapon) {
 		return weaponCollection.contains(weapon);
 	}
 	
@@ -1192,9 +1224,15 @@ public class Worm extends BallisticBody {
 	
 	// }}
 	
-	
-
-
+	/**
+	 * Returns the name of the team the worm is in.
+	 * 
+	 * @return	The name of the team the worm is in.
+	 * 			| if (getTeam() == null)
+	 * 			|	return ""
+	 * 			| else
+	 * 			|	return getTeam().getName()
+	 */
 	public String getTeamName() {
 		if (getTeam()==null)
 			return "";

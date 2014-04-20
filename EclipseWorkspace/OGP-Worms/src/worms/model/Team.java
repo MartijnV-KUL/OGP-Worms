@@ -4,6 +4,21 @@ import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class to define the different aspects of a team of worms.
+ * This includes the name of the team.
+ * 
+ * @invar	The name of a team must be valid at all times.
+ * 			| isValidName(getName())
+ * 
+ * @invar	A team must can have a valid world as world.
+ * 			| canHaveAsWorld(getWorld())
+ * @invar	A team must can have a valid worm as worm.
+ * 			| canHaveAsWorm(getWorms())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
 public class Team {
 	
 // {{ Constructors

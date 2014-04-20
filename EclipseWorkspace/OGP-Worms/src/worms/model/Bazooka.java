@@ -1,5 +1,12 @@
 package worms.model;
 
+/**
+ * This class is an extension of the Weapon class.
+ * All aspects related to a bazooka-type weapon are defined here.
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
 public class Bazooka extends Weapon {
 	
 	/**

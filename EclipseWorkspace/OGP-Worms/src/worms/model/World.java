@@ -9,7 +9,31 @@ import be.kuleuven.cs.som.annotate.Immutable;
 //TODO invariants
 //TODO association invariants
 //TODO "raw" methods for associations
-public class World{
+/**
+ * A class to define all different aspects of a world and the objects contained in it.
+ * 
+ * @invar	Every dimension must be a valid dimension at all times.
+ * 			| isValidDimension(getWidth())
+ * 			| isValidDimension(getHeight())
+ * @invar	Every passable map must be a valid map at all times.
+ * 			| isValidPassableMap(getPassableMap())
+ * @invar	Every random seed must be a valid number at all times.
+ * 			| isValidRandomSeed(getRandomSeed())
+ * @invar	Every worm must be a valid worm at all times
+ * 			| isValidWorm(getWorms())
+ * @invar	Every active worm must be a valid active worm at all times.
+ * 			| isValidActiveWorm(getActiveWorm())
+ *
+ * @invar	Every world must can have a valid foodobject as food.
+ * 			| canHaveAsFood(getFood())
+ * @invar	Every world must can have a valid projectile as projectile.
+ * 			| canHaveAsProjectile(getProjectile())
+ * @invar	Every world must can have a valid team as team.
+ * 			| canHaveAsTeam(getTeam())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ */
+public class World {
 
 // {{ Constructors
 	
@@ -49,8 +73,8 @@ public class World{
 	 * 
 	 * @effect	The passable map is set to the input passable map.
 	 * 			| setPassableMap(passableMap)
-	 * @effect	The random seed is set to the input random object.
-	 * 			| setRandomSeed(random)
+	 * @post	The random seed is set to the input random object.
+	 * 			| new.getRandomSeed() == random
 	 * @post	The width of the world is set to the specified width.
 	 * 			| new.getWidth()==width
 	 * @post	The height of the world is set to the specified height.
@@ -58,7 +82,7 @@ public class World{
 	 * @post	The maximum amount of teams is set to 10.
 	 * 			| new.getMaxTeams()=10;
 	 * @throws	ModelException
-	 * 			Throws a ModelException if either the specified rndom object or width or height is invalid.
+	 * 			Throws a ModelException if either the specified random object or width or height is invalid.
 	 * 			| if ( !isValidRandomSeed(random) || !isValidDimension(width) || !isValidDimension(height) )
 	 */
 	public World(double width, double height, boolean[][] passableMap, Random random) throws ModelException {
@@ -85,7 +109,8 @@ public class World{
 	// {{ Gravitational Acceleration
 
 	/**
-	 * The gravitational acceleration of the world. This attribute is only used for ballistic bodies, but it is an attribute of the world, not the ballistic bodies.
+	 * The gravitational acceleration of the world.
+	 * This attribute is only used for ballistic bodies, but it is an attribute of the world, not the ballistic bodies.
 	 */
 	private static final double gravitationalAcceleration = 9.80665;
 
@@ -222,7 +247,7 @@ public class World{
 	 * 			Throws a ModelException if the specified passable map is invalid.
 	 * 			| if (!isValidPassableMap(passableMap))
 	 */
-	private void setPassableMap(boolean[][] passableMap) throws ModelException {
+	protected void setPassableMap(boolean[][] passableMap) throws ModelException {
 		if (!isValidPassableMap(passableMap))
 			throw new ModelException("Invalid passable map specified.");
 		this.passableMap = passableMap;
@@ -234,7 +259,7 @@ public class World{
 	 * @param 	passableMap
 	 * 			The passable map to check.
 	 * 
-	 * @return	The passable map is valid if it isn't null.
+	 * @return	The passable map is valid if it is not null.
 	 * 			| return (passableMap != null)
 	 */
 	private static boolean isValidPassableMap(boolean[][] passableMap) {
@@ -259,13 +284,13 @@ public class World{
 	 * 			The y-coordinate
 	 * 
 	 * @return	The pixel the specified x- and y-coordinates are in.
-	 * 			| return {                           (int) round(x*((double)getHorizontalPixels()-1)/getWidth()), 
-	 * 					   (getVerticalPixels()-1) - (int) round(y*((double)getVerticalPixels()-1)/geHeight()) }
+	 * 			| return {                           (int) Math.round(x*((double)getHorizontalPixels()-1)/getWidth()), 
+	 * 					   (getVerticalPixels()-1) - (int) Math.round(y*((double)getVerticalPixels()-1)/geHeight()) }
 	 * @throws	ModelException
 	 * 			Throws a ModelException if the specified x- and y-coordinates are outside the boundaries of the game world.
 	 * 			| if (!isWithinBoundaries(x,y))
 	 */
-	private int[] positionToPixel(double x, double y) throws ModelException { //TODO update documentation
+	private int[] positionToPixel(double x, double y) throws ModelException {
 		if (!isWithinBoundaries(x,y))
 			throw new ModelException("Specified x & y not within boundaries!");
 		int pixelX =                           (int) Math.round( x * ((double) getHorizontalPixels()-1 ) / getWidth() );
@@ -285,13 +310,13 @@ public class World{
 	 * 			The y-coordinate.
 	 * 
 	 * @return	Return true if the coordinates lie within the boundaries of the map.
-	 * 			| if (x<0)
+	 * 			| if (x < 0)
 	 * 			| 	return false;
-	 * 			| elseif (x>getWidth))
+	 * 			| if (x > getWidth))
 	 * 			| 	return false;
-	 * 			| elseif (y<0)
+	 * 			| if (y < 0)
 	 * 			| 	return false;
-	 * 			| elseif (y>getHeight())
+	 * 			| if (y > getHeight())
 	 * 			| 	return false;
 	 * 			| else
 	 * 			| 	return true;
@@ -331,7 +356,7 @@ public class World{
 	 * @param 	y
 	 * 			The y-coordinate in meters.
 	 * 
-	 * @return	Rteurns true if the x- and y-coordinates lie within the boundaries of the map and the corresponding pixel is passable.
+	 * @return	Returns true if the x- and y-coordinates lie within the boundaries of the map and the corresponding pixel is passable.
 	 * 			| if (!isWithinBoundaries(x,y))
 	 * 			|	return false;
 	 * 			| else {
@@ -385,7 +410,7 @@ public class World{
 	 * 			| 	}
 	 * 			| }
 	 */
-	public boolean isPassable(double x, double y, double radius) { //TODO The formal documentation seems quite extensive. How can this be written shorter? 
+	public boolean isPassable(double x, double y, double radius) { 
 		if (!isPassable(x, y))
 			return false;
 		
@@ -429,10 +454,24 @@ public class World{
 	 * 			| if (!isPassable(x,y,radius))
 	 * 			| 	return false;
 	 * 			Loops over sampled angles and checks if the pixels next to the boundary of the search area is impassable.
-	 * 			| TODO formal documentation
+	 * 			| for (double testAngle = 0; testAngle < 2*Math.PI; testAngle += testAngleInterval) {
+	 * 			|		double deltaX = (searchRadius+getResolutionX()) * Math.cos(testAngle)
+	 *			|		double deltaY = (searchRadius+getResolutionY()) * Math.sin(testAngle);
+	 *			|	if (isWithinBoundaries(x + deltaX, y + deltaY)) {
+	 *			|		if (!isPassable(x + deltaX, y + deltaY))
+	 *			|			return true
+	 *			|	}
+	 *			| }
+	 *			| else
+	 *			|	return false
 	 * 
 	 * @note	A different technique is suggested in the assignment.
-	 * 			This implementation results in a more homogeneous distribution of objects and objects can get into the nooks and crannies of a map, something that is impossible with the suggested implementation..
+	 * 			This implementation results in a more homogeneous distribution of objects.
+	 * 			Objects can get into the nooks and crannies of a map,
+	 * 			something that is impossible with the suggested implementation...
+	 * @note	The values testAngle and testAngleInterval used in the for-loop are calculated as follows:
+	 * 			double searchRadius = 0.1*radius;
+	 * 			double testAngleInterval = 2*Math.PI/40;
 	 */
 	public boolean isAdjacent(double x, double y, double radius) {
 		if (!isPassable(x,y,radius))
@@ -464,7 +503,9 @@ public class World{
 	 * 			The y-coordinate.
 	 * @param 	radius
 	 * 			The radius.
-	 * @return	Returns true if the position just below the search area is still within the boundaries of the game world and is impassable.
+	 * 
+	 * @return	Returns true if the position just below the search area is still
+	 * 			within the boundaries of the game world and is impassable.
 	 * 			| double searchRadius = 0.1*radius;
 	 * 			| if (!isWithinBoundaries(x, y-searchRadius-getResolutionY()))
 	 * 			| 	then return false;
@@ -534,8 +575,9 @@ public class World{
 	/**
 	 * Method to add food to the map at a random location.
 	 * 
-	 * @post	The new food is added to the world in a new random location that is adjacent to impassable terrain.
-	 * 			| TODO formal documentation
+	 * @effect	The new food is added to the world in a new random location that is adjacent to impassable terrain.
+	 * 			| addFood(new Food(randX, randY))
+	 * @note	randX and randY are the new random coordinates that are adjacent to impassable terrain.
 	 */
 	public void addNewFood() {
 		double randX = 0;
@@ -545,7 +587,7 @@ public class World{
 			randX = randomXY[0];
 			randY = randomXY[1];
 		} while( !isAdjacent(randX, randY, Food.getRadius()) );
-		//} while( !isPassable(randX,randY,Food.getRadius()) || !isOnSolidGround(randX,randY,Food.getRadius()) ); //TODO more sensible implementation for future iterations.
+		//} while( !isPassable(randX,randY,Food.getRadius()) || !isOnSolidGround(randX,randY,Food.getRadius()) ); //more sensible implementation for future iterations.
 		addFood( new Food( randX, randY ) );
 	}
 	
@@ -569,8 +611,9 @@ public class World{
 	/**
 	 * Method to add a new worm at a random location and assign it to a random team.
 	 * 
-	 * @post 	The new worm is added to the world in a new random location that is adjacent to impassable terrain and is assigned a random team if there are teams in the world.
-	 * 			| TODO formal documentation
+	 * @effect 	The new worm is added to the world in a new random location that is adjacent to impassable terrain
+	 * 			and is assigned a random team if there are teams in the world.
+	 *			| addWorm(newWorm)
 	 */
 	public void addNewWorm() {
 		double newX = 0;
@@ -646,7 +689,7 @@ public class World{
 	 * 			Throws a ModelException if the given worm isn't valid.
 	 * 			| if (!isValidActiveWorm(worm)
 	 */
-	private void setActiveWorm(Worm worm) throws ModelException {
+	protected void setActiveWorm(Worm worm) throws ModelException {
 		if (!isValidActiveWorm(worm))
 			throw new ModelException("Invalid worm.");
 		worm.resetActionPoints();
@@ -660,7 +703,8 @@ public class World{
 	 * @param 	worm
 	 * 			The given worm.
 	 * 
-	 * @return	The given worm is valid as an active worm if the world contains the worm. This immediately also excludes the null case and a terminated worm, since those cannot belong to the world.
+	 * @return	The given worm is valid as an active worm if the world contains the worm.
+	 * 			This immediately also excludes the null case and a terminated worm, since those cannot belong to the world.
 	 * 			| return hasAsWorm(worm)
 	 * @note	The method hasAsWorm(worm) verifies null and isTerminated().
 	 */
@@ -673,7 +717,16 @@ public class World{
 	 * The game is finished unless two or more worms are still alive and if some worms belong to different teams or if at least one of the alive worms does not belong to a team.
 	 * 
 	 * @return 	Returns true if the game is finished.
-	 * 			| TODO formal documentation
+	 * 			| for (Worm aliveworm: getAliveWorm() ) {
+	 * 			|	if (aliveWorm != getAliveWorms().get(0)) {
+	 * 			|		if (aliveWorm.getTeam() != getAliveWorms().get(0).getTeam())
+	 * 			|			return false
+	 * 			|		if (aliveWorm.getTeam() == null)
+	 * 			|			return false
+	 * 			|	}
+	 * 			| }
+	 * 			| else
+	 * 			|	return true
 	 */
 	public boolean isGameFinished() {
 		for ( Worm aliveWorm : getAliveWorms() ) {
@@ -711,9 +764,9 @@ public class World{
 	 * 			| int index = getWorms().indexOf(getActiveWorm());
 	 * 			| if (getActiveWorm().isAlive())
 	 * 			| 	then
-	 * 					if (index==(getWorms().size()-1)
-	 * 						then index = 0;
-	 * 					else index += 1; 
+	 * 			|		if (index==(getWorms().size()-1)
+	 * 			|			then index = 0;
+	 * 			|		else index += 1; 
 	 * 			| setActiveWorm(getWorms().get(index));
 	 */
 	public void nextTurn() {
@@ -741,27 +794,32 @@ public class World{
 	 * 			| 		elseif (getAliveWorms().size()==1)
 	 * 			|			return getAliveWorms().get(0).getName();
 	 * 			| 		else
-	 * 			|			return getAliveWorms().get(0).getName();
+	 * 			|			return getAliveWorms().get(0).getTeamName();
 	 * 			| else return "";
-	 * 					
+	 * @note	If there is more than one worm present in the world and they both belong to the same team,
+	 * 			it is logical to return the name of the winning team in stead of a wormname.
 	 */
 	public String getWinner() {
 		if (isGameFinished()) {
 			if (getAliveWorms().size()==0)
-				return "";//TODO all worms died (suicide action or something, may be possible with later iterations, not right now)
+				return ""; //All worms died (suicide action or something, may be possible with later iterations, not right now)
 			else if (getAliveWorms().size()==1)
 				return getAliveWorms().get(0).getName();
 			else
-				return getAliveWorms().get(0).getName(); //TODO a team won, not a single worm. Should it return the team name? Not clear from the assignment
+				return getAliveWorms().get(0).getTeamName();
 		}
-		return ""; //TODO game isn't finished yet.
+		return ""; // Game finishes and winner is announced.
 	}
 	
 	/**
 	 * Method that return all worms that are alive in the world.
 	 * 
 	 * @return	Returns all worms that are still alive.
-	 * 			| { worm : getWorms | worm.isAlive() } TODO is this formal documentation correct?
+	 * 			| for (Worm testWorm : getWorms()) {
+	 * 			|	if (testWorm.isAlive())
+	 * 			|		aliveWorms.add(testWorm)
+	 * 			| }
+	 * 			| return aliveWorms
 	 */
 	public ArrayList<Worm> getAliveWorms() {
 		ArrayList<Worm> aliveWorms = new ArrayList<Worm>();

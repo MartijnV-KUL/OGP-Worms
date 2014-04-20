@@ -3,9 +3,33 @@ package worms.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
+/**
+ * A class to define the different aspects of a projectile.
+ * These include position, radius, direction and propulsionyield.
+ * 
+ * @invar	The propulsionyield a projectile has must be valid at all times.
+ * 			| isValidPropulsionYield(getPropulsionYield())
+ * 
+ * @invar	A projectile must can have a valid weapon as weapon.
+ * 			| canHaveAsWeapon(getWeapon())
+ * @invar	A projectile must can have a valid world as world.
+ * 			| canHaveAsWorld(getWorld())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
 public class Projectile extends BallisticBody {
 	
-	
+	/**
+	 * Method to check if a worm is hit.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * 
+	 * @return	The worm which is hit.
+	 */
 	public Worm wormHit(double x, double y) {
 		for ( Worm worm : getWorld().getAliveWorms() ) {
 			if ( World.isOverlapping(worm.getX(), worm.getY(), worm.getRadius(), x, y, getRadius()) )
@@ -15,6 +39,20 @@ public class Projectile extends BallisticBody {
 	}
 	
 	@Override
+	/**
+	 * Method to calculate when a ballistic trajectory has ended.
+	 * 
+	 * @param	x
+	 * 			The x-coordinate.
+	 * @param	y
+	 * 			The y-coordinate.
+	 * 
+	 * @return	| if (worm != null)
+	 * 			|	return true
+	 * 			| else
+	 * 			|	return super.ballisticTrajectoryHasEnded(x, y)
+	 * 			
+	 */
 	public boolean ballisticTrajectoryHasEnded(double x, double y) {
 		Worm worm = wormHit(x,y);
 		if (worm!=null)
@@ -23,12 +61,22 @@ public class Projectile extends BallisticBody {
 	}
 
 	@Override
+	/**
+	 * Method to calculate the force with which a projectile is fired.
+	 * 
+	 * @return	The force with which a projectile is fired.
+	 */
 	protected double getJumpForce() {
 		return getWeapon().getForce(getPropulsionYield());
 	}
 
 
 	@Override
+	/**
+	 * Returns the mass of a projectile.
+	 * 
+	 * @return	The mass of a projectile.
+	 */
 	protected double getMass() {
 		return getWeapon().getProjectileMass();
 	}
@@ -69,16 +117,31 @@ public class Projectile extends BallisticBody {
 	
 	// }}
 	
+// {{ Jump related methods
+	
 	@Override
-	public void jump(double timeStep) throws ModelException {//TODO update documentation
+	/**
+	 * Method to let a projectile perform a jump.
+	 * 
+	 * @param	timeStep
+	 * 			The timestep with which the jump is calculated.
+	 */
+	public void jump(double timeStep) throws ModelException {
 		super.jump(timeStep);
 		terminate();
 	}
 	
 	@Override
+	/**
+	 * Checks if a projectile can jump.
+	 * 
+	 * @return	Always true.
+	 */
 	public boolean canJump() {
 		return true;
 	}
+	
+	// }}
 	
 // {{ Propulsion Yield
 	
@@ -104,7 +167,7 @@ public class Projectile extends BallisticBody {
 	 * @throws 	ModelException
 	 * 			if (!isValidPropulsionYield(propulsionYield))
 	 */
-	private void setPropulsionYield(int propulsionYield) throws ModelException {
+	protected void setPropulsionYield(int propulsionYield) throws ModelException {
 		if (!isValidPropulsionYield(propulsionYield))
 			throw new ModelException("Invalid propulsion yield.");
 		this.propulsionYield = propulsionYield;

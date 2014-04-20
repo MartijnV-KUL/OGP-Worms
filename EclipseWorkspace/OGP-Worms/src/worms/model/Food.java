@@ -2,12 +2,21 @@ package worms.model;
 
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class that defines food positions and other related methods.
+ * 
+ * @invar	The x-coordinate of a foodobject is a valid coordinate.
+ * 			| isValidX(getX())
+ * @invar	The y-coordinate of a foodobject is a valid coordinate.
+ * 			| isValidY(getY())
+ * 
+ * @invar	Every food must can have a valid world as world.
+ * 			| canHaveAsWorld(getWorld())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
 public class Food {
-	
-	/*public Food() {
-				
-		this(randX,randY);
-	}*/
 	
 	/**
 	 * Constructor for the food class.

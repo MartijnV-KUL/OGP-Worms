@@ -3,17 +3,50 @@ package worms.model;
 import be.kuleuven.cs.som.annotate.Basic;
 
 /**
- *
+ * An abstract class that defines all objects that perform ballistic actions. At the moment, these includes worms and projectiles.
+ * 
+ * @invar	The x-coordinate of an object of this class is a valid coordinate.
+ * 			| isValidX(getX())
+ * @invar	The y-coordinate of an object of this class is a valid coordinate.
+ * 			| isValidY(getY())
+ * @invar	The direction of an object of this class is a valid direction.
+ * 			| isValidDirection(getDirection())
  */
 public abstract class BallisticBody {
 	
+	/**
+	 * Sets the position of a worm or projectile.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * @param 	direction
+	 * 			The direction the worm or projectile is facing.
+	 * 
+	 * @effect	The x-coordinate is set to the given value.
+	 * 			| setX(x)
+	 * @effect	The y-coordinate is set to the given value.
+	 * 			| setY(y)
+	 * @effect	The direction is set to the given value.
+	 * 			| setDirection(direction)
+	 */
 	public void setPosition(double x, double y, double direction) {
 		setX(x);
 		setY(y);
 		setDirection(direction);
 	}
 	
-	public void jump(double timeStep) throws ModelException {//TODO update documentation
+	/**
+	 * Method to let the worm or projectile perform a jump.
+	 * 
+	 * @param 	timeStep
+	 * 			The timestep with which the jump is calculated.
+	 * @throws 	ModelException
+	 * 			Throws a modelexception if the worm or projectile can not jump.
+	 * 			| if (!canJump())
+	 */
+	public void jump(double timeStep) throws ModelException {
 		if (!canJump())
 			throw new ModelException("Can't jump");
 		
@@ -199,7 +232,7 @@ public abstract class BallisticBody {
 	 * @param	direction
 	 *      	The direction of the worm, given as an angle in radians.
 	 *      
-	 * @return 	Return true if the direction lies between 0 and 2*pi, including
+	 * @return 	Returns true if the direction lies between 0 and 2*pi, including
 	 *         	0 and excluding 2*pi. Otherwise return false. 
 	 *         	| return (direction >= 0 && direction < 2*Math.PI)
 	 */
@@ -282,6 +315,23 @@ public abstract class BallisticBody {
 		return (time-timeStep);
 	}
 	
+	/**
+	 * Method to calculate when the ballistic trajectory of an object ends.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate of an object.
+	 * @param	y
+	 * 			The y-coordinate of an object.
+	 * 
+	 * @return	False if the coordinates are within the boundaries of the field and
+	 * 			and when the position is not adjacent to invalid terrain.
+	 * 			| if (!getWorld().isWithinBoundaries(x, y))
+	 * 			|	return true
+	 * 			| if (getWorld.isAdjacent(x, y, getRadius()))
+	 * 			|	return true
+	 * 			| else
+	 * 			| 	return false
+	 */
 	public boolean ballisticTrajectoryHasEnded(double x, double y) {
 		if (!getWorld().isWithinBoundaries(x, y))
 			return true;
