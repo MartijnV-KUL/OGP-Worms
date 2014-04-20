@@ -18,6 +18,13 @@ import be.kuleuven.cs.som.annotate.Raw;
  * 			| isValidActionPoints(getActionPoints())
  * @invar	The amount of hitPoints each worm has is valid.
  * 			| isValidHitPoints(getHitPoints())
+ * @invar	Every weapon a worm has must be a valid weapon.
+ * 			| isValidWeapon(getWeapon())
+ * 
+ * @invar	Every worm must can have a valid team as team.
+ * 			| canHaveAsTeam(getTeam())
+ * @invar	Every worm must can have a valid world as world.
+ * 			| canHaveAsWorld(getWorld())
  * 
  * @author Martijn Vermaut, Niels Claes
  */

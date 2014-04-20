@@ -6,9 +6,6 @@ import java.util.Random;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 
-//TODO invariants
-//TODO association invariants
-//TODO "raw" methods for associations
 /**
  * A class to define all different aspects of a world and the objects contained in it.
  * 
