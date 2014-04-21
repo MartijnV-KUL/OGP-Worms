@@ -280,9 +280,11 @@ public class World {
 	 * @param	y
 	 * 			The y-coordinate
 	 * 
-	 * @return	The pixel the specified x- and y-coordinates are in.
-	 * 			| return {                           (int) Math.round(x*((double)getHorizontalPixels()-1)/getWidth()), 
-	 * 					   (getVerticalPixels()-1) - (int) Math.round(y*((double)getVerticalPixels()-1)/geHeight()) }
+	 * @return	The position of the pixel the specified x- and y-coordinates are in,
+	 * 			expressed as an array of integers (pixelPosition).
+	 * 			pixelPosition[0] equals the x-coordinate of the pixel, pixelPosition[1] equals
+	 * 			the y-coordinate of the pixel. 
+	 * 			| return pixelPosition
 	 * @throws	ModelException
 	 * 			Throws a ModelException if the specified x- and y-coordinates are outside the boundaries of the game world.
 	 * 			| if (!isWithinBoundaries(x,y))
@@ -356,10 +358,10 @@ public class World {
 	 * @return	Returns true if the x- and y-coordinates lie within the boundaries of the map and the corresponding pixel is passable.
 	 * 			| if (!isWithinBoundaries(x,y))
 	 * 			|	return false;
-	 * 			| else {
-	 * 			|	int[] pixelXY = positionToPixel(x, y);
+	 * 			| else
 	 * 			|	return isPassable(pixelXY[0], pixelXY[1]);
-				| }
+	 * @note	pixelXY[] is an array of integers that contains the x- and y-coordinates of the pixel.
+	 * 			pixelXY[0] is the x-coordinate, pixelXY[1] is the y-coordinate. Then the passability is checked.
 	 */
 	private boolean isPassable(double x, double y) {
 		if (!isWithinBoundaries(x,y))
@@ -372,7 +374,7 @@ public class World {
 	 * Checks if a circular area around the given location is passable.
 	 * The area that is checked has its origin in the specified x- and y-coordinates and has a radius of one tenth of the specified radius.
 	 * First, it is calculated what the size of the area to be checked is in pixels.
-	 * Then, the method loops over every pixel and chacks the passability of that pixels if that pixel lies within the search area.
+	 * Then, the method loops over every pixel and checks the passability of that pixel if it lies within the search area.
 	 * 
 	 * @param 	x
 	 * 			The x-coordinate.
@@ -383,29 +385,10 @@ public class World {
 	 * 
 	 * @return	Returns false if the specified location itself isn't passable.
 	 * 			| if (!isPassable(x,y))
-	 * 			| 	return false;
-	 * 			Loops over every pixel within the search area and return false if one of those pixels is impassable.
-	 * 			| searchRadius = 0.1*radius;
-	 * 			| pixelsX = (int) ceil(searchRadius = getResolutionX());
-	 * 			| pixelsY = (int) ceil(searchRadius = getResolutionY());
-	 * 			| double testX = 0;
-	 * 			| double testY = 0;
-	 * 			| for (int i=0; i<pixelsX; i++) {
-	 * 			| 	for (int j=0; j<pixelsY; j++) {
-	 * 			| 		testX = i*getResolutionX();
-	 * 			| 		testY = j*getResolutionY();
-	 * 			| 		if (Math.sqrt(Math.pow(testX,2)+Math.pow(testY,2))<=searchRadius) {
-	 * 			| 			if (!isPassable(x+testX,y+testY))
-	 * 			| 				return false;
-	 * 			| 			if (!isPassable(x-testX,y+testY))
-	 * 			| 				return false;
-	 * 			| 			if (!isPassable(x+testX,y-testY))
-	 * 			| 				return false;
-	 * 			| 			if (!isPassable(x-testX,y-testY))
-	 * 			| 				return false;
-	 * 			| 		}
-	 * 			| 	}
-	 * 			| }
+	 * 			| 	return false
+	 * 			| for all (x, y) with (x - x0)² + (y - y0)² < (0.1 * r)²
+	 * 			|	if (isPassale(x, y)
+	 * 			|		return true
 	 */
 	public boolean isPassable(double x, double y, double radius) { 
 		if (!isPassable(x, y))
@@ -447,28 +430,20 @@ public class World {
 	 * @param 	radius
 	 * 			The radius.
 	 * 
-	 * @return	Returns false if the object isn't in a passable location.
+	 * @return	Returns false if the object is not in a passable location.
 	 * 			| if (!isPassable(x,y,radius))
-	 * 			| 	return false;
-	 * 			Loops over sampled angles and checks if the pixels next to the boundary of the search area is impassable.
-	 * 			| for (double testAngle = 0; testAngle < 2*Math.PI; testAngle += testAngleInterval) {
-	 * 			|		double deltaX = (searchRadius+getResolutionX()) * Math.cos(testAngle)
-	 *			|		double deltaY = (searchRadius+getResolutionY()) * Math.sin(testAngle);
-	 *			|	if (isWithinBoundaries(x + deltaX, y + deltaY)) {
-	 *			|		if (!isPassable(x + deltaX, y + deltaY))
-	 *			|			return true
-	 *			|	}
-	 *			| }
-	 *			| else
-	 *			|	return false
+	 * 			| 	return false
+	 * 			| for all testAngle with testAngle < 2*Math.PI
+	 * 			|	if (isWithinBoundaries(x + xOffset, y + yOffset)
+	 * 			|		if (!ispassable(x + xOffset, y + yOffset))
+	 * 			|			return true
+	 * 			| else
+	 * 			|	return false
 	 * 
 	 * @note	A different technique is suggested in the assignment.
 	 * 			This implementation results in a more homogeneous distribution of objects.
-	 * 			Objects can get into the nooks and crannies of a map,
-	 * 			something that is impossible with the suggested implementation...
-	 * @note	The values testAngle and testAngleInterval used in the for-loop are calculated as follows:
-	 * 			double searchRadius = 0.1*radius;
-	 * 			double testAngleInterval = 2*Math.PI/40;
+	 * 			Objects can now get into the nooks and crannies of a map,
+	 * 			something that is almost impossible with the suggested implementation...
 	 */
 	public boolean isAdjacent(double x, double y, double radius) {
 		if (!isPassable(x,y,radius))
@@ -504,12 +479,12 @@ public class World {
 	 * @return	Returns true if the position just below the search area is still
 	 * 			within the boundaries of the game world and is impassable.
 	 * 			| double searchRadius = 0.1*radius;
-	 * 			| if (!isWithinBoundaries(x, y-searchRadius-getResolutionY()))
-	 * 			| 	then return false;
-	 * 			| elseif (isPassable(x,y-searchRadius-getResolutionY()))
-	 * 			| 	then return false;
+	 * 			| if (!isWithinBoundaries(x, y - (0.1 * radius) - getResolutionY()))
+	 * 			| 	return false
+	 * 			| if (isPassable(x, y - (0.1 * radius) - getResolutionY()))
+	 * 			| 	return false
 	 * 			| else
-	 * 			| 	then return true;
+	 * 			| 	return true
 	 */
 	public boolean isOnSolidGround(double x, double y, double radius) {
 		double searchRadius = 0.1*radius;
@@ -622,7 +597,8 @@ public class World {
 			newY = randomXY[1];
 			newWorm = new Worm(newX,newY,0,"JohnDoe");
 		} while( !isAdjacent(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
-		//} while( !isPassable(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) || !isOnSolidGround(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );//TODO more sensible implementation for future iterations.
+		//} while( !isPassable(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) || !isOnSolidGround(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
+		// more sensible implementation for future iterations.
 		addWorm(newWorm);
 		if (getTeams().size()>0)
 			getTeams().get(getRandomSeed().nextInt(getTeams().size())).addWorm(newWorm);
@@ -714,13 +690,12 @@ public class World {
 	 * The game is finished unless two or more worms are still alive and if some worms belong to different teams or if at least one of the alive worms does not belong to a team.
 	 * 
 	 * @return 	Returns true if the game is finished.
-	 * 			| for (Worm aliveworm: getAliveWorm() ) {
-	 * 			|	if (aliveWorm != getAliveWorms().get(0)) {
+	 * 			| for (Worm aliveWorm : getAliveWorms() ) {
+	 * 			|	if (aliveWorm != getAliveWorms().get(0))
 	 * 			|		if (aliveWorm.getTeam() != getAliveWorms().get(0).getTeam())
 	 * 			|			return false
 	 * 			|		if (aliveWorm.getTeam() == null)
 	 * 			|			return false
-	 * 			|	}
 	 * 			| }
 	 * 			| else
 	 * 			|	return true
@@ -752,12 +727,14 @@ public class World {
 	/**
 	 * Method to initiate the next turn (select the next worm).
 	 * 
-	 * @post	If the current active worm is dead, terminate it and activate the worm that took its place in the list.
+	 * @effect	If the current active worm is dead, terminate it and activate the worm that took its place in the list.
 	 * 			| int index = getWorms().indexOf(getActiveWorm());
 	 * 			| if (!getActiveWorm().isAlive())
-	 * 			| 	then getActiveWorm().terminate();
+	 * 			| 	then 
+	 * 			|		getActiveWorm().terminate();
 	 * 			| setActiveWorm(getWorms().get(index));
-	 * @post	If the current active worm is still alive, select the next worm in the list. If the active worm is the last worm in the list, select the first worm in the list.
+	 * @effect	If the current active worm is still alive, select the next worm in the list.
+	 * 			If the active worm is the last worm in the list, select the first worm in the list.
 	 * 			| int index = getWorms().indexOf(getActiveWorm());
 	 * 			| if (getActiveWorm().isAlive())
 	 * 			| 	then
@@ -788,7 +765,7 @@ public class World {
 	 * 			| 	then
 	 * 			| 		if (getAliveWorms().size()==0)
 	 * 			|			return "";
-	 * 			| 		elseif (getAliveWorms().size()==1)
+	 * 			| 		if (getAliveWorms().size()==1)
 	 * 			|			return getAliveWorms().get(0).getName();
 	 * 			| 		else
 	 * 			|			return getAliveWorms().get(0).getTeamName();
@@ -812,10 +789,9 @@ public class World {
 	 * Method that return all worms that are alive in the world.
 	 * 
 	 * @return	Returns all worms that are still alive.
-	 * 			| for (Worm testWorm : getWorms()) {
+	 * 			| for (Worm testWorm : getWorms())
 	 * 			|	if (testWorm.isAlive())
 	 * 			|		aliveWorms.add(testWorm)
-	 * 			| }
 	 * 			| return aliveWorms
 	 */
 	public ArrayList<Worm> getAliveWorms() {

@@ -538,10 +538,11 @@ public class Worm extends BallisticBody {
 	 * @return	The distance a worm can move in one step.
 	 * 			If there is no slope, the distance will be equal to the worm's radius.
 	 * 			If there is a slope present, the method will calculate the highest possible distance a worm can cover.
-	 * 			The result (output) is returned as an array of doubles.
+	 * 			The result (output) is returned as an array of doubles. output[0] equals the new x-coordinate,
+	 * 			output[1] equals the new y-coordinate.
 	 * 			| return output
 	 */
-	protected double[] getMoveDistance() {//TODO documentation (have fun with this one :s)
+	protected double[] getMoveDistance() {
 		
 		double testX = getX();
 		double testY = getY();
