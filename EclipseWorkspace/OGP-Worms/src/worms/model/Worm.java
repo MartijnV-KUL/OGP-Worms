@@ -557,10 +557,12 @@ public class Worm extends BallisticBody {
 		double scaleDivergence = 1;
 		double scaleRadius = 1000;
 		
+		double[] I = new double[] {-1,1};
+		
 		boolean adjacentFound = false;
 		for (double testRadius=getRadius(); testRadius>=0.1; testRadius-=testRadiusInterval) { // Loop over possible radii
 			for ( double testAngle=0; testAngle<=0.7875; testAngle+=0.000175) { // Loop over possible angles //TODO take these small steps, otherwise testMoveVerticalAlongTerrain fails due to numerical deviations.
-				for ( double i=-1; i<=1; i+=2 ){
+				for ( double i : I ){
 					// Calculate the coordinates to test and the corresponding divergence.
 					testX = getX() + testRadius*Math.cos(getDirection()+i*testAngle);
 					testY = getY() + testRadius*Math.sin(getDirection()+i*testAngle);

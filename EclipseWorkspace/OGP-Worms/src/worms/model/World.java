@@ -406,8 +406,9 @@ public class World {
 
 		double testX = 0;
 		double testY = 0;
-		
-		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
+
+//		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
+		double testRadiusInterval = 0.1*radius;
 		double testAngleInterval = 2*Math.PI/40;
 		
 		// Loop over the entire resolution
