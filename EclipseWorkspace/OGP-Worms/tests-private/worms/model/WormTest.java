@@ -297,16 +297,45 @@ public class WormTest {
 	@Test
 	public void test_move_LegalCase() {
 		worm.setWorld(world);
+		worm.setDirection(0);
 		worm.move();
-		assertEquals(2.9459132464687130, worm.getX(), EPS);
-		assertEquals(3.3244196821326111, worm.getY(), EPS);
+		assertEquals(3, worm.getX(), EPS);
+		assertEquals(3, worm.getY(), EPS);
 	}
+	@Test
+	public void testMoveVertical() {
+		worm = new Worm(1, 1.5, Math.PI / 2, 0.5, "Test");
+		worm.setWorld(world);
+		worm.move();
+		assertEquals(1, worm.getX(), EPS);
+		assertEquals(2.0, worm.getY(), EPS);
+	}
+	@Test
+	public void testMoveVerticalAlongTerrain() {
+		// . . X
+		// . w X
+
+		world =  new World(3.0, 2.0, new boolean[][] {
+				{ true, true, false }, { true, true, false } }, random);
+		worm =  new Worm(1.5, 0.5, Math.PI / 2 - 10 * 0.0175, 0.5, "Test");
+		worm.setWorld(world);
+		
+		worm.move();
+		
+		assertEquals(1.5, worm.getX(), EPS);
+		assertEquals(1.0, worm.getY(), EPS);
+	}
+
 	
 	@Test
 	public void test_getMoveDistance() {
+		world =  new World(3.0, 2.0, new boolean[][] {
+				{ true, true, false }, { true, true, false } }, random);
+		worm =  new Worm(1.5, 0.5, Math.PI / 2 - 10 * 0.0175, 0.5, "Test");
 		worm.setWorld(world);
-		assertEquals(0.9459132464687103, worm.getMoveDistance()[0], EPS);	//Compares first value in double array.
-		assertEquals(0.3244196821326111, worm.getMoveDistance()[1], EPS);	//Compares second value in double array.
+		
+		assertEquals(0, worm.getMoveDistance()[0], EPS);	//Compares first value in double array.
+		assertEquals(0.5, worm.getMoveDistance()[1], EPS);	//Compares second value in double array.
 	}
 	@Test
 	public void test_getActionPointCostMove() {
@@ -402,19 +431,17 @@ public class WormTest {
 	@Test
 	public void test_fall() {
 		world = new World(3, 5, new boolean[][] { {true,  true,  true},				// . . .
-												  {true,  true,  true},				// . w .
 												  {true,  true,  true},				// . . .
+												  {true,  true,  true},				// . w .
 												  {true,  true,  true},				// . . .
 												  {false, false, false}},			// X X X
 												  random);
 		worm.setWorld(world);
-		worm.setPosition(1, 1, Math.PI / 4);
-		System.out.println(worm.getRadius());
-		System.out.println(worm.canFall());
+		worm.setPosition(2, 1, Math.PI / 4);
 		worm.fall();
-		assertEquals(1, worm.getX(), EPS);
-		assertEquals(3, worm.getY(), EPS);
-		assertEquals(4442, worm.getHitPoints(), EPS);		//worm falls 2 meters, so it looses 6 hitpoints.
+		assertEquals(3, worm.getX(), EPS);
+		assertEquals(1, worm.getY(), EPS);
+		assertEquals(4445, worm.getHitPoints(), EPS);		//worm falls 1 meter, so it looses 3 hitpoints.
 	}
 	
 	@Test
@@ -434,7 +461,7 @@ public class WormTest {
 				{true,  true,  true}, {true, true, true},									// w . . 
 				{false, false, false} }, random);											// X X X
 		worm.setWorld(world);
-		worm.setPosition(0, 3, Math.PI / 4);
+		worm.setPosition(3, 0, Math.PI / 4);
 		assertFalse(worm.canFall());
 	}
 	
@@ -464,11 +491,20 @@ public class WormTest {
 		assertEquals(bazooka, worm.getEquippedWeapon());
 	}
 	
-	//@Test		TODO The method "shoot" still has to be implemented
-	public void test_shoot() {
+	@Test(expected = ModelException.class)
+	public void test_shoot_noAP() {
+		worm.setWorld(world);
 		worm.addNewWeapon(rifle);
 		worm.equipWeapon(rifle);
-		worm.shoot(50);			//propulsionyield of 50.
+		worm.setActionPoints(0);
+		worm.shoot(50);
+	}
+	@Test
+	public void test_shoot_LegalCase() {
+		worm.setWorld(world);
+		worm.addNewWeapon(rifle);
+		worm.equipWeapon(rifle);
+		worm.shoot(50);
 	}
 	
 	@Test

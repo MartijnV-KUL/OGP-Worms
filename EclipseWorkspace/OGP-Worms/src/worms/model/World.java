@@ -268,7 +268,7 @@ public class World {
 	
 // }}
 	
-// {{ Map & passability & ... related methods
+// {{ Map & passability & related methods
 	
 	/**
 	 * Converts a position expressed in meters to its corresponding pixel.
@@ -290,7 +290,7 @@ public class World {
 	 * 			Throws a ModelException if the specified x- and y-coordinates are outside the boundaries of the game world.
 	 * 			| if (!isWithinBoundaries(x,y))
 	 */
-	private int[] positionToPixel(double x, double y) throws ModelException {//TODO update documentation
+	private int[] positionToPixel(double x, double y) throws ModelException {
 		if (!isWithinBoundaries(x,y))
 			throw new ModelException("Specified x & y not within boundaries!");
 		if (Util.fuzzyEquals(x,0))
@@ -396,11 +396,17 @@ public class World {
 	 * @return	Returns false if the specified location itself isn't passable.
 	 * 			| if (!isPassable(x,y))
 	 * 			| 	return false
-	 * 			| for all (x, y) with (x - x0)² + (y - y0)² < (0.1 * r)²
-	 * 			|	if (isPassale(x, y)
-	 * 			|		return true
+	 * 			| for all radius <= 0.1*radius {
+	 * 			|	for all angles < 2*Math.PI {
+	 * 			|		if (isWithinBoundaries(xOffset, yOffset)
+	 * 			|			if (!isPassable(xOffset, yOffset)
+	 * 			|				return false
+	 * 			|	}
+	 * 			| }
+	 * 			| else
+	 * 			|	return true
 	 */
-	public boolean isPassable(double x, double y, double radius) { //TODO update documentation
+	public boolean isPassable(double x, double y, double radius) {
 		if (!isPassable(x, y))
 			return false;
 
@@ -438,41 +444,36 @@ public class World {
 	 * 			The radius.
 	 * 
 	 * @return	Returns false if the object is not in a passable location.
-	 * 			| if (!isPassable(x,y,radius))
-	 * 			| 	return false
-	 * 			| for all testAngle with testAngle < 2*Math.PI
-	 * 			|	if (isWithinBoundaries(x + xOffset, y + yOffset)
-	 * 			|		if (!ispassable(x + xOffset, y + yOffset))
-	 * 			|			return true
-	 * 			| else
-	 * 			|	return false
+	 * 			| return ( isPassable(x, y, radius) && !isPassable(x, y, 1.1*radius) )
 	 * 
 	 * @note	A different technique is suggested in the assignment.
 	 * 			This implementation results in a more homogeneous distribution of objects.
 	 * 			Objects can now get into the nooks and crannies of a map,
 	 * 			something that is almost impossible with the suggested implementation...
 	 */
-	public boolean isAdjacent(double x, double y, double radius) {//TODO update documentation
+	public boolean isAdjacent(double x, double y, double radius) {
 		return ( isPassable(x,y,radius) && !isPassable(x, y, 1.1*radius) );
 
-////		double searchRadius = 0.1*radius;//TODO is this correct? this makes partialFacadeTest not work, so... but is asys like this in the assignment...
-//		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
-//		double testAngleInterval = 2*Math.PI/40;
-//		
-//		// Loop over the entire resolution
-//		for (double testRadius=1.1*radius; testRadius>=radius; testRadius-=testRadiusInterval) {
-//			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
-//				// Calculate the x- and y-offsets at the current angle
-//				double deltaX = (testRadius) * Math.cos(testAngle);
-//				double deltaY = (testRadius) * Math.sin(testAngle);
-//				
-//				if (isWithinBoundaries(x+deltaX, y+deltaY)) {
-//					if (!isPassable(x+deltaX,y+deltaY))
-//						return true;
-//				}
-//			}
-//		}
-//		return false;
+/*		TODO is this correct? this makes partialFacadeTest not work, so... but is asys like this in the assignment...
+*		double searchRadius = 0.1*radius;
+*		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
+*		double testAngleInterval = 2*Math.PI/40;
+*		
+*		// Loop over the entire resolution
+*		for (double testRadius=1.1*radius; testRadius>=radius; testRadius-=testRadiusInterval) {
+*			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
+*				// Calculate the x- and y-offsets at the current angle
+*				double deltaX = (testRadius) * Math.cos(testAngle);
+*				double deltaY = (testRadius) * Math.sin(testAngle);
+*				
+*				if (isWithinBoundaries(x+deltaX, y+deltaY)) {
+*					if (!isPassable(x+deltaX,y+deltaY))
+*						return true;
+*				}
+*			}
+*		}
+*		return false;
+*/
 	}
 	
 	/**

@@ -145,23 +145,22 @@ public class WorldTest {
 	 */
 	@Test
 	public void test_isPassable_true() {
-		assertTrue(world.isPassable(1, 1, 1));
+		assertTrue(world.isPassable(1, 2, 0.5));
 	}
-	@Test	// fails in test, fine in game.
+	@Test
 	/**
 	 * @note	The isPassable tests fail, although everything works fine when the game is run.
 	 * 			There are probably rounding errors in the calculation of the position of the pixels,
 	 * 			so there could be a slight deviation. Probably is this the reason why the tests fail.
 	 */
 	public void test_isPassable_false() {
-		System.out.println(passableMap[0][2]);
-		assertFalse(world.isPassable(0, 2, 1));
+		assertFalse(world.isPassable(3, 1, 1));
 	}
 	
-	@Test // fails in test, fine in game.				// X X X X
-	public void test_isAdjacent_true() {				// . . w .
-		worm.setPosition(1, 2, Math.PI / 4);			// . . . .
-		assertTrue(world.isAdjacent(1, 2, 1));			// X X X X
+	@Test	//fails for some reason, fine in game				// X X X X
+	public void test_isAdjacent_true() {						// . . . .
+		worm.setPosition(2, 2, Math.PI / 4);					// . . w .
+		assertTrue(world.isAdjacent(2, 2, 1));					// X X X X
 	}
 	@Test
 	public void test_isAdjacent_false() {
@@ -170,6 +169,7 @@ public class WorldTest {
 												  {true,  true,  true,  true},			// . . . .
 												  {false, false, false, false}}			// X X X X
 												  , random);
+		worm.setWorld(world);
 		worm.setPosition(1, 3, Math.PI / 4);
 		assertFalse(world.isAdjacent(1, 3, 1));
 	}

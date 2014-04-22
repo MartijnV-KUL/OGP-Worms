@@ -561,7 +561,8 @@ public class Worm extends BallisticBody {
 		
 		boolean adjacentFound = false;
 		for (double testRadius=getRadius(); testRadius>=0.1; testRadius-=testRadiusInterval) { // Loop over possible radii
-			for ( double testAngle=0; testAngle<=0.7875; testAngle+=0.000175) { // Loop over possible angles //TODO take these small steps, otherwise testMoveVerticalAlongTerrain fails due to numerical deviations.
+			for ( double testAngle=0; testAngle<=0.7875; testAngle+=0.000175) { // Loop over possible angles.
+				 //TODO take these small steps, otherwise testMoveVerticalAlongTerrain fails due to numerical deviations
 				for ( double i : I ){
 					// Calculate the coordinates to test and the corresponding divergence.
 					testX = getX() + testRadius*Math.cos(getDirection()+i*testAngle);
@@ -774,8 +775,22 @@ public class Worm extends BallisticBody {
 
 	/**
 	 * Method to make a worm fall down to impassable terrain or out of the game world.
+	 * 
+	 * @effect	The worm will die if it falls out of the world.
+	 * 			| if (!getWorld().isWithinBoundaries(getX(), y)) {
+	 * 			|	setPosition(getX(), y, getDirection())
+	 * 			|	die()
+	 * 			| }
+	 * @effect	The worm will hit the ground if it reaches impassable terrain when falling.
+	 * 			| if (!getWorld().isPassable(getX(), y, getRadius()))
+	 * 			|	setPosition(getX(), y, getDirection)
+	 * @effect	The worm will loose hitpoints after falling and will die if they are less than zero.
+	 * 			| if (getHitPoints > 0)
+	 * 			|	setHitPoints(newHitPoints)
+	 * 			| else
+	 * 			|	die()
 	 */
-	public void fall() { // TODO documentation: post
+	public void fall() {
 		if (canFall()) {
 			double y = getY();
 //			double resolution = 0.1*getWorld().getResolutionY();
@@ -808,9 +823,14 @@ public class Worm extends BallisticBody {
 	 * @return	True if a worm is not adjacent to any terrain, false if the worm has no world.
 	 * 			| if (!hasAWorld())
 	 * 			|	return false
-	 * 			| return (!getWorld().isAdjacent( getX(), getY(), getRadius() ))
+	 * 			| if (getWorld().isAdjacent( getX(), getY(), getRadius() ))
+	 * 			|	return false
+	 * 			| if (!getWorld().isPassable( getX(), getY(), getRadius() ))
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
 	 */
-	public boolean canFall() {//TODO update documentation
+	public boolean canFall() {
 		if (!hasAWorld())
 			return false;
 		if ( getWorld().isAdjacent( getX(), getY(), getRadius() ) )
