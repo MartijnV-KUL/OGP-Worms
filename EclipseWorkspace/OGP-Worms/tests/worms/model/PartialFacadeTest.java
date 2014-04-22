@@ -66,7 +66,9 @@ public class PartialFacadeTest {
 				{ true, true, false }, { true, true, false } }, random);
 		Worm worm = facade.createWorm(world, 1.5, 0.5,
 				Math.PI / 2 - 10 * 0.0175, 0.5, "Test");
+		
 		facade.move(worm);
+		
 		assertEquals(1.5, facade.getX(worm), EPS);
 		assertEquals(1.0, facade.getY(worm), EPS);
 	}
@@ -82,10 +84,13 @@ public class PartialFacadeTest {
 				{ true, true, true }, { false, false, false } }, random);
 		Worm worm = facade.createWorm(world, 1.5, 2.5, -Math.PI / 2, 0.5,
 				"Test");
+		
 		assertFalse(facade.canFall(worm));
 		facade.move(worm);
+		
 		assertTrue(facade.canFall(worm));
 		facade.fall(worm);
+		
 		assertEquals(1.5, facade.getX(worm), EPS);
 		assertEquals(1.5, facade.getY(worm), EPS);
 	}

@@ -3,6 +3,7 @@ package worms.model;
 import java.util.ArrayList;
 import java.util.Random;
 
+import worms.util.Util;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 
@@ -289,11 +290,16 @@ public class World {
 	 * 			Throws a ModelException if the specified x- and y-coordinates are outside the boundaries of the game world.
 	 * 			| if (!isWithinBoundaries(x,y))
 	 */
-	private int[] positionToPixel(double x, double y) throws ModelException {
+	public int[] positionToPixel(double x, double y) throws ModelException {//TODO make private again, was only public for debugging purposes
 		if (!isWithinBoundaries(x,y))
 			throw new ModelException("Specified x & y not within boundaries!");
-		int pixelX =                           (int) Math.round( x * ((double) getHorizontalPixels()-1 ) / getWidth() );
-		int pixelY = (getVerticalPixels()-1) - (int) Math.round( y * ((double) getVerticalPixels()  -1 ) / getHeight() );
+		if (Util.fuzzyEquals(x,getWidth()))
+			x = x-((double)getResolutionX())/2;
+		if (Util.fuzzyEquals(y,getHeight()))
+			y = y-((double)getResolutionY())/2;
+		
+		int pixelX = (int) Math.floor(               x * ((double) getHorizontalPixels() ) / getWidth() );
+		int pixelY = (int) Math.floor( (getHeight()-y) * ((double) getVerticalPixels()   ) / getHeight() );
 		int[] pixelPosition = new int[2];
 		pixelPosition[0] = pixelX;
 		pixelPosition[1] = pixelY;
@@ -445,22 +451,25 @@ public class World {
 	 * 			Objects can now get into the nooks and crannies of a map,
 	 * 			something that is almost impossible with the suggested implementation...
 	 */
-	public boolean isAdjacent(double x, double y, double radius) {
-		if (!isPassable(x,y,radius))
+	public boolean isAdjacent(double x, double y, double radius) {//TODO update formal documentation
+		if (!isPassable(x,y))
 			return false;
-		
-		double searchRadius = 0.1*radius;
-		
+
+		double searchRadius = 0.1*radius;//TODO is this correct? this makes partialFacadeTest not work, so... but is asys like this in the assignment...
+		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
 		double testAngleInterval = 2*Math.PI/40;
+		
 		// Loop over the entire resolution
-		for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
-			// Calculate the x- and y-offsets at the current angle
-			double deltaX = (searchRadius+getResolutionX()) * Math.cos(testAngle);
-			double deltaY = (searchRadius+getResolutionY()) * Math.sin(testAngle);
-			
-			if (isWithinBoundaries(x+deltaX, y+deltaY)) {
-				if (!isPassable(x+deltaX,y+deltaY))
-					return true;
+		for (double testRadius=searchRadius; testRadius>=0; testRadius-=testRadiusInterval) {
+			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
+				// Calculate the x- and y-offsets at the current angle
+				double deltaX = (testRadius) * Math.cos(testAngle);
+				double deltaY = (testRadius) * Math.sin(testAngle);
+				
+				if (isWithinBoundaries(x+deltaX, y+deltaY)) {
+					if (!isPassable(x+deltaX,y+deltaY))
+						return true;
+				}
 			}
 		}
 		return false;

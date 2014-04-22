@@ -546,7 +546,7 @@ public class Worm extends BallisticBody {
 		
 		double testX = getX();
 		double testY = getY();
-		double testDivergence = Math.abs(getDirection()-Math.atan2(testY-getY(), testX-getX()));
+		double testDivergence = 0;
 		
 		double optimRadius = 0;
 		double optimX = testX;
@@ -555,7 +555,7 @@ public class Worm extends BallisticBody {
 		
 		double testRadiusInterval = Math.min(getWorld().getResolutionX(), getWorld().getResolutionY());
 		double scaleDivergence = 1;
-		double scaleRadius = 1;
+		double scaleRadius = 10;
 		
 		boolean adjacentFound = false;
 		for (double testRadius=getRadius(); testRadius>=0.1; testRadius-=testRadiusInterval) { // Loop over possible radii
@@ -563,10 +563,11 @@ public class Worm extends BallisticBody {
 				// Calculate the coordinates to test and the corresponding divergence.
 				testX = getX() + testRadius*Math.cos(getDirection()+testAngle);
 				testY = getY() + testRadius*Math.sin(getDirection()+testAngle);
-				testDivergence = Math.abs(getDirection()-Math.atan2(testY-getY(), testX-getX()));
+//				testDivergence = Math.abs(getDirection()-Math.atan2(testY-getY(), testX-getX())) % (2*Math.PI);
+				testDivergence = Math.abs(testAngle);
 				// The comparison takes less time to compute, so test this first.
-				if ( scaleDivergence * ( testDivergence - optimDivergence ) +
-					 scaleRadius     * ( optimRadius    - testRadius      ) < 0 ) { //Test if a more optimal divergence/radius combination is found.
+				if ( ( scaleDivergence * ( optimDivergence - testDivergence ) +
+					   scaleRadius     * ( testRadius      - optimRadius    ) ) > 0 ) { //Test if a more optimal divergence/radius combination is found.
 					if ( getWorld().isAdjacent(testX,testY,getRadius()) ) { // Test if the location is adjacent to impassable terrain.
 						adjacentFound = true;
 						optimRadius = testRadius;
@@ -781,7 +782,7 @@ public class Worm extends BallisticBody {
 						die();
 					break;
 				}
-				if ( getWorld().isOnSolidGround( getX(), y, getRadius() ) ) {
+				if ( getWorld().isAdjacent( getX(), y, getRadius() ) ) {
 					// Can't fall anymore --> Worm has hit the ground.
 					setPosition(getX(), y, getDirection());
 					int newHitPoints = getHitPoints() - (int) Math.floor(distanceFallen * 3);
