@@ -87,7 +87,7 @@ public class PartialFacadeTest {
 		
 		assertFalse(facade.canFall(worm));
 		facade.move(worm);
-		
+
 		assertTrue(facade.canFall(worm));
 		facade.fall(worm);
 		

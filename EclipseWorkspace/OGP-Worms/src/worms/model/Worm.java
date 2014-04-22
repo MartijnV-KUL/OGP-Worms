@@ -555,25 +555,27 @@ public class Worm extends BallisticBody {
 		
 		double testRadiusInterval = Math.min(getWorld().getResolutionX(), getWorld().getResolutionY());
 		double scaleDivergence = 1;
-		double scaleRadius = 10;
+		double scaleRadius = 1000;
 		
 		boolean adjacentFound = false;
 		for (double testRadius=getRadius(); testRadius>=0.1; testRadius-=testRadiusInterval) { // Loop over possible radii
-			for ( double testAngle=-0.7875; testAngle<=0.7875; testAngle+=0.0175) { // Loop over possible angles
-				// Calculate the coordinates to test and the corresponding divergence.
-				testX = getX() + testRadius*Math.cos(getDirection()+testAngle);
-				testY = getY() + testRadius*Math.sin(getDirection()+testAngle);
-//				testDivergence = Math.abs(getDirection()-Math.atan2(testY-getY(), testX-getX())) % (2*Math.PI);
-				testDivergence = Math.abs(testAngle);
-				// The comparison takes less time to compute, so test this first.
-				if ( ( scaleDivergence * ( optimDivergence - testDivergence ) +
-					   scaleRadius     * ( testRadius      - optimRadius    ) ) > 0 ) { //Test if a more optimal divergence/radius combination is found.
-					if ( getWorld().isAdjacent(testX,testY,getRadius()) ) { // Test if the location is adjacent to impassable terrain.
-						adjacentFound = true;
-						optimRadius = testRadius;
-						optimX = testX;
-						optimY = testY;
-						optimDivergence = testDivergence;
+			for ( double testAngle=0; testAngle<=0.7875; testAngle+=0.000175) { // Loop over possible angles //TODO take these small steps, otherwise testMoveVerticalAlongTerrain fails due to numerical deviations.
+				for ( double i=-1; i<=1; i+=2 ){
+					// Calculate the coordinates to test and the corresponding divergence.
+					testX = getX() + testRadius*Math.cos(getDirection()+i*testAngle);
+					testY = getY() + testRadius*Math.sin(getDirection()+i*testAngle);
+					//				testDivergence = Math.abs(getDirection()-Math.atan2(testY-getY(), testX-getX())) % (2*Math.PI);
+					testDivergence = testAngle;
+					// The comparison takes less time to compute, so test this first.
+					if ( ( scaleDivergence * ( optimDivergence - testDivergence ) +
+							scaleRadius     * ( testRadius      - optimRadius    ) ) > 0 ) { //Test if a more optimal divergence/radius combination is found.
+						if ( getWorld().isAdjacent(testX,testY,getRadius()) ) { // Test if the location is adjacent to impassable terrain.
+							adjacentFound = true;
+							optimRadius = testRadius;
+							optimX = testX;
+							optimY = testY;
+							optimDivergence = testDivergence;
+						}
 					}
 				}
 			}
@@ -583,7 +585,7 @@ public class Worm extends BallisticBody {
 			for (double testRadius=getRadius(); testRadius>=0.1; testRadius-=testRadiusInterval) { // Loop over possible radii
 				testX = getX() + testRadius*Math.cos(getDirection());
 				testY = getY() + testRadius*Math.sin(getDirection());
-				if (getWorld().isPassable(testX, testY, getRadius())) {
+				if (getWorld().isPassable(testX, testY)) {
 					optimX = testX;
 					optimY = testY;
 					break;
@@ -771,10 +773,12 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method to make a worm fall down to impassable terrain or out of the game world.
 	 */
-	public void fall() {
+	public void fall() { // TODO documentation: post
 		if (canFall()) {
 			double y = getY();
-			for ( double distanceFallen = 0; distanceFallen<=getWorld().getHeight(); distanceFallen+=getWorld().getResolutionY()) { // perform checks per pixel moved downwards.
+//			double resolution = 0.1*getWorld().getResolutionY();
+			double resolution = 0.1*getRadius();
+			for ( double distanceFallen = 0; distanceFallen<=getWorld().getHeight(); distanceFallen+=resolution) {
 				y = getY() - distanceFallen;
 				if (!getWorld().isWithinBoundaries(getX(),y)) {
 					// Fell out of world.
@@ -782,7 +786,7 @@ public class Worm extends BallisticBody {
 						die();
 					break;
 				}
-				if ( getWorld().isAdjacent( getX(), y, getRadius() ) ) {
+				if ( !getWorld().isPassable( getX(), y, getRadius() ) ) {
 					// Can't fall anymore --> Worm has hit the ground.
 					setPosition(getX(), y, getDirection());
 					int newHitPoints = getHitPoints() - (int) Math.floor(distanceFallen * 3);
@@ -804,10 +808,14 @@ public class Worm extends BallisticBody {
 	 * 			|	return false
 	 * 			| return (!getWorld().isAdjacent( getX(), getY(), getRadius() ))
 	 */
-	public boolean canFall() {
+	public boolean canFall() {//TODO update documentation
 		if (!hasAWorld())
 			return false;
-		return ( !getWorld().isAdjacent( getX(), getY(), getRadius() ) );
+		if ( getWorld().isAdjacent( getX(), getY(), getRadius() ) )
+			return false;
+		if ( !getWorld().isPassable( getX(), getY(), getRadius() ) )
+			return false;
+		return true;
 		//return ( !getWorld().isOnSolidGround( getX(), getY(), getRadius() ) ); // better implementation for future iterations.	
 	}
 	

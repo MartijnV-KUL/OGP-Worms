@@ -290,9 +290,13 @@ public class World {
 	 * 			Throws a ModelException if the specified x- and y-coordinates are outside the boundaries of the game world.
 	 * 			| if (!isWithinBoundaries(x,y))
 	 */
-	public int[] positionToPixel(double x, double y) throws ModelException {//TODO make private again, was only public for debugging purposes
+	private int[] positionToPixel(double x, double y) throws ModelException {//TODO update documentation
 		if (!isWithinBoundaries(x,y))
 			throw new ModelException("Specified x & y not within boundaries!");
+		if (Util.fuzzyEquals(x,0))
+			x = x+((double)getResolutionX())/2;
+		if (Util.fuzzyEquals(y,0))
+			y = y+((double)getResolutionY())/2;
 		if (Util.fuzzyEquals(x,getWidth()))
 			x = x-((double)getResolutionX())/2;
 		if (Util.fuzzyEquals(y,getHeight()))
@@ -369,7 +373,7 @@ public class World {
 	 * @note	pixelXY[] is an array of integers that contains the x- and y-coordinates of the pixel.
 	 * 			pixelXY[0] is the x-coordinate, pixelXY[1] is the y-coordinate. Then the passability is checked.
 	 */
-	private boolean isPassable(double x, double y) {
+	public boolean isPassable(double x, double y) {
 		if (!isWithinBoundaries(x,y))
 			return false;
 		int[] pixelXY = positionToPixel(x,y);
@@ -396,29 +400,25 @@ public class World {
 	 * 			|	if (isPassale(x, y)
 	 * 			|		return true
 	 */
-	public boolean isPassable(double x, double y, double radius) { 
+	public boolean isPassable(double x, double y, double radius) { //TODO update documentation
 		if (!isPassable(x, y))
 			return false;
-		
-		double searchRadius = 0.1*radius;
-		
-		int pixelsX = (int) Math.ceil( searchRadius / getResolutionX() );
-		int pixelsY = (int) Math.ceil( searchRadius / getResolutionY() );
 
 		double testX = 0;
 		double testY = 0;
-		for (int i=0; i<pixelsX; i++) {
-			for (int j=0; j<pixelsY; j++) {
-				testX = i*getResolutionX();
-				testY = j*getResolutionY();
-				if (Math.sqrt(Math.pow(testX,2)+Math.pow(testY,2))<=searchRadius) {
-					if (!isPassable(x+testX,y+testY))
-						return false;
-					if (!isPassable(x-testX,y+testY))
-						return false;
-					if (!isPassable(x+testX,y-testY))
-						return false;
-					if (!isPassable(x-testX,y-testY))
+		
+		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
+		double testAngleInterval = 2*Math.PI/40;
+		
+		// Loop over the entire resolution
+		for (double testRadius=radius; testRadius>=0; testRadius-=testRadiusInterval) {
+			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
+				// Calculate the x- and y-offsets at the current angle
+				testX = x + (testRadius) * Math.cos(testAngle);
+				testY = y + (testRadius) * Math.sin(testAngle);
+				
+				if (isWithinBoundaries(testX, testY)) {
+					if (!isPassable(testX,testY))
 						return false;
 				}
 			}
@@ -451,57 +451,27 @@ public class World {
 	 * 			Objects can now get into the nooks and crannies of a map,
 	 * 			something that is almost impossible with the suggested implementation...
 	 */
-	public boolean isAdjacent(double x, double y, double radius) {//TODO update formal documentation
-		if (!isPassable(x,y))
-			return false;
+	public boolean isAdjacent(double x, double y, double radius) {//TODO update documentation
+		return ( isPassable(x,y,radius) && !isPassable(x, y, 1.1*radius) );
 
-		double searchRadius = 0.1*radius;//TODO is this correct? this makes partialFacadeTest not work, so... but is asys like this in the assignment...
-		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
-		double testAngleInterval = 2*Math.PI/40;
-		
-		// Loop over the entire resolution
-		for (double testRadius=searchRadius; testRadius>=0; testRadius-=testRadiusInterval) {
-			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
-				// Calculate the x- and y-offsets at the current angle
-				double deltaX = (testRadius) * Math.cos(testAngle);
-				double deltaY = (testRadius) * Math.sin(testAngle);
-				
-				if (isWithinBoundaries(x+deltaX, y+deltaY)) {
-					if (!isPassable(x+deltaX,y+deltaY))
-						return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Checks if a worm is located on solid ground.
-	 * 
-	 * @param 	x
-	 * 			The x-coordinate.
-	 * @param 	y
-	 * 			The y-coordinate.
-	 * @param 	radius
-	 * 			The radius.
-	 * 
-	 * @return	Returns true if the position just below the search area is still
-	 * 			within the boundaries of the game world and is impassable.
-	 * 			| double searchRadius = 0.1*radius;
-	 * 			| if (!isWithinBoundaries(x, y - (0.1 * radius) - getResolutionY()))
-	 * 			| 	return false
-	 * 			| if (isPassable(x, y - (0.1 * radius) - getResolutionY()))
-	 * 			| 	return false
-	 * 			| else
-	 * 			| 	return true
-	 */
-	public boolean isOnSolidGround(double x, double y, double radius) {
-		double searchRadius = 0.1*radius;
-		if (!isWithinBoundaries(x, y-searchRadius-getResolutionY()))
-			return false;
-		if (isPassable(x,y-searchRadius-getResolutionY()))
-			return false;
-		return true;
+////		double searchRadius = 0.1*radius;//TODO is this correct? this makes partialFacadeTest not work, so... but is asys like this in the assignment...
+//		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
+//		double testAngleInterval = 2*Math.PI/40;
+//		
+//		// Loop over the entire resolution
+//		for (double testRadius=1.1*radius; testRadius>=radius; testRadius-=testRadiusInterval) {
+//			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
+//				// Calculate the x- and y-offsets at the current angle
+//				double deltaX = (testRadius) * Math.cos(testAngle);
+//				double deltaY = (testRadius) * Math.sin(testAngle);
+//				
+//				if (isWithinBoundaries(x+deltaX, y+deltaY)) {
+//					if (!isPassable(x+deltaX,y+deltaY))
+//						return true;
+//				}
+//			}
+//		}
+//		return false;
 	}
 	
 	/**

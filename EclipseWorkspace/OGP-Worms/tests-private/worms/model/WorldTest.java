@@ -174,12 +174,6 @@ public class WorldTest {
 		assertFalse(world.isAdjacent(1, 3, 1));
 	}
 	
-	@Test // fails in test, fine in game.					// X X X X
-	public void test_isOnSolidGround_true() {				// . . . .
-		worm.setPosition(2, 2, Math.PI / 4);				// . . w .
-		assertTrue(world.isOnSolidGround(2, 2, 1));			// X X X X
-	}
-	
 	@Test
 	public void test_isOverLapping_true() {
 		assertTrue(World.isOverlapping(1, 1, 1, 1, 2, 1));
