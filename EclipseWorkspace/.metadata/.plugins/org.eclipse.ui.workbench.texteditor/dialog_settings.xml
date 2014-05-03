@@ -13,11 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="pass" key="selection"/>
+		<item value="175" key="selection"/>
 		<list key="findhistory">
-			<item value="pass"/>
-			<item value="try"/>
-			<item value="map"/>
+			<item value="175"/>
+			<item value=" setPo"/>
+			<item value="setPo"/>
+			<item value="set"/>
+			<item value="Syst"/>
+			<item value="isPass"/>
+			<item value="canFall"/>
+			<item value="HasEnded"/>
 		</list>
 		<list key="replacehistory">
 		</list>

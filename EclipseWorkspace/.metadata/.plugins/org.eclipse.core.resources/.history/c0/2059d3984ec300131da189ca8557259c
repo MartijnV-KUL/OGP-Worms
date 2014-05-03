@@ -1,9 +1,0 @@
-package worms.model;
-
-public class Bazooka extends Weapon {
-	
-	public Bazooka() {
-		
-	}
-
-}

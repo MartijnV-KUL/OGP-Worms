@@ -1,0 +1,5 @@
+package worms.model;
+
+public class Program {
+System.out.println("This class has no implementation yet!");
+}

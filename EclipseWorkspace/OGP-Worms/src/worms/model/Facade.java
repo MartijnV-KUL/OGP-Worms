@@ -3,6 +3,9 @@ package worms.model;
 import java.util.Collection;
 import java.util.Random;
 
+import worms.gui.game.IActionHandler;
+import worms.model.programs.ParseOutcome;
+
 public class Facade implements IFacade {
 
 	public Facade() {}
@@ -88,11 +91,6 @@ public class Facade implements IFacade {
 	}
 
 	@Override
-	public void addNewWorm(World world) {
-		world.addNewWorm();
-	}
-
-	@Override
 	public boolean canFall(Worm worm) {
 		return worm.canFall();
 	}
@@ -111,12 +109,6 @@ public class Facade implements IFacade {
 	public World createWorld(double width, double height,
 			boolean[][] passableMap, Random random) {
 		return new World(width, height, passableMap, random);
-	}
-
-	@Override
-	public Worm createWorm(World world, double x, double y, double direction,
-			double radius, String name) {
-		return world.addNewWorm(x, y, direction, radius, name);
 	}
 
 	@Override
@@ -241,7 +233,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isImpassable(World world, double x, double y, double radius) {
-		return !world.isPassable(x, y, radius);
+		return !world.isPassable(x, y, 0, radius);
 	}
 
 	@Override
@@ -277,5 +269,34 @@ public class Facade implements IFacade {
 	@Override
 	public void startNextTurn(World world) {
 		world.nextTurn();
+	}
+
+	@Override
+	public void addNewWorm(World world, Program program) {
+		//TODO dummy implementation; add programs
+		world.addNewWorm();
+	}
+
+	@Override
+	public Worm createWorm(World world, double x, double y, double direction,
+			double radius, String name, Program program) {
+		//TODO dummy implementation; add programs
+		return world.addNewWorm(x, y, direction, radius, name);
+	}
+
+	@Override
+	public ParseOutcome<?> parseProgram(String programText,
+			IActionHandler handler) {
+		return Program.parseProgram(programText,handler);;
+	}
+
+	@Override
+	public boolean hasProgram(Worm worm) {
+		return worm.hasProgram();
+	}
+
+	@Override
+	public boolean isWellFormed(Program program) {
+		return Program.isWellFormed(program);
 	}
 }

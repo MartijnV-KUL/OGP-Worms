@@ -298,19 +298,15 @@ public abstract class BallisticBody {
 	 * 
 	 * @return	The time it takes to perform the ballistic trajectory.
 	 */
-	public double ballisticTrajectoryTime(World world, double radius, double force, double duration, double mass, double timeStep) {
+	public double ballisticTrajectoryTime(World world, double radius, double force, double duration, double mass, double timeStep) { //TODO update doc
 		double time = 0;
 		double[] pos = ballisticTrajectory(force, duration, mass, 0);
-		while ( true ) {
-			
-			time += timeStep;
+		for (int i=1; i<Integer.MAX_VALUE; i++) {
+			time = i*timeStep;
 			pos = ballisticTrajectory(force, duration, mass, time);
 			
-			if ( (Math.abs(pos[0]-getX())>2*world.getResolutionX()) || 
-				 (Math.abs(pos[1]-getY())>2*world.getResolutionY()) ) {
-				if (ballisticTrajectoryHasEnded(pos[0],pos[1]))
-					break;
-			}
+			if (ballisticTrajectoryHasEnded(pos[0],pos[1]))
+				break;
 		}
 		return (time-timeStep);
 	}
@@ -332,10 +328,10 @@ public abstract class BallisticBody {
 	 * 			| else
 	 * 			| 	return false
 	 */
-	public boolean ballisticTrajectoryHasEnded(double x, double y) {
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {//TODO update doc
 		if (!getWorld().isWithinBoundaries(x, y))
 			return true;
-		if (getWorld().isAdjacent( x, y, getRadius() ))
+		if (!getWorld().isPassable( x, y, 0, getRadius() ))
 			return true;
 		return false;
 	}
