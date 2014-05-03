@@ -416,41 +416,23 @@ public class World {
 		if (!isPassable(x, y))
 			return false;
 		
-//		double testX = 0;
-//		double testY = 0;
-//		
-////		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
-//		double testRadiusInterval = 0.1*stopRadius;
-//		double testAngleInterval = 2*Math.PI/40;
-//		
-//		// Loop over the entire resolution
-//		for (double testRadius=stopRadius; testRadius>=startRadius; testRadius-=testRadiusInterval) {
-//			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
-//				// Calculate the x- and y-offsets at the current angle
-//				testX = x + (testRadius) * Math.cos(testAngle);
-//				testY = y + (testRadius) * Math.sin(testAngle);
-//				
-//				if (isWithinBoundaries(testX, testY)) {
-//					if (!isPassable(testX,testY))
-//						return false;
-//				}
-//			}
-//		}
 		double testX;
 		double testY;
 		double testRadius;
 		double resX = 0.1*(stopRadius-startRadius);
 		double resY = 0.1*(stopRadius-startRadius);
-		for (int i=0; i*resX<=stopRadius; i++) {
-			for (int j=0; j*resY<=stopRadius; j++) {
-				testX = i*resX;
-				testY = j*resY;
+		double border = 0.001*Math.min(resX, resY);
+		for (     int i=0; Util.fuzzyLessThanOrEqualTo(i*resX,stopRadius-border); i++ ) {
+			for ( int j=0; Util.fuzzyLessThanOrEqualTo(j*resY,stopRadius-border); j++ ) {
+				//Loop from big to small. There is a bigger chance that impassable terrain is further away from the worm. This ends the loop sooner.
+				testX = stopRadius-border-i*resX;
+				testY = stopRadius-border-j*resY;
 				testRadius = Math.sqrt(Math.pow(testX,2)+Math.pow(testY,2));
 				if (testRadius<startRadius) {
-					// do nothing, skip to next y-position
+					break; //gone too far --> stop inner loop
 				}
 				else if (testRadius>stopRadius) {
-					break; //gone too far --> stop inner loop
+					// do nothing, skip to next y-position
 				}
 				else {
 					if (isWithinBoundaries( testX+x, testY+y) && !isPassable( testX+x, testY+y)) { return false; }
