@@ -287,7 +287,7 @@ public class Facade implements IFacade {
 	@Override
 	public ParseOutcome<?> parseProgram(String programText,
 			IActionHandler handler) {
-		return Program.parseProgram(programText,handler);;
+		return Program.parseProgram(programText, handler);
 	}
 
 	@Override

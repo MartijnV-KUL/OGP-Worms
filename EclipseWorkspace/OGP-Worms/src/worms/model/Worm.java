@@ -1241,6 +1241,43 @@ public class Worm extends BallisticBody {
 	
 	// }}
 	
+// {{ Program Association
+	
+	private Program program;
+	
+	@Basic
+	public Program getProgram() {
+		return program;
+	}
+	
+	@Raw
+	void setProgram(Program program) {
+		if (!canHaveAsProgram(program))
+			throw new ModelException("Invalid program specified.");
+		if (hasProgram())
+			throw new ModelException("Already has a program");
+		this.program = program;
+	}
+	
+	private static boolean canHaveAsProgram(Program program) {
+		if (program == null)
+			return false;
+		if (program.isTerminated())
+			return false;
+		return true;
+	}
+	
+	protected boolean hasProgram() {
+		return (!(program == null));
+	}
+	
+	@Raw
+	void removeProgram() {
+		program = null;
+	}
+	
+	// }}
+	
 // {{ Terminated
 	
 	private boolean terminated;
