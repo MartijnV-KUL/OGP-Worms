@@ -1,0 +1,15 @@
+package worms.model;
+
+public class StatementSequence extends Statement {
+	
+	public StatementSequence(List<Statement> statements) {
+		
+	})
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

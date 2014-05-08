@@ -573,14 +573,8 @@ public class World {
 		return newFood;
 	}
 	
-	/**
-	 * Method to add a new worm at a random location and assign it to a random team.
-	 * 
-	 * @effect 	The new worm is added to the world in a new random location that is adjacent to impassable terrain
-	 * 			and is assigned a random team if there are teams in the world.
-	 *			| addWorm(newWorm)
-	 */
-	public void addNewWorm() {
+	// TODO new function; add documentation (can be re-used)
+	public Worm createRandomWorm() {
 		double newX = 0;
 		double newY = 0;
 		Worm newWorm;
@@ -592,9 +586,21 @@ public class World {
 		} while( !isAdjacent(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
 		//} while( !isPassable(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) || !isOnSolidGround(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
 		// more sensible implementation for future iterations.
-		addWorm(newWorm);
 		if (getTeams().size()>0)
 			getTeams().get(getRandomSeed().nextInt(getTeams().size())).addWorm(newWorm);
+		return newWorm;
+	}
+	
+	/**
+	 * Method to add a new worm at a random location and assign it to a random team.
+	 * 
+	 * @effect 	The new worm is added to the world in a new random location that is adjacent to impassable terrain
+	 * 			and is assigned a random team if there are teams in the world.
+	 *			| addWorm(newWorm)
+	 */
+	public void addNewWorm() {//TODO update documentation
+		Worm newWorm = createRandomWorm();
+		addWorm(newWorm);
 	}
 	
 	/**
@@ -618,6 +624,23 @@ public class World {
 	public Worm addNewWorm(double x, double y, double direction, double radius, String name) {
 		Worm newWorm = new Worm(x,y,direction,radius,name);
 		addWorm(newWorm);
+		return newWorm;
+	 }
+	
+	//TODO new function add documentation
+	public void addNewWorm(Program program) {
+		Worm newWorm = createRandomWorm();
+		addWorm(newWorm);
+		if (program!=null)
+			newWorm.setProgram(program);
+	}
+
+	//TODO new function add documentation
+	public Worm addNewWorm(double x, double y, double direction, double radius, String name, Program program) {
+		Worm newWorm = new Worm(x,y,direction,radius,name);
+		addWorm(newWorm);
+		if (program!=null)
+			newWorm.setProgram(program);
 		return newWorm;
 	 }
 	

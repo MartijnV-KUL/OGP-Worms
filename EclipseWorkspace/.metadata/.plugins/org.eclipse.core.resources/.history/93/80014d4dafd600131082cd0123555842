@@ -1,0 +1,5 @@
+package worms.model;
+
+public class ExpressionVariable extends Expression {
+
+}

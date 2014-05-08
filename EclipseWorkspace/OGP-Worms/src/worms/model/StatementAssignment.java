@@ -1,19 +1,23 @@
 package worms.model;
 
-import java.util.ArrayList;
-
 public class StatementAssignment extends Statement {
-
-	public StatementAssignment(String variable, Expression e) {
-		super(null, (new ArrayList<Expression>()).add(e));
-		
-		// TODO Auto-generated constructor stub
+	
+	private String variable;
+	
+	public StatementAssignment(int line, int column, String variable, Expression e) {
+		super(line, column, new Statement[0], new Expression[] {e});
+		this.variable = variable;
 	}
 
 	@Override
 	public void execute() {
-		// TODO Auto-generated method stub
-		
+		preExecute();
+		getProgram().assignVariable(variable, getExpressions().get(0).evaluate());
+	}
+
+	@Override
+	public boolean containsActionStatement() {
+		return false;
 	}
 
 }

@@ -3,13 +3,40 @@ package worms.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
-public abstract class Expression {
+public class Expression {
 	
+	private final int line;
+	private final int column;
 	private final Expression.Types type;
 	
-	public Expression(Expression.Types type) {
+	public Expression(int line, int column, Expression.Types type) {
+		this.line = line;
+		this.column = column;
 		this.type = type;
 	}
+	
+	public int getLine() {
+		return line;
+	}
+	public int getColumn() {
+		return column;
+	}
+	
+	public Type<?> evaluate() {
+		if (getType()==Expression.Types.TRUE)
+			return new Type<Boolean>(true);
+		if (getType()==Expression.Types.FALSE)
+			return new Type<Boolean>(false);
+		if (getType()==Expression.Types.NULL)
+			return new Type<Entity>(null);
+		if (getType()==Expression.Types.SELF)
+			return new Type<Entity>(new Entity(getStatement().getProgram().getWorm()));
+		
+		getStatement().getProgram().typeErrorOccurred();
+		return null;
+	}
+	
+	
 	
 	public Types getType() {
 		return type;
@@ -44,6 +71,8 @@ public abstract class Expression {
 		GETDIR,
 		GETAP,
 		GETMAXAP,
+		GETHP,
+		GETMAXHP,
 		SAMETEAM,
 		SEARCHOBJ,
 		ISWORM,

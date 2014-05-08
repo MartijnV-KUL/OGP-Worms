@@ -1,0 +1,15 @@
+package worms.model;
+
+public class StatementWhile extends Statement {
+	
+	public StatementWhile(Expression e, Statement s) {
+		super(new Statement[] {s}, new Ecpression[] {e})
+	}
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

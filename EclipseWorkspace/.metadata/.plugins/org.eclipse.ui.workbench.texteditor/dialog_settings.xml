@@ -3,29 +3,36 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="257" key="DIALOG_WIDTH"/>
 		<item value="242" key="DIALOG_Y_ORIGIN"/>
-		<item value="903" key="DIALOG_X_ORIGIN"/>
 		<item value="381" key="DIALOG_HEIGHT"/>
+		<item value="903" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="Expression.Types." key="selection"/>
+		<item value="new StatementAction(line,column," key="selection"/>
 		<list key="findhistory">
-			<item value="Types."/>
-			<item value="isW"/>
-			<item value="hasEnded"/>
-			<item value="ball"/>
-			<item value="175"/>
-			<item value=" setPo"/>
-			<item value="setPo"/>
-			<item value="set"/>
+			<item value="new StatementAction("/>
+			<item value="new ExpressionSingular("/>
+			<item value="new ExpressionBinary("/>
+			<item value="new Expression("/>
+			<item value=".ju"/>
+			<item value="(boolean)e2.evaluate()"/>
+			<item value="(boolean)e1.evaluate()"/>
+			<item value="t2"/>
 		</list>
 		<list key="replacehistory">
-			<item value="Expression.Types."/>
+			<item value="new StatementAction(line,column,"/>
+			<item value="new ExpressionSingular(line,column,"/>
+			<item value="new ExpressionBinary(line,column,"/>
+			<item value="new Expression(line,column,"/>
+			<item value="new Expression("/>
+			<item value="(boolean)((Type&lt;Boolean&gt;)e2.evaluate())"/>
+			<item value="(boolean)((Type&lt;Boolean&gt;)e1.evaluate())"/>
+			<item value="e2"/>
 		</list>
 	</section>
 </section>

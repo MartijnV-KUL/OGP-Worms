@@ -6,19 +6,52 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
 public abstract class Statement {
+
+	private final int line;
+	private final int column;
 	
-	public Statement(ArrayList<Statement> statements, ArrayList<Expression> expressions) {
-		for ( Statement statement : statements ) {
-			this.statements.add(statement);
+	public Statement(int line, int column, Statement[] statements, Expression[] expressions) {
+		this.line = line;
+		this.column = column;
+		
+		for ( int i=0; i<statements.length; i++ ) {
+			this.addStatement(statements[i]);
 		}
-		for ( Expression expression : expressions ) {
-			this.expressions.add(expression);
+		for ( int i=0; i<expressions.length; i++ ) {
+			this.addExpression(expressions[i]);
 		}
+	}
+
+	
+	public int getLine() {
+		return line;
+	}
+	public int getColumn() {
+		return column;
 	}
 	
 	public abstract void execute();
+	
+	public void preExecute() {
+		Program program = getRootProgram();
+		program.setCurrentLine(getLine());
+		program.setCurrentColumn(getColumn());
+		program.incNbStatementsExecuted();
+	}
+	
+	public Program getRootProgram() {
+		Statement statement = this;
+		while ( statement.hasAParentStatement() ) {
+			statement = statement.getParentStatement();
+		}
+		return statement.getProgram();
+	}
 
-	public abstract boolean isWellFormed();
+	public boolean isWellFormed() {
+		return true; //NOTE dummy implementation, is overridden by the for each statement 
+	}
+	
+	public abstract boolean containsActionStatement();
 	
 // {{ Program Association
 
@@ -145,7 +178,7 @@ public abstract class Statement {
 	private final ArrayList<Expression> expressions = new ArrayList<Expression>();
 	
 	@Basic
-	public ArrayList<Expression> getExpressionss() {
+	public ArrayList<Expression> getExpressions() {
 		return expressions;
 	}
 	

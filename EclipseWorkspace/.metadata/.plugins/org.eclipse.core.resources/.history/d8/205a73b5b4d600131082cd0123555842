@@ -1,0 +1,16 @@
+package worms.model;
+
+public class ExpressionEntity extends Expression {
+	
+	private final double d;
+	
+	public ExpressionEntity(int line, int column, double d) {
+		super(line,column,Expression.Types.DOUBLE);
+		this.d = d;
+	}
+	
+	public Type<?> evaluate() {
+		return new Type<Double>(d);
+	}
+
+}

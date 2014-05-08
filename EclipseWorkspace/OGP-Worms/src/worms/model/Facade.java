@@ -273,30 +273,31 @@ public class Facade implements IFacade {
 
 	@Override
 	public void addNewWorm(World world, Program program) {
-		//TODO dummy implementation; add programs
-		world.addNewWorm();
+		world.addNewWorm(program);
 	}
 
 	@Override
 	public Worm createWorm(World world, double x, double y, double direction,
 			double radius, String name, Program program) {
-		//TODO dummy implementation; add programs
-		return world.addNewWorm(x, y, direction, radius, name);
+		return world.addNewWorm(x, y, direction, radius, name, program);
 	}
 
 	@Override
 	public ParseOutcome<?> parseProgram(String programText,
 			IActionHandler handler) {
-		return Program.parseProgram(programText, handler);
+		Program program = new Program();
+		program.parseProgram(programText, handler);
+		
+		return null;
 	}
 
 	@Override
 	public boolean hasProgram(Worm worm) {
-		return worm.hasProgram();
+		return worm.hasAProgram();
 	}
 
 	@Override
 	public boolean isWellFormed(Program program) {
-		return Program.isWellFormed(program);
+		return program.isWellFormed();
 	}
 }

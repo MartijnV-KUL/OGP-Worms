@@ -4,297 +4,255 @@ import java.util.List;
 
 import worms.model.programs.*;
 
-public class ProgramFactoryImpl<E,S,T> implements ProgramFactory<E, S, T> {
+public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement, Type<?>> {
 	
 	@Override
-	public E createDoubleLiteral(int line, int column, double d) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createDoubleLiteral(int line, int column, double d) {
+		return new ExpressionDouble(line,column,d);
 	}
 
 	@Override
-	public E createBooleanLiteral(int line, int column, boolean b) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createBooleanLiteral(int line, int column, boolean b) {
+		if (b)
+			return new Expression(line,column,Expression.Types.TRUE);
+		else
+			return new Expression(line,column,Expression.Types.FALSE);
 	}
 
 	@Override
-	public E createAnd(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createAnd(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.DISJUNCTION, e1, e2);
 	}
 
 	@Override
-	public E createOr(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createOr(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.CONJUNCTION, e1, e2);
 	}
 
 	@Override
-	public E createNot(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createNot(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.NEGATION, e);
 	}
 
 	@Override
-	public E createNull(int line, int column) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createNull(int line, int column) {
+		return new Expression(line,column,Expression.Types.NULL);
 	}
 
 	@Override
-	public E createSelf(int line, int column) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createSelf(int line, int column) {
+		return new Expression(line,column,Expression.Types.SELF);
 	}
 
 	@Override
-	public E createGetX(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetX(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETX, e);
 	}
 
 	@Override
-	public E createGetY(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetY(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETY, e);
 	}
 
 	@Override
-	public E createGetRadius(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetRadius(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETRADIUS, e);
 	}
 
 	@Override
-	public E createGetDir(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetDir(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETDIR, e);
 	}
 
 	@Override
-	public E createGetAP(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetAP(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETAP, e);
 	}
 
 	@Override
-	public E createGetMaxAP(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetMaxAP(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETMAXAP, e);
 	}
 
 	@Override
-	public E createGetHP(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetHP(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETHP, e);
 	}
 
 	@Override
-	public E createGetMaxHP(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGetMaxHP(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.GETMAXHP, e);
 	}
 
 	@Override
-	public E createSameTeam(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createSameTeam(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.SAMETEAM, e);
 	}
 
 	@Override
-	public E createSearchObj(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createSearchObj(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.SEARCHOBJ, e);
 	}
 
 	@Override
-	public E createIsWorm(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createIsWorm(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.ISWORM, e);
 	}
 
 	@Override
-	public E createIsFood(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createIsFood(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.ISFOOD, e);
 	}
 
 	@Override
-	public E createVariableAccess(int line, int column, String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createVariableAccess(int line, int column, String name) {
+		return new ExpressionVariable(line,column,name);
 	}
 
 	@Override
-	public E createLessThan(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createLessThan(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.LESSTHAN, e1, e2);
 	}
 
 	@Override
-	public E createGreaterThan(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGreaterThan(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.GREATERTHAN, e1, e2);
 	}
 
 	@Override
-	public E createLessThanOrEqualTo(int line, int column, Object e1,
-			Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createLessThanOrEqualTo(int line, int column, Expression e1,
+			Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.LESSTHANOREQUALTO, e1, e2);
 	}
 
 	@Override
-	public E createGreaterThanOrEqualTo(int line, int column, Object e1,
-			Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createGreaterThanOrEqualTo(int line, int column, Expression e1,
+			Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.GREATERTHANOREQUALTO, e1, e2);
 	}
 
 	@Override
-	public E createEquality(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createEquality(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.EQUALTO, e1, e2);
 	}
 
 	@Override
-	public E createInequality(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createInequality(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.DIFFERENTFROM, e1, e2);
 	}
 
 	@Override
-	public E createAdd(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createAdd(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.ADDITION, e1, e2);
 	}
 
 	@Override
-	public E createSubtraction(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createSubtraction(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.SUBTRACTION, e1, e2);
 	}
 
 	@Override
-	public E createMul(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createMul(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.MULTIPLICATION, e1, e2);
 	}
 
 	@Override
-	public E createDivision(int line, int column, Object e1, Object e2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createDivision(int line, int column, Expression e1, Expression e2) {
+		return new ExpressionBinary(line,column,Expression.Types.DIVISION, e1, e2);
 	}
 
 	@Override
-	public E createSqrt(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createSqrt(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.SQUAREROOT, e);
 	}
 
 	@Override
-	public E createSin(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createSin(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.SINE, e);
 	}
 
 	@Override
-	public E createCos(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createCos(int line, int column, Expression e) {
+		return new ExpressionSingular(line,column,Expression.Types.COSINE, e);
 	}
 
 	@Override
-	public S createTurn(int line, int column, Object angle) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createTurn(int line, int column, Expression angle) {
+		return new StatementAction(line,column,StatementAction.ActionTypes.TURN, angle);
 	}
 
 	@Override
-	public S createMove(int line, int column) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createMove(int line, int column) {
+		return new StatementAction(line,column,StatementAction.ActionTypes.MOVE);
 	}
 
 	@Override
-	public S createJump(int line, int column) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createJump(int line, int column) {
+		return new StatementAction(line,column,StatementAction.ActionTypes.JUMP);
 	}
 
 	@Override
-	public S createToggleWeap(int line, int column) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createToggleWeap(int line, int column) {
+		return new StatementAction(line,column,StatementAction.ActionTypes.TOGGLEWEAP);
 	}
 
 	@Override
-	public S createFire(int line, int column, Object yield) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createFire(int line, int column, Expression yield) {
+		return new StatementAction(line,column,StatementAction.ActionTypes.FIRE, yield);
 	}
 
 	@Override
-	public S createSkip(int line, int column) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createSkip(int line, int column) {
+		return new StatementAction(line,column,StatementAction.ActionTypes.SKIP);
 	}
 
 	@Override
-	public S createAssignment(int line, int column, String variableName,
-			Object rhs) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createAssignment(int line, int column, String variableName,
+			Expression rhs) {
+		return new StatementAssignment(line,column,variableName, rhs);
 	}
 
 	@Override
-	public S createIf(int line, int column, Object condition, Object then,
-			Object otherwise) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createIf(int line, int column, Expression condition, Statement then,
+			Statement otherwise) {
+		return new StatementIfThenElse(line,column,condition, then, otherwise);
 	}
 
 	@Override
-	public S createWhile(int line, int column, Object condition,
-			Object body) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createWhile(int line, int column, Expression condition,
+			Statement body) {
+		return new StatementWhile(line,column,condition, body);
 	}
 
 	@Override
-	public S createForeach(int line, int column, ForeachType type,
-			String variableName, Object body) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createForeach(int line, int column, ForeachType type,
+			String variableName, Statement body) {
+		return new StatementForEach(line,column,type, variableName, body);
 	}
 
 	@Override
-	public S createSequence(int line, int column, List<S> statements) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createSequence(int line, int column, List<Statement> statements) {
+		return new StatementSequence(line,column,statements);
 	}
 
 	@Override
-	public S createPrint(int line, int column, Object e) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createPrint(int line, int column, Expression e) {
+		return new StatementPrint(line,column,e);
 	}
 
 	@Override
-	public T createDoubleType() {
-		return (T) new Type<Double>();
+	public Type<?> createDoubleType() {
+		return new Type<Double>();
 	}
 
 	@Override
-	public T createBooleanType() {
-		return (T) new Type<Boolean>();
+	public Type<?> createBooleanType() {
+		return new Type<Boolean>();
 	}
 
 	@Override
-	public T createEntityType() {
-		return (T) new Type<Entity>();
+	public Type<?> createEntityType() {
+		return new Type<Entity>();
 	}
 
 }

@@ -1,0 +1,12 @@
+package worms.model;
+
+public class ExpressionDouble extends Expression {
+	
+	private final double d;
+	
+	public ExpressionDouble(double d) {
+		super(Expression.Types.DOUBLE);
+		this.d = d;
+	}
+
+}

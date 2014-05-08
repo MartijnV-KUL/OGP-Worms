@@ -1,0 +1,16 @@
+package worms.model;
+
+public class ExpressionVariable extends Expression {
+	
+	private String variable;
+	
+	public ExpressionVariable( String variable ) {
+		super(Expression.Types.VARIABLE);
+		this.variable = variable;
+	}
+	
+	public Type<?> evaluate() {
+		return new Type<?>(getStatement().getProgram().getVariable(variable).evaluate());
+	}
+
+}

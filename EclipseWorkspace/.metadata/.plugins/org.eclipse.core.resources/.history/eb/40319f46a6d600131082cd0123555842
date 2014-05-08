@@ -1,0 +1,15 @@
+package worms.model;
+
+public class StatementIfThenElse extends Statement {
+	
+	public StatementIfThenElse(Expression e, Statement s1, Statement s2) {
+		super(e,{s1,s2})
+	}
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

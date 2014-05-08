@@ -1,0 +1,17 @@
+package worms.model;
+
+import java.util.List;
+
+public class StatementSequence extends Statement {
+	
+	public StatementSequence(List<Statement> statements) {
+		super(statements.toArray(), new Expression[0[]);
+	}
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

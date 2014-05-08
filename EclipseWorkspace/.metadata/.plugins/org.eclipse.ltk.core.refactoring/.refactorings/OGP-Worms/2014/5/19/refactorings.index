@@ -23,3 +23,11 @@
 1399503620227	Rename field 'e2'
 1399506277939	Rename field 't1'
 1399508205838	Rename type 'While'
+1399549156502	Rename method 'isWellFormed'
+1399549173121	Rename method 'containsAstionStatement'
+1399555698355	Copy compilation unit
+1399555737810	Delete element
+1399555753280	Rename type 'ExpressionDouble'
+1399556076472	Rename type 'ExpressionType'
+1399557529551	Rename method 'execute'
+1399557572178	Rename method 'preExecute'

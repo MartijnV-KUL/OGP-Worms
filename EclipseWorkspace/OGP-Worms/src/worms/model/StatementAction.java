@@ -1,6 +1,6 @@
 package worms.model;
 
-import java.util.ArrayList;
+import worms.gui.GUIConstants;
 
 public class StatementAction extends Statement {
 	
@@ -10,9 +10,14 @@ public class StatementAction extends Statement {
 		return actionType;
 	}
 
-	public StatementAction() {
-		super(statements, expressions);
-		this.actionType = null;
+	public StatementAction(int line, int column, StatementAction.ActionTypes type) {
+		super(line, column, new Statement[0], new Expression[0]);
+		this.actionType = type;
+	}
+	
+	public StatementAction( int line, int column, StatementAction.ActionTypes type, Expression e ) {
+		super(line, column, new Statement[0], new Expression[] {e});
+		this.actionType = type;
 	}
 	
 	public static enum ActionTypes {
@@ -26,31 +31,59 @@ public class StatementAction extends Statement {
 
 	@Override
 	public void execute() {
-		Statement statement = this;
-		while ( statement.hasAParentStatement() ) {
-			statement = statement.getParentStatement();
-		}
-		Program program = statement.getProgram();
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
+		
+		preExecute();
+		Program program = getRootProgram();
 		Worm worm = program.getWorm();
 		
-		if ( getActionType() == StatementAction.ActionTypes.TURN )
-			worm.turn((double)expressions.get(0).evaluate().getValue());
-		if ( getActionType() == StatementAction.ActionTypes.MOVE )
-			worm.move();
-		if ( getActionType() == StatementAction.ActionTypes.JUMP )
-			worm.jump();
-		if ( getActionType() == StatementAction.ActionTypes.TOGGLEWEAP )
-			worm.equipNextWeapon();
-		if ( getActionType() == StatementAction.ActionTypes.FIRE )
-			worm.shoot();
-		if ( getActionType() == StatementAction.ActionTypes.SKIP )
+		if ( getActionType() == StatementAction.ActionTypes.TURN ) {
+			if ( !(getExpressions().get(0).evaluate().getValue() instanceof Number) )
+				program.typeErrorOccurred();
+			if ( !worm.canTurn((double)((Type<Double>)getExpressions().get(0).evaluate()).getValue()) )
+				program.stopProgram();
+			getRootProgram().getHandler().turn(worm, (double)((Type<Double>)getExpressions().get(0).evaluate()).getValue());
+			return;
+		}
+		if ( getActionType() == StatementAction.ActionTypes.MOVE ) {
+			if ( !worm.canMove() )
+				program.stopProgram();
+			getRootProgram().getHandler().move(worm);
+			return;
+		}
+		if ( getActionType() == StatementAction.ActionTypes.JUMP ) {
+			if ( !worm.canJump() )
+				program.stopProgram();
+			getRootProgram().getHandler().jump(worm);
+			return;
+		}
+		if ( getActionType() == StatementAction.ActionTypes.TOGGLEWEAP ) {
+			if ( !worm.canMove() )
+				program.stopProgram();
+			getRootProgram().getHandler().toggleWeapon(worm);
+			return;
+		}
+		if ( getActionType() == StatementAction.ActionTypes.FIRE ) {
+			if ( !worm.canShoot() )
+				program.stopProgram();
+			if ( !(getExpressions().get(0).evaluate().getValue() instanceof Number) )
+				program.typeErrorOccurred();
+			getRootProgram().getHandler().fire(worm, (int)Math.floor(((Type<Double>)getExpressions().get(0).evaluate()).getValue()));
+			return;
+		}
+		if ( getActionType() == StatementAction.ActionTypes.SKIP ) {
 			// do nothing
+			return;
+		}
 		program.typeErrorOccurred();
 
 	}
 
 	@Override
-	public boolean isWellFormed() {
+	public boolean containsActionStatement() {
 		return true;
 	}
 
