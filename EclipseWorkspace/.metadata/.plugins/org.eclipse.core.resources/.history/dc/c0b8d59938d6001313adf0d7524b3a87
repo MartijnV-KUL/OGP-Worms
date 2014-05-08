@@ -1,0 +1,13 @@
+package worms.model;
+
+public class StatementAction extends Statement {
+	
+	public StatementAction() {
+		
+	}
+
+	@Override
+	public void execute() {
+		
+	}
+}

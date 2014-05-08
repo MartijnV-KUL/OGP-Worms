@@ -1,0 +1,52 @@
+package worms.model;
+
+import java.util.ArrayList;
+
+public class StatementAction extends Statement {
+	
+	private final StatementAction.ActionTypes actionType;
+	
+	public StatementAction.ActionTypes getActionType() {
+		return actionType;
+	}
+
+	public StatementAction() {
+		super(statements, expressions);
+		this.actionType = null;
+	}
+	
+	public static enum ActionTypes {
+		TURN,
+		MOVE,
+		JUMP,
+		TOGGLEWEAP,
+		FIRE,
+		SKIP
+	}
+
+	@Override
+	public void execute() {
+		Statement statement = this;
+		while ( statement.hasAParentStatement() ) {
+			statement = statement.getParentStatement();
+		}
+		Program program = statement.getProgram();
+		Worm worm = program.getWorm();
+		
+		if ( getActionType() == StatementAction.ActionTypes.TURN )
+			worm.turn((double)expressions.get(0).evaluate().getValue());
+		if ( getActionType() == StatementAction.ActionTypes.MOVE )
+			worm.move();
+		if ( getActionType() == StatementAction.ActionTypes.JUMP )
+			worm.jump();
+		if ( getActionType() == StatementAction.ActionTypes.TOGGLEWEAP )
+			worm.equipNextWeapon();
+		if ( getActionType() == StatementAction.ActionTypes.FIRE )
+			worm.shoot();
+		if ( getActionType() == StatementAction.ActionTypes.SKIP )
+			// do nothing
+		program.typeErrorOccurred();
+
+	}
+
+}

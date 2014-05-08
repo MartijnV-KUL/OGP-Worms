@@ -1,0 +1,62 @@
+package worms.model;
+
+import worms.model.Expression.Types;
+
+public class ExpressionBinary extends Expression {
+	
+	public ExpressionBinary(Types expressionType, Type<?> e1, Type<?> e2) {
+		super(expressionType);
+		this.e1 = e1;
+		this.e2 = e2;
+	}
+	
+	private Type<?> e1;
+	private Type<?> e2;
+
+	@Override
+	public Type<?> evaluate() {
+		if (getExpressionType()==Types.ADDITION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())+((double)e2.getValue()));
+		}
+		if (getExpressionType()==Types.SUBTRACTION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())-((double)e2.getValue()));
+		}
+		if (getExpressionType()==Types.MULTIPLICATION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())*((double)e2.getValue()));
+		}
+		if (getExpressionType()==Types.DIVISION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())/((double)e2.getValue()));
+		}
+		if (getExpressionType()==Types.CONJUNCTION) {
+			if ( !(e1.getValue() instanceof Boolean) || !(e2.getValue() instanceof Boolean) )
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((boolean)e1.getValue())&&((boolean)e2.getValue()));
+		}
+		if (getExpressionType()==Types.DISJUNCTION)
+			return null;
+		if (getExpressionType()==Types.NEGATION)
+			return null;
+		if (getExpressionType()==Types.LESSTHAN)
+			return null;
+		if (getExpressionType()==Types.LESSTHANOREQUALTO)
+			return null;
+		if (getExpressionType()==Types.GREATERTHAN)
+			return null;
+		if (getExpressionType()==Types.GREATERTHANOREQUALTO)
+			return null;
+		if (getExpressionType()==Types.EQUALTO)
+			return null;
+		if (getExpressionType()==Types.DIFFERENTFROM)
+			return null;
+		throw new ModelException("Evaluation of expression failed."); //TODO do something else than throwing an exception?
+	}
+
+}

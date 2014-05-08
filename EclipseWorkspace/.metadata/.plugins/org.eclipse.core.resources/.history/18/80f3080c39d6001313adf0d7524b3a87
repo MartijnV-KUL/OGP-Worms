@@ -1,0 +1,22 @@
+package worms.model;
+
+public class StatementAction extends Statement {
+	
+	public StatementAction(StatementAction.Types) {
+		
+	}
+	
+	public static enum Types {
+		TURN,
+		MOVE,
+		JUMP,
+		TOGGLEWEAP,
+		FIRE,
+		SKIP
+	}
+
+	@Override
+	public void execute() {
+		
+	}
+}

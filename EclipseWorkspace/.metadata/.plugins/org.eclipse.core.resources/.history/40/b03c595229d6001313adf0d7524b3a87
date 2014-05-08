@@ -1,0 +1,44 @@
+package worms.model;
+
+public abstract class Expression {
+	
+	private abstract final Types expressionType;
+	
+	public abstract Type evaluate();
+	
+	enum Types {
+		VARIABLE,
+		DOUBLE,
+		TRUE,
+		FALSE,
+		NULL,
+		SELF,
+		ADDITION,
+		SUBTRACTION,
+		MULTIPLICATION,
+		DIVISION,
+		SQUAREROOT,
+		SINE,
+		COSINE,
+		CONJUNCTION,
+		DISJUNCTION,
+		NEGATION,
+		LESSTHAN,
+		LESSTHANOREQUALTO,
+		GREATERTHAN,
+		GREATERTHANOREQUALTO,
+		EQUALTO,
+		DIFFERENTFROM,
+		GETX,
+		GETY,
+		GETRADIUS,
+		GETDIR,
+		GETAP,
+		GETMAXAP,
+		SAMETEAM,
+		SEARCHOBJ,
+		ISWORM,
+		ISFOOD;
+	}
+
+}

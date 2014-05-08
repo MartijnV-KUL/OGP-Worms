@@ -1,0 +1,310 @@
+package worms.model;
+
+import java.util.List;
+
+import worms.model.programs.*;
+
+public class ProgramFactoryImpl<E, S, T> implements ProgramFactory<E, S, T> {
+	/**
+	 * @note	E = expression
+	 * 			S = action
+	 * 			T = type
+	 */
+	
+	private Program program;
+	private Object expression;
+	private Object action;
+	private Object type;
+	
+	@Override
+	public E createDoubleLiteral(int line, int column, double d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createBooleanLiteral(int line, int column, boolean b) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createAnd(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createOr(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createNot(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createNull(int line, int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createSelf(int line, int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetX(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetY(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetRadius(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetDir(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetAP(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetMaxAP(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetHP(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGetMaxHP(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createSameTeam(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createSearchObj(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createIsWorm(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createIsFood(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createVariableAccess(int line, int column, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createLessThan(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGreaterThan(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createLessThanOrEqualTo(int line, int column, Object e1,
+			Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createGreaterThanOrEqualTo(int line, int column, Object e1,
+			Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createEquality(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createInequality(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createAdd(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createSubtraction(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createMul(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createDivision(int line, int column, Object e1, Object e2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createSqrt(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createSin(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E createCos(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createTurn(int line, int column, Object angle) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createMove(int line, int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createJump(int line, int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createToggleWeap(int line, int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createFire(int line, int column, Object yield) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createSkip(int line, int column) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createAssignment(int line, int column, String variableName,
+			Object rhs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createIf(int line, int column, Object condition, Object then,
+			Object otherwise) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createWhile(int line, int column, Object condition,
+			Object body) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createForeach(int line, int column, ForeachType type,
+			String variableName, Object body) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createSequence(int line, int column, List<S> statements) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public S createPrint(int line, int column, Object e) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public T createDoubleType() {
+		return new Type<Double>();
+	}
+
+	@Override
+	public T createBooleanType() {
+		return new Type<Boolean>();
+	}
+
+	@Override
+	public T createEntityType() {
+		return new Type<Entity>();
+	}
+
+}

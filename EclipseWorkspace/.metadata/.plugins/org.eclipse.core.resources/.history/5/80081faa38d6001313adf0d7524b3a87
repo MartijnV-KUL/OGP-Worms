@@ -1,0 +1,110 @@
+package worms.model;
+
+import worms.model.Expression.Types;
+
+public class ExpressionSingular extends Expression {
+	
+	protected ExpressionSingular(Types expressionType, Type<?> e) {
+		super(expressionType);
+		this.e = e;
+	}
+
+	private Type<?> e;
+
+	@Override
+	public Type<?> evaluate() throws ModelException {
+		if (getExpressionType()==Types.VARIABLE)
+			return e;
+		if (getExpressionType()==Types.DOUBLE)
+			return e;
+		if (getExpressionType()==Types.TRUE)
+			return new Type<Boolean>(true);
+		if (getExpressionType()==Types.FALSE)
+			return new Type<Boolean>(false);
+		if (getExpressionType()==Types.NULL)
+			return new Type<Entity>();
+		if (getExpressionType()==Types.SELF)
+			return e; //TODO this brings a reference to the actual object out. is that desired?
+		if (getExpressionType()==Types.SQUAREROOT) {
+			if ( !(e.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(Math.sqrt((double)e.getValue()));
+		}
+		if (getExpressionType()==Types.SINE) {
+			if ( !(e.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(Math.sin((double)e.getValue()));
+		}
+		if (getExpressionType()==Types.COSINE) {
+			if ( !(e.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(Math.cos((double)e.getValue()));
+		}
+		if (getExpressionType()==Types.NEGATION) {
+			if ( !(e.getValue() instanceof Boolean) )
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Boolean>(~((boolean)e.getValue()));
+		}
+		if (getExpressionType()==Types.GETX) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>(((Worm)e.getValue()).getX());
+			if ( e.getValue() instanceof Food )
+				return new Type<Double>(((Food)e.getValue()).getX());
+			getStatement().getProgram().typeErrorOccurred();
+		}
+		if (getExpressionType()==Types.GETY) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>(((Worm)e.getValue()).getY());
+			if ( e.getValue() instanceof Food )
+				return new Type<Double>(((Food)e.getValue()).getY());
+			getStatement().getProgram().typeErrorOccurred();
+		}
+		if (getExpressionType()==Types.GETRADIUS) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>(((Worm)e.getValue()).getRadius());
+			if ( e.getValue() instanceof Food )
+				return new Type<Double>(Food.getRadius());
+			getStatement().getProgram().typeErrorOccurred();
+		}
+		if (getExpressionType()==Types.GETDIR) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>(((Worm)e.getValue()).getDirection());
+			getStatement().getProgram().typeErrorOccurred();
+		}
+		if (getExpressionType()==Types.GETAP) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>((double) ((Worm)e.getValue()).getActionPoints());
+			getStatement().getProgram().typeErrorOccurred();
+		}
+		if (getExpressionType()==Types.GETMAXAP) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>((double) ((Worm)e.getValue()).getMaxActionPoints());
+			getStatement().getProgram().typeErrorOccurred();
+		}
+		if (getExpressionType()==Types.SAMETEAM) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Boolean>(getStatement().getProgram().getWorm().getTeam()==((Worm)e.getValue()).getTeam());
+			getStatement().getProgram().typeErrorOccurred();
+		}
+		if (getExpressionType()==Types.SEARCHOBJ) {
+			double x = getStatement().getProgram().getWorm().getX();
+			double y = getStatement().getProgram().getWorm().getY();
+			double angle = getStatement().getProgram().getWorm().getDirection() + e.getValue();
+			double resolution = 0.1*getStatement().getProgram().getWorm().getRadius();
+			while ( getStatement().getProgram().getWorm().getWorld().isWithinBoundaries(x,y) ) {
+				for ( Worm worm : getStatement().getProgram().getWorm().getWorld().getAliveWorms() ) {
+					if ( World.isOverlapping(worm.getX(), worm.getY(), worm.getRadius(), x, y, 0) )
+						return new Type<Entity>(new Entity(worm));
+				}
+			}
+			return new Type<Entity>();
+		}
+		if (getExpressionType()==Types.ISWORM)
+			return new Type<Boolean>(e.getValue() instanceof Worm);
+		if (getExpressionType()==Types.ISFOOD)
+			return new Type<Boolean>(e.getValue() instanceof Food);
+
+		getStatement().getProgram().typeErrorOccurred();
+	}
+
+}

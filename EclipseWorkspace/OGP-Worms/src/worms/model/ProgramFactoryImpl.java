@@ -4,17 +4,8 @@ import java.util.List;
 
 import worms.model.programs.*;
 
-public class ProgramFactoryImpl<E, S, T> implements ProgramFactory<E, S, T> {
-	/**
-	 * @note	E = expression
-	 * 			S = action
-	 * 			T = type
-	 */
+public class ProgramFactoryImpl<E,S,T> implements ProgramFactory<E, S, T> {
 	
-	private Program program;
-	private Object expression;
-	private Object action;
-	private Object type;
 	@Override
 	public E createDoubleLiteral(int line, int column, double d) {
 		// TODO Auto-generated method stub
@@ -293,22 +284,17 @@ public class ProgramFactoryImpl<E, S, T> implements ProgramFactory<E, S, T> {
 
 	@Override
 	public T createDoubleType() {
-		type = Double.TYPE;
-		// TODO Auto-generated method stub
-		return (T) type;
+		return (T) new Type<Double>();
 	}
 
 	@Override
 	public T createBooleanType() {
-		type = Boolean.TYPE;
-		// TODO Auto-generated method stub
-		return (T) type;
+		return (T) new Type<Boolean>();
 	}
 
 	@Override
 	public T createEntityType() {
-		// TODO Auto-generated method stub
-		return null;
+		return (T) new Type<Entity>();
 	}
 
 }

@@ -1,0 +1,5 @@
+package worms.model;
+
+public enum ExpressionType {
+
+}

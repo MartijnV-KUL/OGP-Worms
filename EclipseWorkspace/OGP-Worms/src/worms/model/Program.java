@@ -3,10 +3,12 @@ package worms.model;
 import java.util.ArrayList;
 
 import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
 import worms.gui.game.IActionHandler;
-import worms.model.programs.*;
+import worms.model.ModelException;
+import worms.model.programs.ParseOutcome;
 
-public class Program extends ProgramFactoryImpl {
+public class Program {
 	
 	private static ParseOutcome<?> parser;
 	
@@ -19,112 +21,142 @@ public class Program extends ProgramFactoryImpl {
 		return parser;
 	}
 
-	public static boolean isWellFormed(Program program) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isWellFormed(Program program) {
+		return getStatement().isWellFormed();
 	}
+	
+	public void typeErrorOccurred() {
+		// Page 16 of assignment about type errors:
+//		Such errors must be detected at runtime, i.e. during the execution of the
+//		program. As explained before, runtime errors should be handled in a total
+//		manner. That is, execution of the program stops and subsequent runs of the
+//		program return immediately.
+	}
+	
 
 	
 // {{ Associations
 	
-	// {{ Worm Association
+// {{ Worm Association
 	
-		private final ArrayList<Worm> wormCollection = new ArrayList<Worm>();
-		
-		/**
-		 * Returns the collection of worms.
-		 * 
-		 * @return	The collection of worms.
-		 */
-		@Basic
-		public ArrayList<Worm> getWorms() {
-			return wormCollection;
-		}
-		
-		/**
-		 * Method to add a new worm to the existing collection of worms.
-		 * 
-		 * @param 	worm
-		 * 			The new worm that has to be added.
-		 * 
-		 * @effect	| wormCollection.add(worm)
-		 * @throws 	ModelException
-		 * 			| if (canHaveAsWorm(worm)
-		 * 			| if (hasAsWorm(worm)
-		 */
-		public void addWorm(Worm worm) throws ModelException {
-			if (!canHaveAsWorm(worm))
-				throw new ModelException("Invalid worm specified.");
-			if (hasAsWorm(worm))
-				throw new ModelException("Worm already has a program.");
-			worm.setProgram(this);
-			wormCollection.add(worm);
-		}
-		
-		/**
-		 * Checks if the given world is valid.
-		 * 
-		 * @param 	worm
-		 * 			The worm that has to be checked.
-		 * 
-		 * @return	| if (worm == null)
-		 * 			|	return false
-		 * 			| if (worm.isTerminated()
-		 * 			|	return false
-		 * 			| else
-		 * 			|	return true
-		 */
-		private static boolean canHaveAsWorm(Worm worm) {
-			if (worm==null)
-				return false;
-			if (worm.isTerminated())
-				return false;
-			return true;
-		}
-		
-		/**
-		 * Checks if the collection of worms contains the given worm.
-		 * 
-		 * @param 	worm
-		 * 			The given worm.
-		 * 
-		 * @return	| wormCollection.contains(worm)
-		 */
-		private boolean hasAsWorm(Worm worm) {
-			return wormCollection.contains(worm);
-		}
-		
-		/**
-		 * Method to remove a worm from the collection of worms.
-		 * 
-		 * @param 	worm
-		 * 			The worm that has to be removed.
-		 * 
-		 * @effect	| wormCollection.remove(worm)
-		 * @throws 	ModelException
-		 * 			| if (!hasAsWorm(worm))
-		 */
-		public void removeWorm(Worm worm) throws ModelException {
-			if (!hasAsWorm(worm))
-				throw new ModelException("Worm not found.");
-			worm.removeProgram();
-			wormCollection.remove(worm);
-		}
-		
-		/**
-		 * Method to remove all worms from the collection.
-		 */
-		public void removeAllWorms() {
-			for ( Worm worm : wormCollection ) {
-				removeWorm(worm);
-			}
-		}
-		
-		// }}
-		
+	private Worm worm;
+	
+	/**
+	 * Returns the worm the weapon belongs to.
+	 * 
+	 * @return	The worm the weapon belongs to.
+	 */
+	@Basic
+	public Worm getWorm() {
+		return worm;
+	}
+	
+	/**
+	 * Method to set a new worm to a program.
+	 * 
+	 * @param 	worm
+	 * 			The new worm.
+	 * 
+	 * @post	| new.getWorm() == worm
+	 * @throws 	ModelException
+	 * 			| if (!canHaveAsWorm(worm)
+	 * 			|	throw new ModelException
+	 * 			| if (hasAWorm())
+	 * 			|	throw new ModelException
+	 */
+	@Raw
+	void setWorm(Worm worm) throws ModelException {
+		if (!canHaveAsWorm(worm))
+			throw new ModelException("Invalid worm specified.");
+		if (hasAWorm())
+			throw new ModelException("Already has a worm.");
+		this.worm = worm;
+	}
+	
+	/**
+	 * Checks if the given worm is valid.
+	 * 
+	 * @param 	worm
+	 * 			The given worm.
+	 * 
+	 * @return	| if (worm == null)
+	 * 			| 	return false
+	 * 			| if (worm.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean canHaveAsWorm(Worm worm) {
+		if (worm==null)
+			return false;
+		if (worm.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if a worm is not null.
+	 * 
+	 * @return	(!(worm == null))
+	 */
+	private boolean hasAWorm() {
+		return(!(worm==null));
+	}
+	
+	/**
+	 * Method to remove a worm.
+	 * 
+	 * @post	| new.getWorm() == null
+	 */
+	@Raw
+	void removeWorm() {
+		worm = null;
+	}
+	
+// }}
+	
+// {{ Statement Association
+
+	private Statement statement;
+	
+	@Basic
+	public Statement getStatement() {
+		return statement;
+	}
+	
+	void setStatement(Statement statement) {
+		if (!canHaveAsStatement(statement))
+			throw new ModelException("Invalid statement specified.");
+		if (hasAStatement())
+			throw new ModelException("Already has a statement");
+		statement.setProgram(this);
+		this.statement = statement;
+	}
+	
+	private static boolean canHaveAsStatement(Statement statement) {
+		if (statement == null)
+			return false;
+		if (statement.isTerminated())
+			return false;
+		return true;
+	}
+	
+	protected boolean hasAStatement() {
+		return (!(statement == null));
+	}
+	
+	void removeStatement() {
+		if (hasAStatement())
+			statement.removeProgram();
+		statement = null;
+	}
+	
+// }}
+	
 // }}
 		
 // {{ Terminated
+	
 	private boolean terminated;
 	
 	@Basic
@@ -133,7 +165,9 @@ public class Program extends ProgramFactoryImpl {
 	}
 	
 	public void terminate() {
-		removeAllWorms();
+		if (hasAWorm())
+			worm.removeProgram();
+		removeStatement();
 		terminated = true;
 	}
 	

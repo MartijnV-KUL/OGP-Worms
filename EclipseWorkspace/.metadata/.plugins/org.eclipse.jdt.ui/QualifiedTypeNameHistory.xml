@@ -4,7 +4,13 @@
 <fullyQualifiedTypeName name="worms.model.Bazooka"/>
 <fullyQualifiedTypeName name="java.lang.NullPointerException"/>
 <fullyQualifiedTypeName name="worms.model.Position"/>
-<fullyQualifiedTypeName name="worms.model.ModelException"/>
 <fullyQualifiedTypeName name="be.kuleuven.cs.som.annotate.Raw"/>
 <fullyQualifiedTypeName name="worms.util.Util"/>
+<fullyQualifiedTypeName name="worms.model.ProgramFactoryImpl"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="worms.model.ModelException"/>
+<fullyQualifiedTypeName name="worms.model.StatementIfThenElse"/>
+<fullyQualifiedTypeName name="worms.model.Statement.Types"/>
+<fullyQualifiedTypeName name="worms.model.StatementAction.ActionTypes"/>
+<fullyQualifiedTypeName name="worms.model.ExpressionSingular"/>
 </qualifiedTypeNameHistroy>

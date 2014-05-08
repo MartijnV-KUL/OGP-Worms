@@ -1,0 +1,164 @@
+package worms.model;
+
+import java.util.ArrayList;
+
+import be.kuleuven.cs.som.annotate.Basic;
+import worms.gui.game.IActionHandler;
+import worms.model.ModelException;
+import worms.model.programs.ParseOutcome;
+
+public class Program {
+	
+	private static ParseOutcome<?> parser;
+	
+	public Program() {
+		System.out.println("This class has no implementation yet!");
+	}
+
+	public static ParseOutcome<?> parseProgram(String programText, IActionHandler handler) {
+		//TODO
+		return parser;
+	}
+
+	public boolean isWellFormed(Program program) {
+		return false;
+	}
+	
+	public void typeErrorOccurred() {
+		// Page 16 of assignment:
+//		Such errors must be detected at runtime, i.e. during the execution of the
+//		program. As explained before, runtime errors should be handled in a total
+//		manner. That is, execution of the program stops and subsequent runs of the
+//		program return immediately.
+	}
+	
+// {{ Statements
+	
+	private final ArrayList<Statement> statements = new ArrayList<Statement>();
+	
+	private void addStatement( Statement newStatement ) {
+		statements.add(newStatement);
+	}
+	
+	
+// }}
+
+	
+// {{ Associations
+	
+	// {{ Worm Association
+	
+		private final ArrayList<Worm> wormCollection = new ArrayList<Worm>();
+		
+		/**
+		 * Returns the collection of worms.
+		 * 
+		 * @return	The collection of worms.
+		 */
+		@Basic
+		public ArrayList<Worm> getWorms() {
+			return wormCollection;
+		}
+		
+		/**
+		 * Method to add a new worm to the existing collection of worms.
+		 * 
+		 * @param 	worm
+		 * 			The new worm that has to be added.
+		 * 
+		 * @effect	| wormCollection.add(worm)
+		 * @throws 	ModelException
+		 * 			| if (canHaveAsWorm(worm)
+		 * 			| if (hasAsWorm(worm)
+		 */
+		public void addWorm(Worm worm) throws ModelException {
+			if (!canHaveAsWorm(worm))
+				throw new ModelException("Invalid worm specified.");
+			if (hasAsWorm(worm))
+				throw new ModelException("Worm already has a program.");
+			worm.setProgram(this);
+			wormCollection.add(worm);
+		}
+		
+		/**
+		 * Checks if the given world is valid.
+		 * 
+		 * @param 	worm
+		 * 			The worm that has to be checked.
+		 * 
+		 * @return	| if (worm == null)
+		 * 			|	return false
+		 * 			| if (worm.isTerminated()
+		 * 			|	return false
+		 * 			| else
+		 * 			|	return true
+		 */
+		private static boolean canHaveAsWorm(Worm worm) {
+			if (worm==null)
+				return false;
+			if (worm.isTerminated())
+				return false;
+			return true;
+		}
+		
+		/**
+		 * Checks if the collection of worms contains the given worm.
+		 * 
+		 * @param 	worm
+		 * 			The given worm.
+		 * 
+		 * @return	| wormCollection.contains(worm)
+		 */
+		private boolean hasAsWorm(Worm worm) {
+			return wormCollection.contains(worm);
+		}
+		
+		/**
+		 * Method to remove a worm from the collection of worms.
+		 * 
+		 * @param 	worm
+		 * 			The worm that has to be removed.
+		 * 
+		 * @effect	| wormCollection.remove(worm)
+		 * @throws 	ModelException
+		 * 			| if (!hasAsWorm(worm))
+		 */
+		public void removeWorm(Worm worm) throws ModelException {
+			if (!hasAsWorm(worm))
+				throw new ModelException("Worm not found.");
+			worm.removeProgram();
+			wormCollection.remove(worm);
+		}
+		
+		/**
+		 * Method to remove all worms from the collection.
+		 */
+		public void removeAllWorms() {
+			for ( Worm worm : wormCollection ) {
+				removeWorm(worm);
+			}
+		}
+		
+		// }}
+		
+// }}
+		
+// {{ Terminated
+	private boolean terminated;
+	
+	@Basic
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	public void terminate() {
+		removeAllWorms();
+		terminated = true;
+	}
+	
+	
+	// }}
+	
+	
+	
+}

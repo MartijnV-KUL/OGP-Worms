@@ -395,7 +395,7 @@ public abstract class Weapon {
 		worm = null;
 	}
 	
-	// }}
+// }}
 	
 // {{ Projectile Association
 	

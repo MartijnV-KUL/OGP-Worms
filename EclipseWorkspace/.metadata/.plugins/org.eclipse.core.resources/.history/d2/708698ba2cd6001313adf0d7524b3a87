@@ -1,0 +1,59 @@
+package worms.model;
+
+public class ExpressionSingle extends Expression {
+	
+	protected ExpressionSingle(Types expressionType, Type<?> e) {
+		super(expressionType);
+		this.e = e;
+	}
+
+	private Type<?> e;
+
+	@Override
+	public Type<?> evaluate() throws ModelException {
+		if (getExpressionType()==Types.VARIABLE)
+			return e;
+		if (getExpressionType()==Types.DOUBLE)
+			return e;
+		if (getExpressionType()==Types.TRUE)
+			return new Type<Boolean>(true);
+		if (getExpressionType()==Types.FALSE)
+			return new Type<Boolean>(false);
+		if (getExpressionType()==Types.NULL)
+			return new Type<Entity>(null);
+		if (getExpressionType()==Types.SELF)
+			return e; //TODO this brings a reference to the actual object out. is that desired?
+		if (getExpressionType()==Types.GETX) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>(((Worm)e.getValue()).getX());
+			if ( e.getValue() instanceof Food )
+				return new Type<Double>(((Food)e.getValue()).getX());
+			throw new ModelException("Cannot request entity's x coordinate.;"); //TODO do something else than throwing an exception?
+		}
+		if (getExpressionType()==Types.GETY) {
+			if ( e.getValue() instanceof Worm )
+				return new Type<Double>(((Worm)e.getValue()).getY());
+			if ( e.getValue() instanceof Food )
+				return new Type<Double>(((Food)e.getValue()).getY());
+			throw new ModelException("Cannot request entity's y coordinate.;"); //TODO do something else than throwing an exception?
+		}
+		if (getExpressionType()==Types.GETRADIUS)
+			return null;
+		if (getExpressionType()==Types.GETDIR)
+			return null;
+		if (getExpressionType()==Types.GETAP)
+			return null;
+		if (getExpressionType()==Types.GETMAXAP)
+			return null;
+		if (getExpressionType()==Types.SAMETEAM)
+			return null;
+		if (getExpressionType()==Types.SEARCHOBJ)
+			return null;
+		if (getExpressionType()==Types.ISWORM)
+			return null;
+		if (getExpressionType()==Types.ISFOOD)
+			return null;
+		throw new ModelException("Evaluation of expression failed;"); //TODO do something else than throwing an exception?
+	}
+
+}

@@ -1,0 +1,88 @@
+package worms.model;
+
+import worms.model.Expression.Types;
+
+public class ExpressionBinary extends Expression {
+
+	private Type<?> e1;
+	private Type<?> e2;
+	
+	protected ExpressionSingular(Types expressionType, Type<?> e1) {
+		super(expressionType);
+		this.e1 = e1;
+	}
+	
+	public ExpressionBinary(Types expressionType, Type<?> e1, Type<?> e2) {
+		super(expressionType);
+		this.e1 = e1;
+		this.e2 = e2;
+	}
+	
+
+	@Override
+	public Type<?> evaluate() {
+		if (getType()==Expression.Types.ADDITION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())+((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.SUBTRACTION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())-((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.MULTIPLICATION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())*((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.DIVISION) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())/((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.CONJUNCTION) {
+			if ( !(e1.getValue() instanceof Boolean) || !(e2.getValue() instanceof Boolean) )
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((boolean)e1.getValue())||((boolean)e2.getValue()));
+		}
+		if (getType()==Expression.Types.DISJUNCTION) {
+			if ( !(e1.getValue() instanceof Boolean) || !(e2.getValue() instanceof Boolean) )
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((boolean)e1.getValue())&&((boolean)e2.getValue()));
+		}
+		if (getType()==Expression.Types.LESSTHAN) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())<((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.LESSTHANOREQUALTO) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())<=((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.GREATERTHAN) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())>((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.GREATERTHANOREQUALTO) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())>=((double)e2.getValue()));
+		}
+		if (getType()==Expression.Types.EQUALTO) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())==((double)e2.getValue())); //TODO only correct for primitive Expression.Types. Since casting to the primitive type double, this is correct.
+		}
+		if (getType()==Expression.Types.DIFFERENTFROM) {
+			if ( !(e1.getValue() instanceof Number) || !(e2.getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+				getStatement().getProgram().typeErrorOccurred();
+			return new Type<Double>(((double)e1.getValue())!=((double)e2.getValue()));
+		}
+
+		getStatement().getProgram().typeErrorOccurred();
+	}
+
+}

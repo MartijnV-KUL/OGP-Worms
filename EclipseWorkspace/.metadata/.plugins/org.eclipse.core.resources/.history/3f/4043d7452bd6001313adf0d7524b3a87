@@ -1,0 +1,34 @@
+package worms.model;
+
+public class ExpressionDouble extends Expression {
+	
+	public ExpressionDouble(Types expressionType, Type<?> e1, Type<?> e2) {
+		super(expressionType);
+		this.e1 = e1;
+		this.e2 = e2;
+	}
+	
+	private Type<?> e1;
+	private Type<?> e2;
+
+	@Override
+	public Type evaluate() {
+		ADDITION,
+		SUBTRACTION,
+		MULTIPLICATION,
+		DIVISION,
+		SQUAREROOT,
+		SINE,
+		COSINE,
+		CONJUNCTION,
+		DISJUNCTION,
+		NEGATION,
+		LESSTHAN,
+		LESSTHANOREQUALTO,
+		GREATERTHAN,
+		GREATERTHANOREQUALTO,
+		EQUALTO,
+		DIFFERENTFROM,
+	}
+
+}

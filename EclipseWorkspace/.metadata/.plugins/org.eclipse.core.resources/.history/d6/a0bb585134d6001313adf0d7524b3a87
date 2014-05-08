@@ -1,0 +1,193 @@
+package worms.model;
+
+import java.util.ArrayList;
+
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+import worms.gui.game.IActionHandler;
+import worms.model.ModelException;
+import worms.model.programs.ParseOutcome;
+
+public class Program {
+	
+	private static ParseOutcome<?> parser;
+	
+	public Program() {
+		System.out.println("This class has no implementation yet!");
+	}
+
+	public static ParseOutcome<?> parseProgram(String programText, IActionHandler handler) {
+		//TODO
+		return parser;
+	}
+
+	public boolean isWellFormed(Program program) {
+		return false;
+	}
+	
+	public void typeErrorOccurred() {
+		// Page 16 of assignment about type errors:
+//		Such errors must be detected at runtime, i.e. during the execution of the
+//		program. As explained before, runtime errors should be handled in a total
+//		manner. That is, execution of the program stops and subsequent runs of the
+//		program return immediately.
+	}
+	
+// {{ Statements
+	
+	private final ArrayList<Statement> statements = new ArrayList<Statement>();
+	
+	private void addStatement( Statement newStatement ) {
+		statements.add(newStatement);
+	}
+	
+	
+// }}
+
+	
+// {{ Associations
+	
+// {{ Worm Association
+	
+	private Worm worm;
+	
+	/**
+	 * Returns the worm the weapon belongs to.
+	 * 
+	 * @return	The worm the weapon belongs to.
+	 */
+	@Basic
+	public Worm getWorm() {
+		return worm;
+	}
+	
+	/**
+	 * Method to set a new worm to a program.
+	 * 
+	 * @param 	worm
+	 * 			The new worm.
+	 * 
+	 * @post	| new.getWorm() == worm
+	 * @throws 	ModelException
+	 * 			| if (!canHaveAsWorm(worm)
+	 * 			|	throw new ModelException
+	 * 			| if (hasAWorm())
+	 * 			|	throw new ModelException
+	 */
+	@Raw
+	void setWorm(Worm worm) throws ModelException {
+		if (!canHaveAsWorm(worm))
+			throw new ModelException("Invalid worm specified.");
+		if (hasAWorm())
+			throw new ModelException("Already has a worm.");
+		this.worm = worm;
+	}
+	
+	/**
+	 * Checks if the given worm is valid.
+	 * 
+	 * @param 	worm
+	 * 			The given worm.
+	 * 
+	 * @return	| if (worm == null)
+	 * 			| 	return false
+	 * 			| if (worm.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean canHaveAsWorm(Worm worm) {
+		if (worm==null)
+			return false;
+		if (worm.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if a worm is not null.
+	 * 
+	 * @return	(!(worm == null))
+	 */
+	private boolean hasAWorm() {
+		return(!(worm==null));
+	}
+	
+	/**
+	 * Method to remove a worm.
+	 * 
+	 * @post	| new.getWorm() == null
+	 */
+	@Raw
+	void removeWorm() {
+		worm = null;
+	}
+	
+// }}
+	
+	// {{ Statement Association
+
+	private final ArrayList<Food> foodCollection = new ArrayList<Food>();
+	
+	@Basic
+	public ArrayList<Food> getFood() {
+		return foodCollection;
+	}
+	
+	public void addFood(Food newFood) throws ModelException {
+		if (!canHaveAsFood(newFood))
+			throw new ModelException("Invalid food specified.");
+		if (hasAsFood(newFood))
+			throw new ModelException("Food already in world.");
+		newFood.setWorld(this);
+		foodCollection.add(newFood);
+	}
+	
+	private static boolean canHaveAsStatement(Statement statement) {
+		if (statement==null)
+			return false;
+		if (statemet.isTerminated())
+			return false;
+		return true;
+	}
+	
+	private boolean hasAsStatement(Statement statement) {
+		return foodCollection.contains(statement);
+	}
+	
+	public void removeStatement(Statement statement) throws ModelException {
+		if (!hasAsFood(statement))
+			throw new ModelException("Statement not found.");
+		statement.removeWorld();
+		statementCollection.remove(statement);
+	}
+	
+	private void removeAllStatements() {
+		for ( Statement statement : statementCollection ) {
+			removeStatement(statement);
+		}
+	}
+	
+// }}
+	
+// }}
+		
+// {{ Terminated
+	private boolean terminated;
+	
+	@Basic
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	public void terminate() {
+		removeAllWorms();
+		terminated = true;
+	}
+	
+	
+	// }}
+	
+	
+	
+}

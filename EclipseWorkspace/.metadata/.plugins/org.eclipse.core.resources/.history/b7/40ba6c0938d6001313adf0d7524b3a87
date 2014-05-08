@@ -1,0 +1,19 @@
+package worms.model;
+
+public class StatementWhile extends Statement {
+	
+	private Expression e;
+	private Statement s;
+	
+	public StatementWhile( Expression e, Statement s ) {
+		this.e = e;
+		this.s = s;
+	}
+	
+	public void execute() {
+		while ( e.evaluate() ) {
+			s.evaluate();
+		}
+	}
+
+}

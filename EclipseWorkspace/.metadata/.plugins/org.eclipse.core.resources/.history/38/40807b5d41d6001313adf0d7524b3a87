@@ -1,0 +1,5 @@
+package worms.model;
+
+public class ExpressionBinary extends Expression {
+
+}

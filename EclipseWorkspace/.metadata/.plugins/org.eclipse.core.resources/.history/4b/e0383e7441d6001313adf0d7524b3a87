@@ -1,0 +1,13 @@
+package worms.model;
+
+public class ExpressionBinary extends Expression {
+
+	private final Type<?> t1;
+	private final Type<?> t2;
+	
+	public ExpressionBinary(Expression.Types type, Type<?> t1, Type<?> t2) {
+		super(type);
+		this.t1 = t1;
+		this.t2 = t2;
+	}
+}

@@ -1,0 +1,22 @@
+package worms.model;
+
+import worms.model.Expression.Types;
+
+public abstract class StatementAction extends Statement {
+	
+	private Expression e;
+	private final Types type;
+
+	public StatementAction(StatementAction.ActionTypes type) {
+		
+	}
+	public StatementAction(StatementAction.ActionTypes type, Expresison e;) {
+		
+	}
+	
+
+	@Override
+	public void execute() {
+		
+	}
+}

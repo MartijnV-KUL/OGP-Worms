@@ -1,0 +1,69 @@
+package worms.model;
+
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+
+public abstract class Expression {
+	
+	private final Expression.Types type;
+	
+	public abstract Expression(Expression.Types type) {
+		this.type = type;
+	}
+	
+	public Types getType() {
+		return type;
+	}
+	
+	public static enum Types {
+		VARIABLE,
+		DOUBLE,
+		TRUE,
+		FALSE,
+		NULL,
+		SELF,
+		ADDITION,
+		SUBTRACTION,
+		MULTIPLICATION,
+		DIVISION,
+		SQUAREROOT,
+		SINE,
+		COSINE,
+		CONJUNCTION,
+		DISJUNCTION,
+		NEGATION,
+		LESSTHAN,
+		LESSTHANOREQUALTO,
+		GREATERTHAN,
+		GREATERTHANOREQUALTO,
+		EQUALTO,
+		DIFFERENTFROM,
+		GETX,
+		GETY,
+		GETRADIUS,
+		GETDIR,
+		GETAP,
+		GETMAXAP,
+		SAMETEAM,
+		SEARCHOBJ,
+		ISWORM,
+		ISFOOD;
+	}
+	
+// {{ Terminated
+
+	private boolean terminated;
+	
+	@Basic
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	public void terminate() {
+		terminated = true;
+	}
+	
+	
+	// }}
+
+}

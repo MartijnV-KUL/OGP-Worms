@@ -1,0 +1,34 @@
+package worms.model;
+
+import java.util.ArrayList;
+
+public class StatementAction extends Statement {
+	
+	private final StatementAction.ActionTypes actionType;
+	
+	public StatementAction.ActionTypes getActionType() {
+		return actionType;
+	}
+
+	public StatementAction() {
+		super(statements, expressions);
+		this.actionType = null;
+	}
+	
+	public static enum ActionTypes {
+		TURN,
+		MOVE,
+		JUMP,
+		TOGGLEWEAP,
+		FIRE,
+		SKIP
+	}
+
+	@Override
+	public void execute() {
+		if ( getActionType() == StatementAction.ActionTypes.TURN )
+			getProgram()
+
+	}
+
+}

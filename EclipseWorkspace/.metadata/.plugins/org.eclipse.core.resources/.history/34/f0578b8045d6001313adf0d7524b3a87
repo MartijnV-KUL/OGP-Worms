@@ -1,0 +1,21 @@
+package worms.model;
+
+import java.util.ArrayList;
+
+public class StatementAssignment extends Statement {
+
+	public StatementAssignment(String variable, Expression e) {
+		ArrayList<Expression> expressions = new ArrayList<Expression>();
+		expressions.add(e);
+		super(null, expressions);
+		
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void execute() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

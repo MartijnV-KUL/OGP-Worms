@@ -1,0 +1,9 @@
+package worms.model;
+
+public abstract class StatementAction extends Statement {
+	
+	@Override
+	public void execute() {
+		
+	}
+}

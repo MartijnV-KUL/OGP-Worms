@@ -1,0 +1,19 @@
+package worms.model;
+
+public class StatementIfThenElse extends Statement {
+	
+	Expression e;
+	Statement s1;
+	Statement s2;
+	
+	public StatementIfThenElse( Expression e, Statement s1, Statement s2) {
+		this.e = e;
+		this.s1 = s1;
+		this.s23 = s2;
+	}
+
+	@Override
+	public void execute() {
+		
+	}
+}

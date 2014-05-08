@@ -295,8 +295,10 @@ public class Team {
 	 * Method to terminate the team and all corresponding objects from the world.
 	 */
 	public void terminate() {
-		if (hasAWorld())
+		if (hasAWorld()) {
 			world.removeTeam(this);
+			world = null;
+		}
 		removeAllWorms();
 		terminated = true;
 	}

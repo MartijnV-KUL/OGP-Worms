@@ -1,0 +1,91 @@
+package worms.model;
+
+import java.util.ArrayList;
+
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+
+public abstract class Statement {
+
+	private final Statement.Types type;
+	private final ArrayList<Statement> statements;
+	private final ArrayList<Expression> expressions;
+	
+	public Statement.Types getType() {
+		return type;
+	}
+
+	public static enum Types {
+		ASSIGNMENT,
+		WHILE,
+		FOREACH,
+		IFTHENELSE,
+		PRINT,
+		SEQUENCE,
+		ACTION_TURN,
+		ACTION_MOVE,
+		ACTION_JUMP,
+		ACTION_TOGGLEWEAP,
+		ACTION_FIRE,
+		ACTION_SKIP
+	}
+	
+	public abstract void execute();
+	
+	
+// {{ Program Association
+
+	private Program program;
+	
+	@Basic
+	public Program getProgram() {
+		return program;
+	}
+	
+	@Raw
+	void setProgram(Program program) {
+		if (!canHaveAsProgram(program))
+			throw new ModelException("Invalid program specified.");
+		if (hasAProgram())
+			throw new ModelException("Already has a program");
+		this.program = program;
+	}
+	
+	private static boolean canHaveAsProgram(Program program) {
+		if (program == null)
+			return false;
+		if (program.isTerminated())
+			return false;
+		return true;
+	}
+	
+	protected boolean hasAProgram() {
+		return (!(program == null));
+	}
+	
+	@Raw
+	void removeProgram() {
+		program = null;
+	}
+	
+// }}
+	
+// {{ Terminated
+
+	private boolean terminated;
+	
+	@Basic
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	public void terminate() {
+		if (hasAProgram())
+			program.removeStatement(this);
+		terminated = true;
+	}
+	
+	
+	// }}
+
+}

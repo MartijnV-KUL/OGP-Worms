@@ -1250,12 +1250,12 @@ public class Worm extends BallisticBody {
 		return program;
 	}
 	
-	@Raw
 	void setProgram(Program program) {
 		if (!canHaveAsProgram(program))
 			throw new ModelException("Invalid program specified.");
-		if (hasProgram())
+		if (hasAProgram())
 			throw new ModelException("Already has a program");
+		program.setWorm(this);
 		this.program = program;
 	}
 	
@@ -1267,16 +1267,18 @@ public class Worm extends BallisticBody {
 		return true;
 	}
 	
-	protected boolean hasProgram() {
+	protected boolean hasAProgram() {
 		return (!(program == null));
 	}
 	
-	@Raw
 	void removeProgram() {
-		program = null;
+		if (hasAProgram()) {
+			program.removeWorm();
+			program = null;
+		}
 	}
 	
-	// }}
+// }}
 	
 // {{ Terminated
 	
@@ -1295,11 +1297,13 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method to terminate the worm and all corresponding objects from the world.
 	 */
-	public void terminate() {
+	public void terminate() {//TODO update doc
 		if (hasAWorld())
 			world.removeWorm(this);
 		if (hasATeam())
 			team.removeWorm(this);
+		if (hasAProgram())
+			program.removeWorm();
 		removeAllWeapons();
 		terminated = true;
 	}

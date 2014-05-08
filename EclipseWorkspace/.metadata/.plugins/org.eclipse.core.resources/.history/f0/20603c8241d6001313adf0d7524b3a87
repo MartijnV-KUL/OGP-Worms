@@ -1,0 +1,12 @@
+package worms.model;
+
+public class ExpressionSingular extends Expression {
+
+	private final Type<?> t;
+	
+	protected ExpressionSingular(Expression.Types type, Type<?> t) {
+		super(type);
+		this.t = t;
+	}
+	
+}
