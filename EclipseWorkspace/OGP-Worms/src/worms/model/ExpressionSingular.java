@@ -9,19 +9,20 @@ public class ExpressionSingular extends Expression {
 		this.e = e;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Type<?> evaluate() {
 		if (getType()==Expression.Types.SQUAREROOT) {
-			if ( !(e.evaluate().getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+			if ( !(e.evaluate().getValue() instanceof Number) )
 				getStatement().getProgram().typeErrorOccurred();
 			return new Type<Double>(Math.sqrt((double)((Type<Double>)e.evaluate()).getValue()));
 		}
 		if (getType()==Expression.Types.SINE) {
-			if ( !(e.evaluate().getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+			if ( !(e.evaluate().getValue() instanceof Number) )
 				getStatement().getProgram().typeErrorOccurred();
 			return new Type<Double>(Math.sin((double)((Type<Double>)e.evaluate()).getValue()));
 		}
 		if (getType()==Expression.Types.COSINE) {
-			if ( !(e.evaluate().getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?
+			if ( !(e.evaluate().getValue() instanceof Number) )
 				getStatement().getProgram().typeErrorOccurred();
 			return new Type<Double>(Math.cos((double)((Type<Double>)e.evaluate()).getValue()));
 		}

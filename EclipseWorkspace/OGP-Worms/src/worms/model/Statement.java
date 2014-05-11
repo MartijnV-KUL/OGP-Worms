@@ -7,12 +7,14 @@ import be.kuleuven.cs.som.annotate.Raw;
 
 public abstract class Statement {
 
-	private final int line;
-	private final int column;
+	private int line;
+	private int column;
 	
 	public Statement(int line, int column, Statement[] statements, Expression[] expressions) {
-		this.line = line;
-		this.column = column;
+		//this.line = line;
+		//this.column = column;
+		setLine(line);
+		setColumn(column);
 		
 		for ( int i=0; i<statements.length; i++ ) {
 			this.addStatement(statements[i]);
@@ -21,7 +23,17 @@ public abstract class Statement {
 			this.addExpression(expressions[i]);
 		}
 	}
-
+	
+	//TODO	I added setters for line and column to continue at the next line when the program stopped.
+	//		Could not do that in program through setCurrentLine, as the method execute() calls preExecute()
+	//		and that overrules the setCurrentLine() method in program through the program.setCurrentLine(getLine()) method.
+	public void setLine(int line) {
+		this.line = line;
+	}
+	
+	public void setColumn(int column) {
+		this.column = column;
+	}
 	
 	public int getLine() {
 		return line;
@@ -31,6 +43,16 @@ public abstract class Statement {
 	}
 	
 	public abstract void execute();
+	
+	private Boolean programContinues = false;
+	
+	public void setProgramContinues(Boolean bool) {
+		this.programContinues = bool;
+	}
+	
+	public Boolean getProgramContinues() {
+		return programContinues;
+	}
 	
 	public void preExecute() {
 		Program program = getRootProgram();

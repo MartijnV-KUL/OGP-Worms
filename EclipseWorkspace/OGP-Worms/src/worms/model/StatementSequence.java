@@ -5,10 +5,13 @@ import java.util.List;
 public class StatementSequence extends Statement {
 	
 	public StatementSequence(int line, int column, List<Statement> statements) {
-		super(line, column, (Statement[]) statements.toArray(), new Expression[0]);
-		//TODO does this casting work properly?
+		super(line, column, StatementSequence.convertToArray(statements), new Expression[0]);
 	}
 
+	private static Statement[] convertToArray(List<Statement> list) {
+		return list.toArray(new Statement[list.size()]);
+	}
+	
 	@Override
 	public void execute() {
 		preExecute();

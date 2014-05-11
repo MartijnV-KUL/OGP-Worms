@@ -6,6 +6,7 @@ public class StatementWhile extends Statement {
 		super(line, column, new Statement[] {s}, new Expression[] {e});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute() {
 		preExecute();

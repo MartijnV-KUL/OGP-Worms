@@ -53,8 +53,8 @@ public class Projectile extends BallisticBody {
 	 * 			|	return super.ballisticTrajectoryHasEnded(x, y)
 	 * 			
 	 */
-	public boolean ballisticTrajectoryHasEnded(double x, double y) { //TODO pdate doc
-		Worm worm = wormHit(x,y);
+	public boolean ballisticTrajectoryHasEnded(double x, double y) { //TODO update doc
+		Worm worm = wormHit(x,y);		//TODO: the worm shoots at itself instead of the targeted worm.
 		if (worm!=null) {
 			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
 			return true;

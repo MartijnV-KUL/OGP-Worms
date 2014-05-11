@@ -1,6 +1,6 @@
 package worms.model;
 
-import worms.gui.GUIConstants;
+//import worms.gui.GUIConstants;
 
 public class StatementAction extends Statement {
 	
@@ -29,6 +29,7 @@ public class StatementAction extends Statement {
 		SKIP
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute() {
 		if (getRootProgram().getCurrentLine() > getLine())

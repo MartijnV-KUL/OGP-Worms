@@ -11,6 +11,7 @@ public class ExpressionBinary extends Expression {
 		this.e2 = e2;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Type<?> evaluate() {
 		if (getType()==Expression.Types.ADDITION) {
 			if ( !(e1.evaluate().getValue() instanceof Number) || !(e2.evaluate().getValue() instanceof Number) ) //TODO instance of "Double" or "Number"?

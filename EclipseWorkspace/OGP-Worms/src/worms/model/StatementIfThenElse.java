@@ -6,6 +6,7 @@ public class StatementIfThenElse extends Statement {
 		super(line, column, new Statement[] {s1,s2}, new Expression[] {e});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute() {
 		preExecute();
