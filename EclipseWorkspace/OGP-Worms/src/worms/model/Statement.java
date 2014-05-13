@@ -11,16 +11,14 @@ public abstract class Statement {
 	private int column;
 	
 	public Statement(int line, int column, Statement[] statements, Expression[] expressions) {
-		//this.line = line;
-		//this.column = column;
 		setLine(line);
 		setColumn(column);
 		
 		for ( int i=0; i<statements.length; i++ ) {
-			this.addStatement(statements[i]);
+			addStatement(statements[i]);
 		}
 		for ( int i=0; i<expressions.length; i++ ) {
-			this.addExpression(expressions[i]);
+			addExpression(expressions[i]);
 		}
 	}
 	
@@ -44,18 +42,10 @@ public abstract class Statement {
 	
 	public abstract void execute();
 	
-	private Boolean programContinues = false;
-	
-	public void setProgramContinues(Boolean bool) {
-		this.programContinues = bool;
-	}
-	
-	public Boolean getProgramContinues() {
-		return programContinues;
-	}
-	
 	public void preExecute() {
 		Program program = getRootProgram();
+		if (!program.continueExecution())
+			program.stopProgram();
 		program.setCurrentLine(getLine());
 		program.setCurrentColumn(getColumn());
 		program.incNbStatementsExecuted();
@@ -68,12 +58,24 @@ public abstract class Statement {
 		}
 		return statement.getProgram();
 	}
+	
+	public ArrayList<Statement> getAllStatements() {
+		ArrayList<Statement> allStatements = new ArrayList<Statement>();
+		allStatements.add(this);
+		for ( Statement s : getStatements() ) {
+			if (s!=null)
+				allStatements.addAll(s.getAllStatements());
+		}
+		return allStatements;
+	}
 
 	public boolean isWellFormed() {
-		return true; //NOTE dummy implementation, is overridden by the for each statement 
+		for ( Statement s : getStatements() ) {
+			if (!s.isWellFormed())
+				return false;
+		}
+		return true;
 	}
-	
-	public abstract boolean containsActionStatement();
 	
 // {{ Program Association
 

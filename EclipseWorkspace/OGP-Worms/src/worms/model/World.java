@@ -736,8 +736,11 @@ public class World {
 	 * 			| 	then setActiveWorm(getWorms().get(0));
 	 */
 	public void startGame() {
-		if (!getWorms().isEmpty())
+		if (!getWorms().isEmpty()) {
 			setActiveWorm(getWorms().get(0));
+			if ( getWorms().get(0).hasAProgram() )
+				getWorms().get(0).getProgram().runProgram();
+		}
 	}
 	
 	/**
@@ -762,7 +765,7 @@ public class World {
 	public void nextTurn() {
 		int index = getWorms().indexOf(getActiveWorm());
 		if (!getActiveWorm().isAlive()){
-			getActiveWorm().terminate();
+			getActiveWorm().die();
 		}
 		else {
 			if (index==(getWorms().size()-1))
@@ -771,6 +774,9 @@ public class World {
 				index += 1;
 		}
 		setActiveWorm(getWorms().get(index));
+		if ( getWorms().get(index).hasAProgram() )
+			getWorms().get(index).getProgram().runProgram();
+		
 	}
 	
 	/**

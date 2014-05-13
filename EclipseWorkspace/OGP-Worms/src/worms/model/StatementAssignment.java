@@ -11,13 +11,14 @@ public class StatementAssignment extends Statement {
 
 	@Override
 	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
 		preExecute();
-		getProgram().assignVariable(variable, getExpressions().get(0).evaluate());
-	}
-
-	@Override
-	public boolean containsActionStatement() {
-		return false;
+		getRootProgram().assignVariable(variable, getExpressions().get(0).evaluate());
 	}
 
 }

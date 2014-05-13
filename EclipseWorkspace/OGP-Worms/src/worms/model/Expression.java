@@ -29,13 +29,13 @@ public class Expression {
 			return new Type<Boolean>(false);
 		if (getType()==Expression.Types.NULL)
 			return new Type<Entity>(null);
-		if (getType()==Expression.Types.SELF)
-			return new Type<Entity>(new Entity(getStatement().getProgram().getWorm()));
+		if (getType()==Expression.Types.SELF) {
+			return new Type<Entity>(new Entity(getStatement().getRootProgram().getWorm()));
+		}
 		
 		getStatement().getProgram().typeErrorOccurred();
 		return null;
 	}
-	
 	
 	
 	public Types getType() {

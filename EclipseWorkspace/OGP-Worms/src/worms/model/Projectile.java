@@ -208,16 +208,10 @@ public class Projectile extends BallisticBody {
 	 * @throws 	ModelException
 	 * 			if (!hasAWeapon())
 	 */
-	public double getRadius() throws ModelException {
+	public double getRadius() throws ModelException { //TODO update doc
 		if (!hasAWeapon())
 			throw new ModelException("This projectile does not have a weapon assigned to it.");
-		// m = rho*V
-		// V = (4/3)*pi*r^3
-		// r = ((m/rho)*(3/4)/pi)^(1/3)
-		double m = getMass();
-		double rho = 7800;
-		double pi = Math.PI;
-		return Math.pow((m/rho)*(3/4)*(1/pi), 1/3);
+		return getWeapon().getProjectileRadius();
 	}
 	
 // }}

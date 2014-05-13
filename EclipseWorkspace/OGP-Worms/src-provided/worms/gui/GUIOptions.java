@@ -32,5 +32,8 @@ public class GUIOptions {
 	 * 
 	 * Can also be set from the command line with the -program argument
 	 */
-	public String programFile = "programs/program.txt";
+//	public String programFile = "programs/program.txt";
+	public String programFile = "programs/program_simple.txt";
+//	public String programFile = "programs/program_example.txt";
+//	public String programFile = "programs/syntax_test.txt";
 }

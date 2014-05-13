@@ -489,12 +489,29 @@ public abstract class Weapon {
 	 */
 	public void shoot( int propulsionYield ) {
 		
-		double projectileX = getWorm().getX() + getWorm().getRadius() * Math.cos(getWorm().getDirection());
-		double projectileY = getWorm().getY() + getWorm().getRadius() * Math.sin(getWorm().getDirection());
+		double projectileX = getWorm().getX() + ( getWorm().getRadius() + getProjectileRadius() ) * Math.cos(getWorm().getDirection());
+		double projectileY = getWorm().getY() + ( getWorm().getRadius() + getProjectileRadius() ) * Math.sin(getWorm().getDirection());
 		double projectileDirection = getWorm().getDirection();
 		Projectile newProjectile = new Projectile(projectileX, projectileY, projectileDirection, propulsionYield);
 		
 		getWorm().getWorld().setProjectile(newProjectile);
 		setProjectile(newProjectile);
 	}
+	
+	/**
+	 * Method to get the radius of a projectile.
+	 * 
+	 * @return	The radius of a projectile.
+	 * 
+	 */
+	public double getProjectileRadius() throws ModelException { //TODO update doc
+		// m = rho*V
+		// V = (4/3)*pi*r^3
+		// r = ((m/rho)*(3/4)/pi)^(1/3)
+		double m = getProjectileMass();
+		double rho = 7800;
+		double pi = Math.PI;
+		return Math.pow((m/rho)*(3/4)*(1/pi), 1/3);
+	}
+	
 }

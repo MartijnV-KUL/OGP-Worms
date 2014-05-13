@@ -15,20 +15,62 @@ public class StatementForEach extends Statement {
 		this.variable = variable;
 	}
 
-	private Object lastObject;
-	
 	@Override
 	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
 		preExecute();
 		Program program = getRootProgram();
 		
-		/* TODO	Starting from lastObject is easily done with a regular for-loop instead of an enhanced for-loop.
-		 * 		I don't know how to do it with an enhanced for-loop, but I guess that must be possible.
-		 * 		I have set the old code in comments.
-		 */
+		if ( type == ForeachType.WORM ) {
+			for ( Worm w : getProgram().getWorm().getWorld().getWorms() ) {
+				program.assignVariable(variable, new Type<Entity>(new Entity(w)));
+				getStatements().get(0).execute();
+			}
+		}
+		if ( type == ForeachType.FOOD ) {
+			for ( Food f : getProgram().getWorm().getWorld().getFood() ) {
+				program.assignVariable(variable, new Type<Entity>(new Entity(f)));
+				getStatements().get(0).execute();
+			}
+		}
+		if ( type == ForeachType.ANY ) {
+			ArrayList<Object> objects = new ArrayList<Object>();
+			objects.addAll(getProgram().getWorm().getWorld().getWorms());
+			objects.addAll(getProgram().getWorm().getWorld().getFood());
+			for ( Object obj : objects ) {
+				program.assignVariable(variable, new Type<Entity>(new Entity(obj)));
+				getStatements().get(0).execute();
+			}
+		}
+	}
+	
+	/*
+
+	private Object lastObject;
+	private int counter = 0;
+	
+	@Override
+	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
+		preExecute();
+		Program program = getRootProgram();
+		
+//		 TODO	Starting from lastObject is easily done with a regular for-loop instead of an enhanced for-loop.
+//		 		I don't know how to do it with an enhanced for-loop, but I guess that must be possible.
+//		 		I have set the old code in comments.
+//		 
 		//For-loop for worms.
 		if ( type == ForeachType.WORM ) {
-			int counter = 0;
 			ArrayList<Worm> worms = new ArrayList<Worm>();
 			worms.addAll(getProgram().getWorm().getWorld().getWorms());
 			if (getProgramContinues() == false) { //The next for-loop is executed for the first time, getProgramContinues = default FALSE
@@ -141,15 +183,15 @@ public class StatementForEach extends Statement {
 //			}
 		}
 	}
-
-	@Override
-	public boolean containsActionStatement() {
-		return getStatements().get(0).containsActionStatement();
-	}
+	*/
 	
 	@Override
 	public boolean isWellFormed() {
-		return (!containsActionStatement());
+		for ( Statement s : getAllStatements() ) {
+			if ( s instanceof StatementAction )
+				return false;
+		}
+		return true;
 	}
 
 }

@@ -14,19 +14,17 @@ public class StatementSequence extends Statement {
 	
 	@Override
 	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
+		
 		preExecute();
 		for ( Statement s : getStatements() ) {
 			s.execute();
 		}
-	}
-
-	@Override
-	public boolean containsActionStatement() {
-		for ( Statement s : getStatements() ) {
-			if (s.containsActionStatement())
-				return true;
-		}
-		return false;
 	}
 
 }

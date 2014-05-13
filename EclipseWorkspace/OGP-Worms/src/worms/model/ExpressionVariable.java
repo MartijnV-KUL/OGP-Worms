@@ -10,7 +10,7 @@ public class ExpressionVariable extends Expression {
 	}
 	
 	public Type<?> evaluate() {
-		return getStatement().getProgram().getVariable(variable);
+		return getStatement().getRootProgram().getVariable(variable);
 	}
 
 }

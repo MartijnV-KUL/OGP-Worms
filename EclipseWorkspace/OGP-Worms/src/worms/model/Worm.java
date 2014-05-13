@@ -115,9 +115,11 @@ public class Worm extends BallisticBody {
 	 * 			| setHitPoints(0)
 	 * 			| setActionPoints(0)
 	 */
-	public void die() {
+	public void die() { //TODO update doc
 		setHitPoints(0);
 		setActionPoints(0);
+		getWorld().nextTurn();
+		terminate();
 	}
 	
 // {{ Constants
@@ -442,10 +444,13 @@ public class Worm extends BallisticBody {
 	 * 			| if (isValid
 	 * @throws
 	 */
-	protected void setHitPoints(int hitPoints)				{ //All aspects related to hitpoints must be worked out in a total manner.
+	protected void setHitPoints(int hitPoints) { //All aspects related to hitpoints must be worked out in a total manner.
+		//TODO update doc with "die()"
 		if ( ! isValidHitPoints(hitPoints) ) {
-			if (hitPoints < 0)
+			if (hitPoints < 0) {
 				this.hitPoints = 0;
+				die();
+			}
 			if (hitPoints > getMaxHitPoints())
 				this.hitPoints = getMaxHitPoints();
 		}
@@ -1226,9 +1231,9 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method to remove all weapons from the collection.
 	 */
-	private void removeAllWeapons() {
-		for ( Weapon weapon : weaponCollection ) {
-			removeWeapon(weapon);
+	private void removeAllWeapons() { //TODO update all other removeAll methods to this. The other way of doing does not work 
+		while (!weaponCollection.isEmpty()) {
+			removeWeapon(weaponCollection.get(0));
 		}
 	}
 	

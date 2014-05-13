@@ -1,6 +1,6 @@
 package worms.model;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -18,21 +18,29 @@ public class Program {
 	}
 	
 	public Program() {}		//Empty constructor.
+	
+	private ProgramParser<Expression,Statement,Type<?>> parser;
 
 	public ParseOutcome<?> parseProgram(String programText, IActionHandler handler) {
 		this.handler = handler;
-		ProgramParser<Expression,Statement,Type<?>> parser = new ProgramParser<Expression,Statement,Type<?>>(new ProgramFactoryImpl());
+		parser = new ProgramParser<Expression,Statement,Type<?>>(new ProgramFactoryImpl());
 		parser.parse(programText);
-		return null;
-		//TODO this seems fishy... what else is there to return. What can be returned as a ParseOutcome?
-		//This gives a null when trying to load the program. This method has to return a ParseOutCome...
+		setVariables(parser.getGlobals());
+		setStatement(parser.getStatement());
+		if (parser.getErrors().isEmpty())
+			return ParseOutcome.success(this);
+		else
+			return ParseOutcome.failure(parser.getErrors());
 	}
 
 	public boolean isWellFormed() {
 		return getStatement().isWellFormed();
 	}
 	
+	private boolean typeErrorOccurred;
+	
 	public void typeErrorOccurred() {
+		typeErrorOccurred=true;
 		System.err.println("A type error occurred in the specified worm program.");
 		System.err.println("This happened at line " + getCurrentLine() + " and column " + getCurrentColumn() + ".");
 		stopProgram();
@@ -46,10 +54,14 @@ public class Program {
 		 * program return immediately. */
 	}
 	
-	private HashMap<String,Type<?>> variables;
+	private Map<String,Type<?>> variables;
 	
-	public void assignVariable(String variable, Type<?> t ) {
+	public void assignVariable( String variable, Type<?> t ) {
 		variables.put(variable, t);
+	}
+	
+	public void setVariables( Map<String,Type<?>> map ) {
+		variables = map;
 	}
 	
 	public Type<?> getVariable(String variable) {
@@ -88,60 +100,84 @@ public class Program {
 		return maxNbStatementsExecutions;
 	}
 	
-	public void runProgram() {
-		if (getNbStatementsExecuted()>=getMaxNbStatementsExecutions()) {
-			stopProgram();
-		} else if (getCurrentLine()>0) {
-			getStatement().execute(); // continuing at specified line is handled in the "execute" command
-		} else {
-			getStatement().execute();	/* NOTE this should start by loading the variables and then running the main statement.
-										 * Which means the statement referred to here, should be a sequence starting with 
-										 * the variable assignment and then the other lines. */
-		}
+	private boolean continueExecution;
+	
+	public boolean continueExecution() {
+		return continueExecution;
 	}
 	
-	private int currentExecutionLine;
+	private boolean hasReachedEnd;
+	
+	public void runProgram() {
+		if (typeErrorOccurred) {
+			typeErrorOccurred(); // this also stops the program
+			getWorm().getWorld().nextTurn();
+			return;
+		} else if (getNbStatementsExecuted()>=getMaxNbStatementsExecutions()) {
+			stopProgram();
+			getWorm().getWorld().nextTurn();
+			return;
+		}
+		if (hasReachedEnd) {
+			hasReachedEnd = false;
+			setVariables(parser.getGlobals());
+			setCurrentLine(0);
+			setCurrentColumn(0);
+		}
+		continueExecution = true;
+		getStatement().execute();
+		if (continueExecution)
+			hasReachedEnd=true;
+		getWorm().getWorld().nextTurn();
+	}
 	
 	public void stopProgram() {
-		currentExecutionLine = getCurrentLine();
+		continueExecution = false;
+		hasReachedEnd = false;
 		
-		if (getNbStatementsExecuted() >= getMaxNbStatementsExecutions())
-			getWorm().terminate();		//removes program if the worm has reached its maximum number of statement executions.
 		
-		else {
-			//TODO is this a correct implementation? Not sure if it is "squishy" to use "instanceof"...
-			//Could do this with 2 if-loops, 1 for StatementForEach and 1 for the other statements,
-			//but this gives a little bit more control as each statement is handled separately.
-			//TODO What to do with the column?
-			if (getStatement() instanceof StatementAction) {
-				getStatement().setLine(currentExecutionLine + 1);//The program will continue on the next line.
-				getStatement().execute();
-			}
-			if (getStatement() instanceof StatementAssignment) {
-				getStatement().setLine(currentExecutionLine + 1);
-				getStatement().execute();
-			}
-			if (getStatement() instanceof StatementForEach) {
-				getStatement().setProgramContinues(true);
-				getStatement().execute();
-			}
-			if (getStatement() instanceof StatementIfThenElse) {
-				getStatement().setLine(currentExecutionLine + 1);
-				getStatement().execute();
-			}
-			if (getStatement() instanceof StatementPrint) {
-				getStatement().setLine(currentExecutionLine + 1);
-				getStatement().execute();
-			}
-			if (getStatement() instanceof StatementSequence) {
-				getStatement().setLine(currentExecutionLine + 1);
-				getStatement().execute();
-			}
-			if (getStatement() instanceof StatementWhile) {
-				getStatement().setLine(currentExecutionLine + 1);
-				getStatement().execute();
-			}
-		}
+		
+		
+		
+//		currentExecutionLine = getCurrentLine();
+//		
+//		if (getNbStatementsExecuted() >= getMaxNbStatementsExecutions())
+//			getWorm().terminate();		//removes program if the worm has reached its maximum number of statement executions.
+//		
+//		else {
+//			//TODO is this a correct implementation? Not sure if it is "squishy" to use "instanceof"...
+//			//Could do this with 2 if-loops, 1 for StatementForEach and 1 for the other statements,
+//			//but this gives a little bit more control as each statement is handled separately.
+//			//TODO What to do with the column?
+//			if (getStatement() instanceof StatementAction) {
+//				getStatement().setLine(currentExecutionLine + 1);//The program will continue on the next line.
+//				getStatement().execute();
+//			}
+//			if (getStatement() instanceof StatementAssignment) {
+//				getStatement().setLine(currentExecutionLine + 1);
+//				getStatement().execute();
+//			}
+//			if (getStatement() instanceof StatementForEach) {
+//				getStatement().setProgramContinues(true);
+//				getStatement().execute();
+//			}
+//			if (getStatement() instanceof StatementIfThenElse) {
+//				getStatement().setLine(currentExecutionLine + 1);
+//				getStatement().execute();
+//			}
+//			if (getStatement() instanceof StatementPrint) {
+//				getStatement().setLine(currentExecutionLine + 1);
+//				getStatement().execute();
+//			}
+//			if (getStatement() instanceof StatementSequence) {
+//				getStatement().setLine(currentExecutionLine + 1);
+//				getStatement().execute();
+//			}
+//			if (getStatement() instanceof StatementWhile) {
+//				getStatement().setLine(currentExecutionLine + 1);
+//				getStatement().execute();
+//			}
+//		}
 	}
 	
 

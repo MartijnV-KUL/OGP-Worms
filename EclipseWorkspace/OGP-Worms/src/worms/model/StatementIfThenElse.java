@@ -9,6 +9,12 @@ public class StatementIfThenElse extends Statement {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
 		preExecute();
 		if ( !(getExpressions().get(0).evaluate().getValue() instanceof Boolean) )
 			getProgram().typeErrorOccurred();
@@ -16,11 +22,6 @@ public class StatementIfThenElse extends Statement {
 			getStatements().get(0).execute();
 		else
 			getStatements().get(1).execute();
-	}
-
-	@Override
-	public boolean containsActionStatement() {
-		return ( getStatements().get(0).containsActionStatement() || getStatements().get(1).containsActionStatement() );
 	}
 
 }

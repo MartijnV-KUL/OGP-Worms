@@ -32,12 +32,14 @@ public class StatementAction extends Statement {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
 		if (getRootProgram().getCurrentLine() > getLine())
 			return;
 		if (getRootProgram().getCurrentColumn() > getColumn())
 			return;
-		
 		preExecute();
+//		getRootProgram().stopProgram();
 		Program program = getRootProgram();
 		Worm worm = program.getWorm();
 		
@@ -81,11 +83,6 @@ public class StatementAction extends Statement {
 		}
 		program.typeErrorOccurred();
 
-	}
-
-	@Override
-	public boolean containsActionStatement() {
-		return true;
 	}
 
 }

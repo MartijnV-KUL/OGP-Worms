@@ -8,13 +8,14 @@ public class StatementPrint extends Statement {
 
 	@Override
 	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
 		preExecute();
 		System.out.println(getExpressions().get(0).evaluate().getValue());
-	}
-
-	@Override
-	public boolean containsActionStatement() {
-		return false;
 	}
 
 }
