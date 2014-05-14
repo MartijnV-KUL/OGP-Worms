@@ -22,9 +22,10 @@ public abstract class Statement {
 		}
 	}
 	
-	//TODO	I added setters for line and column to continue at the next line when the program stopped.
-	//		Could not do that in program through setCurrentLine, as the method execute() calls preExecute()
-	//		and that overrules the setCurrentLine() method in program through the program.setCurrentLine(getLine()) method.
+//		I added setters for line and column to continue at the next line when the program stopped.
+//		Could not do that in program through setCurrentLine, as the method execute() calls preExecute()
+//		and that overrules the setCurrentLine() method in program through the program.setCurrentLine(getLine()) method.
+	
 	public void setLine(int line) {
 		this.line = line;
 	}

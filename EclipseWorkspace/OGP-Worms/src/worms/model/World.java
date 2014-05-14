@@ -764,15 +764,15 @@ public class World {
 	 */
 	public void nextTurn() {
 		int index = getWorms().indexOf(getActiveWorm());
-		if (!getActiveWorm().isAlive()){
-			getActiveWorm().die();
-		}
-		else {
+		//if (!getActiveWorm().isAlive()){
+	//		getActiveWorm().die();					//TODO
+//		}
+		//else {
 			if (index==(getWorms().size()-1))
 				index = 0;
 			else
 				index += 1;
-		}
+	//	}
 		setActiveWorm(getWorms().get(index));
 		if ( getWorms().get(index).hasAProgram() )
 			getWorms().get(index).getProgram().runProgram();

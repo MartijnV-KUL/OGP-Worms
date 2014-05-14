@@ -31,6 +31,23 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @author Martijn Vermaut, Niels Claes
  */
 public class Worm extends BallisticBody {
+	
+	
+//	TODO Questions:
+//	-	Direction boundaries?
+//	-	Method isAdjacent => computations fast enough?
+//	-	Method getMoveDistance => computations fast enough?
+//	- 	StatementForEach => when interrupted, continue from last worm or again from the beginning?
+//	- 	Documentation of Statement classes?
+//	- 	Do we have to write our own worm program? If so, what's the complexity?
+//	- 	In StatementWhile (for example): Warning "Unchecked cast from Type<capture#2-of ?> to Type<Boolean>"
+//		=> What's Type<capture#2-of ?> and how to fix it?
+//	-	TypeErrorOccured => correct implementation?
+//	-	What to do with the columns of the program file? Loops take lines into account, not columns.
+//	-	Write testcases for worm programs or assume they are correct?
+//	-	UML diagram?
+//	-	Worms able to jump down?
+
 
 	/**
 	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
