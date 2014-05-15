@@ -1,8 +1,8 @@
 package worms.model;
 
-public class StatementActionTurn extends StatementAction {
+public class StatementActionFire extends StatementAction {
 	
-	public StatementActionTurn(int line, int column, Expression e) {
+	public StatementActionFire(int line, int column, Expression e) {
 		super(line,column,e);
 	}
 
@@ -10,16 +10,16 @@ public class StatementActionTurn extends StatementAction {
 	protected void doAction() {
 		Program program = getRootProgram();
 		Worm worm = program.getWorm();
-		Object val = getExpressions().get(0).evaluate().getValue(); 
+		Object val = getExpressions().get(0).evaluate(); 
 		if ( !(val instanceof Number) ) { //TODO dynamic-static type: which is checked here?
 			program.typeErrorOccurred();
 			return;
 		}
-		if ( !worm.canTurn((double)val) ) {
+		if ( !worm.canShoot() ) {
 			program.stopProgram();
 			return;
 		}
-		program.getHandler().turn(worm, (double)(val));
+		program.getHandler().fire(worm, (int)Math.floor((double)(val)));
 	}
 
 }
