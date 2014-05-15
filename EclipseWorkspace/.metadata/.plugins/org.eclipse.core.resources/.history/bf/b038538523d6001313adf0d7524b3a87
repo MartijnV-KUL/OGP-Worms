@@ -1,7 +1,0 @@
-package worms.model;
-
-public class TypeBool extends Type {
-	
-	private double value;
-
-}

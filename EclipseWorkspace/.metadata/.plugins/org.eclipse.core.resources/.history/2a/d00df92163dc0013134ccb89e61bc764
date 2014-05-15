@@ -1,0 +1,28 @@
+package worms.model.programs.statements;
+
+import worms.model.programs.Type;
+import worms.model.programs.expressions.Expression;
+
+public class While extends Statement {
+	
+	public While(int line, int column, Expression e, Statement s) {
+		super(line, column, new Statement[] {s}, new Expression[] {e});
+	}
+
+	@Override
+	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
+		preExecute();
+		if ( !(getExpressions().get(0).evaluate().getValue() instanceof Boolean) )
+			getProgram().typeErrorOccurred();
+		while ((boolean) ((Type<Boolean>)getExpressions().get(0).evaluate()).getValue()) {
+			getStatements().get(0).execute();
+		}
+	}
+
+}

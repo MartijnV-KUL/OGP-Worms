@@ -3,6 +3,7 @@ package worms.model;
 import java.util.List;
 
 import worms.model.programs.*;
+import worms.model.programs.ProgramFactory.ForeachType;
 
 public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement, Type<?>> {
 	
@@ -14,94 +15,94 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 	@Override
 	public Expression createBooleanLiteral(int line, int column, boolean b) {
 		if (b)
-			return new Expression(line,column,Expression.Types.TRUE);
+			return new ExpressionTrue(line,column);
 		else
-			return new Expression(line,column,Expression.Types.FALSE);
+			return new ExpressionFalse(line,column);
 	}
 
 	@Override
 	public Expression createAnd(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.DISJUNCTION, e1, e2);
+		return new ExpressionDisjunction(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createOr(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.CONJUNCTION, e1, e2);
+		return new ExpressionConjunction(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createNot(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.NEGATION, e);
+		return new ExpressionNegation(line,column, e);
 	}
 
 	@Override
 	public Expression createNull(int line, int column) {
-		return new Expression(line,column,Expression.Types.NULL);
+		return new ExpressionNull(line,column);
 	}
 
 	@Override
 	public Expression createSelf(int line, int column) {
-		return new Expression(line,column,Expression.Types.SELF);
+		return new ExpressionSelf(line,column);
 	}
 
 	@Override
 	public Expression createGetX(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETX, e);
+		return new ExpressionGetX(line,column, e);
 	}
 
 	@Override
 	public Expression createGetY(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETY, e);
+		return new ExpressionGetY(line,column, e);
 	}
 
 	@Override
 	public Expression createGetRadius(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETRADIUS, e);
+		return new ExpressionGetRadius(line,column, e);
 	}
 
 	@Override
 	public Expression createGetDir(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETDIR, e);
+		return new ExpressionGetDirection(line,column, e);
 	}
 
 	@Override
 	public Expression createGetAP(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETAP, e);
+		return new ExpressionGetAP(line,column, e);
 	}
 
 	@Override
 	public Expression createGetMaxAP(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETMAXAP, e);
+		return new ExpressionGetMaxAP(line,column, e);
 	}
 
 	@Override
 	public Expression createGetHP(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETHP, e);
+		return new ExpressionGetHP(line,column, e);
 	}
 
 	@Override
 	public Expression createGetMaxHP(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.GETMAXHP, e);
+		return new ExpressionGetMaxHP(line,column, e);
 	}
 
 	@Override
 	public Expression createSameTeam(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.SAMETEAM, e);
+		return new ExpressionSameTeam(line,column, e);
 	}
 
 	@Override
 	public Expression createSearchObj(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.SEARCHOBJ, e);
+		return new ExpressionSearchObj(line,column, e);
 	}
 
 	@Override
 	public Expression createIsWorm(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.ISWORM, e);
+		return new ExpressionIsWorm(line,column, e);
 	}
 
 	@Override
 	public Expression createIsFood(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.ISFOOD, e);
+		return new ExpressionIsFood(line,column, e);
 	}
 
 	@Override
@@ -111,99 +112,99 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
 	@Override
 	public Expression createLessThan(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.LESSTHAN, e1, e2);
+		return new ExpressionLessThan(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createGreaterThan(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.GREATERTHAN, e1, e2);
+		return new ExpressionGreaterThan(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createLessThanOrEqualTo(int line, int column, Expression e1,
 			Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.LESSTHANOREQUALTO, e1, e2);
+		return new ExpressionLessThanOrEqualTo(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createGreaterThanOrEqualTo(int line, int column, Expression e1,
 			Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.GREATERTHANOREQUALTO, e1, e2);
+		return new ExpressionGreaterThanOrEqualTo(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createEquality(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.EQUALTO, e1, e2);
+		return new ExpressionEqualTo(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createInequality(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.DIFFERENTFROM, e1, e2);
+		return new ExpressionDifferentFrom(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createAdd(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.ADDITION, e1, e2);
+		return new ExpressionAddition(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createSubtraction(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.SUBTRACTION, e1, e2);
+		return new ExpressionSubtraction(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createMul(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.MULTIPLICATION, e1, e2);
+		return new ExpressionMultiplication(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createDivision(int line, int column, Expression e1, Expression e2) {
-		return new ExpressionBinary(line,column,Expression.Types.DIVISION, e1, e2);
+		return new ExpressionDivision(line,column, e1, e2);
 	}
 
 	@Override
 	public Expression createSqrt(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.SQUAREROOT, e);
+		return new ExpressionSquareRoot(line,column, e);
 	}
 
 	@Override
 	public Expression createSin(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.SINE, e);
+		return new ExpressionSine(line,column, e);
 	}
 
 	@Override
 	public Expression createCos(int line, int column, Expression e) {
-		return new ExpressionSingular(line,column,Expression.Types.COSINE, e);
+		return new ExpressionCosine(line,column, e);
 	}
 
 	@Override
 	public Statement createTurn(int line, int column, Expression angle) {
-		return new StatementAction(line,column,StatementAction.ActionTypes.TURN, angle);
+		return new StatementActionTurn(line,column,angle);
 	}
 
 	@Override
 	public Statement createMove(int line, int column) {
-		return new StatementAction(line,column,StatementAction.ActionTypes.MOVE);
+		return new StatementActionMove(line,column);
 	}
 
 	@Override
 	public Statement createJump(int line, int column) {
-		return new StatementAction(line,column,StatementAction.ActionTypes.JUMP);
+		return new StatementActionJump(line,column);
 	}
 
 	@Override
 	public Statement createToggleWeap(int line, int column) {
-		return new StatementAction(line,column,StatementAction.ActionTypes.TOGGLEWEAP);
+		return new StatementActionToggleWeapon(line,column);
 	}
 
 	@Override
 	public Statement createFire(int line, int column, Expression yield) {
-		return new StatementAction(line,column,StatementAction.ActionTypes.FIRE, yield);
+		return new StatementActionFire(line,column,yield);
 	}
 
 	@Override
 	public Statement createSkip(int line, int column) {
-		return new StatementAction(line,column,StatementAction.ActionTypes.SKIP);
+		return new StatementActionSkip(line,column);
 	}
 
 	@Override
@@ -253,6 +254,13 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 	@Override
 	public Type<?> createEntityType() {
 		return new Type<Entity>();
+	}
+
+	@Override
+	public Expression createVariableAccess(int line, int column, String name,
+			Type<?> type) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

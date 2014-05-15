@@ -1,9 +1,10 @@
 package worms.model;
 
+
 public class StatementPrint extends Statement {
 	
 	public StatementPrint(int line, int column, Expression e) {
-		super(line, column, new Statement[0], new Expression[] {e});
+		super(line, column, new Expression[] {e});
 	}
 
 	@Override
@@ -16,6 +17,7 @@ public class StatementPrint extends Statement {
 			return;
 		preExecute();
 		System.out.println(getExpressions().get(0).evaluate().getValue());
+		//TODO this kind of print? perhaps somewhere on the GUI?
 	}
 
 }

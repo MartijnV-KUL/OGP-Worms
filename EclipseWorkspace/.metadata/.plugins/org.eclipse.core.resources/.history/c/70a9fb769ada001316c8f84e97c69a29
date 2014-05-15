@@ -1,0 +1,516 @@
+package worms.model;
+
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+
+/**
+ * An abstract class that defines all different aspects of weapons.
+ * This includes the name, force with which they are fired, the amount of damage they do, 
+ * the amount of action points they cost to fire and the amount of ammunition each weapon has.
+ * 
+ * @invar	The mass of a projectile must be a valid mass at all times.
+ * 			| isValidProjectileMass(getProjectileMass())
+ * @invar	The name of a weapon must be a valid name at all times.
+ * 			| isValidName(getname())
+ * @invar	The amount of damage a weapon does must be a valid amount.
+ * 			| isValidHitPointsDamage(getHitPointsDamage())
+ * @invar	The amount of actionpoints it costs to fire a weapon must be a valid amount.
+ * 			| isValidActionPointsCost(getActionPointsCost())
+ * @invar	The amount of ammunition a weapon has must be a valid amount.
+ * 			| isValidAmmunition(getAmmunition())
+ * 
+ * @invar	Every weapon must can have a valid projectile as projectile.
+ * 			| canHaveAsProjectile(getProjectile())
+ * @invar	Every weapon must can have a valid worm as worm.
+ * 			| canHaveAsWorm(getWorms())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
+public abstract class Weapon {
+
+// {{ Projectile Mass
+	
+	private double projectileMass;
+	
+	/**
+	 * Returns the mass of projectiles.
+	 * 
+	 * @return	The mass of projectiles.
+	 */
+	@Basic
+	public double getProjectileMass() {
+		return projectileMass;
+	}
+	
+	/**
+	 * Method to set the mass of projectiles (if the given mass is valid).
+	 * 
+	 * @param 	projectileMass
+	 * 			The new mass of projectiles.
+	 * 
+	 * @post	| new.getProjectileMass() == projectileMass
+	 * @throws 	ModelException
+	 * 			| ( !isValidProjectileMass(projectileMass))
+	 */
+	protected void setProjectileMass(double projectileMass) throws ModelException {
+		if (!isValidProjectileMass(projectileMass))
+			throw new ModelException("Invalid projectile mass.");
+		this.projectileMass = projectileMass;	
+	}
+	
+	/**
+	 * Checks if the given mass is valid.
+	 * 
+	 * @param 	projectileMass
+	 * 			The given mass of projectiles.
+	 * 
+	 * @return	| if (Double.isNaN(projectileMass))
+	 * 			|	return false
+	 * 			| if (projectileMass <= 0)
+	 * 			|	return false
+	 * 			| if (projectileMass == Double.POSITIVE_INFINITY)
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean isValidProjectileMass(double projectileMass) {
+		if (Double.isNaN(projectileMass))
+			return false;
+		if (projectileMass<=0)
+			return false;
+		if (projectileMass==Double.POSITIVE_INFINITY)
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// {{ Name
+	
+	private String name;
+	
+	/**
+	 * Returns the name of the weapon.
+	 * 
+	 * @return	The name of the weapon.
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Sets the name of the weapon to the given name (if it is valid).
+	 * 
+	 * @param 	name
+	 * 			The new name.
+	 * 
+	 * @post	| new.getName() == name
+	 * @throws 	ModelException
+	 * 			| if (!isValidName(name))
+	 */
+	protected void setName(String name) throws ModelException {
+		if (!isValidName(name))
+			throw new ModelException("Invalid name.");
+		this.name = name;
+	}
+	
+	/**
+	 * Checks if the given name is valid or not.
+	 * 
+	 * @param 	name
+	 * 			The given name.
+	 * 
+	 * @return	| if (!name.matches("[a-zA-Z0-9- ]*"))
+	 *			|	return false
+	 *			| if (!Character.isUpperCase(name.charAt(0)))
+	 *			|	return false
+	 *			| if (name.length() < 2)
+	 *  		|	return false
+	 *			| else
+	 *			| 	return true
+	 */
+	private static boolean isValidName(String name) {
+		if (!name.matches("[a-zA-Z0-9- ]*"))
+			return false;
+		if (!Character.isUpperCase(name.charAt(0)))
+			return false;
+		if (name.length() < 2)
+			return false;
+		return true;
+	}
+	
+// }}
+	
+// {{ Force
+
+	/**
+	 * Abstract method to return the force.
+	 * 
+	 * @param 	propulsionYield
+	 * 			The given yield of the weapon.
+	 * 
+	 * @return	The force of the weapon.
+	 * 			No formal documentation because of abstract method.
+	 */
+	public abstract double getForce( int propulsionYield );
+	
+	// }}
+	
+// {{ Hit Points Damage
+
+	private int hitPointsDamage;
+	
+	/**
+	 * Returns the amount of damage.
+	 * 
+	 * @return	The amount of damage of the weapon.
+	 */
+	public int getHitPointsDamage() {
+		return hitPointsDamage;
+	}
+	
+	/**
+	 * Method to set the amount of damage a weapon does.
+	 * 
+	 * @param 	hitPointsDamage
+	 * 			The amount of damage
+	 * 
+	 * @post	| new.getHitPointsDamage() == hitPointsDamage
+	 * @throws 	ModelException
+	 * 			| if (!isValidHitPointsDamage(hitPointsDamage))
+	 */
+	protected void setHitPointsDamage(int hitPointsDamage) throws ModelException {
+		if (!isValidHitPointsDamage(hitPointsDamage))
+			throw new ModelException("Invalid hit points damage");
+		this.hitPointsDamage = hitPointsDamage;
+	}
+	
+	/**
+	 * Checks if the amount of damage is valid.
+	 * 
+	 * @param 	hitPointsDamage
+	 * 			The amount of damage
+	 * 
+	 * @return	| return (hitPointsDamage > 0)
+	 */
+	private static boolean isValidHitPointsDamage(int hitPointsDamage) {
+		if (hitPointsDamage<0)
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// {{ Action Points Cost
+
+	private int actionPointsCost;
+	
+	/**
+	 * Returns the cost of actionpoints for firing the weapon.
+	 * 
+	 * @return	The cost of actionpoints.
+	 */
+	public int getActionPointsCost() {
+		return actionPointsCost;
+	}
+	
+	/**
+	 * Method to set the cost of actionpoints for firing the weapon.
+	 * 
+	 * @param 	actionPointsCost
+	 * 			The amount of actionpoints a weapon costs
+	 * 
+	 * @post	| new.getActionPointsCost() == actionPointsCost
+	 * @throws 	ModelException
+	 * 			| if (!isValidActionPointsCost(actionPointsCost))
+	 */
+	protected void setActionPointsCost(int actionPointsCost) throws ModelException {
+		if (!isValidActionPointsCost(actionPointsCost))
+			throw new ModelException("Invalid action points cost.");
+		this.actionPointsCost = actionPointsCost;
+	}
+	
+	/**
+	 * Checks if the cost is valid.
+	 * 
+	 * @param 	actionPointsCost
+	 * 			The actionpoint cost for firing.
+	 * 
+	 * @return	| return (actionPointsCost > 0)
+	 */
+	private static boolean isValidActionPointsCost(int actionPointsCost) {
+		if (actionPointsCost<0)
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// {{ Ammunition
+
+	private int ammunition = 0;
+	
+	/**
+	 * Returns the ammunition.
+	 * 
+	 * @return	The ammunition.
+	 */
+	public int getAmmunition() {
+		return ammunition;
+	}
+	
+	/**
+	 * Method to set the ammunition.
+	 * 
+	 * @param 	ammunition
+	 * 			The amount of ammunition
+	 * 
+	 * @post	| new.getAmmunition() == ammunition
+	 * @throws 	ModelException
+	 * 			| if (!isValidAmmunition(ammunition))
+	 */
+	protected void setAmmunition(int ammunition) throws ModelException {
+		if (!isValidAmmunition(ammunition))
+			throw new ModelException("Invalid ammunition.");
+		this.ammunition = ammunition;
+	}
+	
+	/**
+	 * Checks if the given ammunition is valid.
+	 * 
+	 * @param 	ammunition
+	 * 			The given ammunition.
+	 * 
+	 * @return	| return (ammunition > 0)
+	 */
+	private static boolean isValidAmmunition(int ammunition) {
+		if (ammunition<0)
+			return false;
+		return true;
+	}
+	
+	// }}
+
+// {{ Terminated
+	
+	private boolean terminated;
+	
+	/**
+	 * Returns the boolean-type terminated.
+	 * 
+	 * @return	The boolean-type terminated.
+	 */
+	@Basic
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	/**
+	 * Method to terminate the weapon and all corresponding objects from the world.
+	 */
+	public void terminate() {
+		if (hasAWorm())
+			worm.removeWeapon(this);
+		if (hasAProjectile())
+			removeProjectile();
+		terminated = true;
+	}
+	
+	// }}
+	
+// {{ Worm Association
+	
+	private Worm worm;
+	
+	/**
+	 * Returns the worm the weapon belongs to.
+	 * 
+	 * @return	The worm the weapon belongs to.
+	 */
+	@Basic
+	public Worm getWorm() {
+		return worm;
+	}
+	
+	/**
+	 * Method to set a new worm to a weapon.
+	 * 
+	 * @param 	worm
+	 * 			The new worm.
+	 * 
+	 * @post	| new.getWorm() == worm
+	 * @throws 	ModelException
+	 * 			| if (!canHaveAsWorm(worm)
+	 * 			|	throw new ModelException
+	 * 			| if (hasAWorm())
+	 * 			|	throw new ModelException
+	 */
+	@Raw
+	void setWorm(Worm worm) throws ModelException {
+		if (!canHaveAsWorm(worm))
+			throw new ModelException("Invalid worm specified.");
+		if (hasAWorm())
+			throw new ModelException("Already has a worm.");
+		this.worm = worm;
+	}
+	
+	/**
+	 * Checks if the given worm is valid.
+	 * 
+	 * @param 	worm
+	 * 			The given worm.
+	 * 
+	 * @return	| if (worm == null)
+	 * 			| 	return false
+	 * 			| if (worm.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean canHaveAsWorm(Worm worm) {
+		if (worm==null)
+			return false;
+		if (worm.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if a worm is not null.
+	 * 
+	 * @return	(!(worm == null))
+	 */
+	private boolean hasAWorm() {
+		return(!(worm==null));
+	}
+	
+	/**
+	 * Method to remove a worm.
+	 * 
+	 * @post	| new.getWorm() == null
+	 */
+	@Raw
+	void removeWorm() {
+		worm = null;
+	}
+	
+// }}
+	
+// {{ Projectile Association
+	
+	private Projectile projectile;
+	
+	/**
+	 * Basic inspector to return the current projectile.
+	 * 
+	 * @return	The current projectile.
+	 */
+	@Basic
+	public Projectile getProjectile() {
+		return projectile;
+	}
+	
+	/**
+	 * Method to set the projectile to the given projectile if it is valid.
+	 * 
+	 * @param 	projectile
+	 * 			The given projectile.
+	 * 
+	 * @post	| new.getProjectile() == projectile
+	 * @effect	| projectile.setWeapon(this)
+	 * @throws 	ModelException
+	 * 			| if (!canHaveAsProjectile(projectile))
+	 * 			| if (hasAProjectile())
+	 */
+	public void setProjectile(Projectile projectile) throws ModelException {
+		if (!canHaveAsProjectile(projectile))
+			throw new ModelException("Invalid projectile specified.");
+		if (hasAProjectile())
+			throw new ModelException("Already has a world.");
+		projectile.setWeapon(this);
+		this.projectile = projectile;
+	}
+	
+	/**
+	 * Checks if the given projectile is valid.
+	 * 
+	 * @param 	projectile
+	 * 			The given projectile.
+	 * 
+	 * @return	| if (projectile == null)
+	 * 			|	return false
+	 * 			| if (projectile.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean canHaveAsProjectile(Projectile projectile) {
+		if (projectile==null)
+			return false;
+		if (projectile.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if a projectile is not null.
+	 * 
+	 * @return	| return (!(projectile == null))
+	 */
+	private boolean hasAProjectile() {
+		return(!(projectile==null));
+	}
+	
+	/**
+	 * Removes the current projectile and the weapon associated with it.
+	 * 
+	 * @post	| new.getProjectile() == null
+	 */
+	public void removeProjectile() {
+		if (hasAProjectile()) {
+			projectile.removeWeapon();
+			projectile = null;
+		}
+	}
+	
+	// }}
+	
+	
+	/**
+	 * Method to let a worm shoot with an equipped weapon, if it has a projectile.
+	 * 
+	 * @param 	propulsionYield
+	 * 			The yield the weapon is fired with.
+	 * 
+	 * @effect	| setProjectile(newProjectile)
+	 * @note	The object "newProjectile" is created when the worm doesn't have a projectile yet.
+	 * @effect	| getWorm().getWorld().setProjectile(newprojectile)
+	 */
+	public void shoot( int propulsionYield ) {
+		
+		double projectileX = getWorm().getX() + ( getWorm().getRadius() +  ) * Math.cos(getWorm().getDirection());
+		double projectileY = getWorm().getY() + ( getWorm().getRadius() +  ) * Math.sin(getWorm().getDirection());
+		double projectileDirection = getWorm().getDirection();
+		Projectile newProjectile = new Projectile(projectileX, projectileY, projectileDirection, propulsionYield);
+		
+		getWorm().getWorld().setProjectile(newProjectile);
+		setProjectile(newProjectile);
+	}
+	
+	/**
+	 * Method to get the radius of a projectile.
+	 * 
+	 * @return	The radius of a projectile.
+	 */
+	public double getProjectileRadius() throws ModelException { //TODO update doc
+		// m = rho*V
+		// V = (4/3)*pi*r^3
+		// r = ((m/rho)*(3/4)/pi)^(1/3)
+		double m = getProjectileMass();
+		double rho = 7800;
+		double pi = Math.PI;
+		return Math.pow((m/rho)*(3/4)*(1/pi), 1/3);
+	}
+	
+}

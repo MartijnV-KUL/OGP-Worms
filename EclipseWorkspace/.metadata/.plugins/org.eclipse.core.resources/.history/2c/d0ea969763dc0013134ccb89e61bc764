@@ -1,0 +1,17 @@
+package worms.model.programs;
+
+
+public class EVariable extends Expression {
+	
+	private final String variable;
+	
+	public EVariable( int line, int column, String variable ) {
+		super(line,column,Expression.Types.VARIABLE);
+		this.variable = variable;
+	}
+	
+	public Type<?> evaluate() {
+		return getStatement().getRootProgram().getVariable(variable);
+	}
+
+}

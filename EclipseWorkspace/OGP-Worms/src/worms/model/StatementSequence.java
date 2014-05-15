@@ -5,11 +5,7 @@ import java.util.List;
 public class StatementSequence extends Statement {
 	
 	public StatementSequence(int line, int column, List<Statement> statements) {
-		super(line, column, StatementSequence.convertToArray(statements), new Expression[0]);
-	}
-
-	private static Statement[] convertToArray(List<Statement> list) {
-		return list.toArray(new Statement[list.size()]);
+		super(line, column, statements.toArray(new Statement[statements.size()]));
 	}
 	
 	@Override

@@ -1,0 +1,17 @@
+package worms.model.programs;
+
+
+public class EDouble extends Expression {
+	
+	private final double d;
+	
+	public EDouble(int line, int column, double d) {
+		super(line,column,Expression.Types.DOUBLE);
+		this.d = d;
+	}
+	
+	public Type<?> evaluate() {
+		return new Type<Double>(d);
+	}
+
+}

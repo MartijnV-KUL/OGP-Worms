@@ -1,0 +1,27 @@
+package worms.model;
+
+public class ExpressionGetX extends Expression {
+	
+	public ExpressionGetX(int line, int column, Expression e) {
+		super(line,column,e);
+	}
+
+	@Override
+	public Type<Double> evaluate() {
+		Object val = getExpressions().get(0).evaluate().getValue();
+		
+		
+
+		if ( val instanceof Worm || val instanceof Food ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+			return new Type<Double>((double)val);
+		getStatement().getRootProgram().typeErrorOccurred();
+		
+		
+		
+		
+		if ( !(val instanceof Boolean) )
+			getStatement().getRootProgram().typeErrorOccurred();
+		return new Type<Boolean>(!((boolean)val));
+	}
+
+}

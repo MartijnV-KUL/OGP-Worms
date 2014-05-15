@@ -1,0 +1,19 @@
+package worms.model;
+
+public class StatementActionTurn extends StatementAction {
+	
+	public StatementActionTurn() {
+		
+	}
+
+	@Override
+	protected void doAction() {
+		if ( !(getExpressions().get(0).evaluate().getValue() instanceof Number) )
+			program.typeErrorOccurred();
+		if ( !worm.canTurn((double)((Type<Double>)getExpressions().get(0).evaluate()).getValue()) )
+			program.stopProgram();
+		getRootProgram().getHandler().turn(worm, (double)((Type<Double>)getExpressions().get(0).evaluate()).getValue());
+		return;
+	}
+
+}

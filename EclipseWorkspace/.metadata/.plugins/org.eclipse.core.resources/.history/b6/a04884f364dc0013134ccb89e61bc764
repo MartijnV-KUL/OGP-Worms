@@ -1,0 +1,26 @@
+package worms.model;
+
+import java.util.List;
+
+public class SSequence extends Statement {
+	
+	public SSequence(int line, int column, List<Statement> statements) {
+		super(line, column, statements.toArray(new Statement[statements.size()]);
+	}
+	
+	@Override
+	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
+		
+		preExecute();
+		for ( Statement s : getStatements() ) {
+			s.execute();
+		}
+	}
+
+}

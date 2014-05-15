@@ -1,0 +1,69 @@
+package worms.model;
+
+public abstract class SAction extends Statement {
+	
+	public SAction(int line, int column) {
+		super(line, column);
+	}
+	
+	public SAction( int line, int column, Expression e ) {
+		super(line, column, new Expression[] {e});
+	}
+	
+	protected abstract void doAction();
+	
+	@Override
+	public abstract void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		if (getRootProgram().getCurrentColumn() > getColumn())
+			return;
+		preExecute();
+		Program program = getRootProgram();
+		Worm worm = program.getWorm();
+		
+		if ( getActionType() == SAction.ActionTypes.TURN ) {
+			if ( !(getExpressions().get(0).evaluate().getValue() instanceof Number) )
+				program.typeErrorOccurred();
+			if ( !worm.canTurn((double)((Type<Double>)getExpressions().get(0).evaluate()).getValue()) )
+				program.stopProgram();
+			getRootProgram().getHandler().turn(worm, (double)((Type<Double>)getExpressions().get(0).evaluate()).getValue());
+			return;
+		}
+		if ( getActionType() == SAction.ActionTypes.MOVE ) {
+			if ( !worm.canMove() )
+				program.stopProgram();
+			getRootProgram().getHandler().move(worm);
+			return;
+		}
+		if ( getActionType() == SAction.ActionTypes.JUMP ) {
+			if ( !worm.canJump() )
+				program.stopProgram();
+			getRootProgram().getHandler().jump(worm);
+			return;
+		}
+		if ( getActionType() == SAction.ActionTypes.TOGGLEWEAP ) {
+			if ( !worm.canMove() )
+				program.stopProgram();
+			getRootProgram().getHandler().toggleWeapon(worm);
+			return;
+		}
+		if ( getActionType() == SAction.ActionTypes.FIRE ) {
+			if ( !worm.canShoot() )
+				program.stopProgram();
+			if ( !(getExpressions().get(0).evaluate().getValue() instanceof Number) )
+				program.typeErrorOccurred();
+			getRootProgram().getHandler().fire(worm, (int)Math.floor(((Type<Double>)getExpressions().get(0).evaluate()).getValue()));
+			return;
+		}
+		if ( getActionType() == SAction.ActionTypes.SKIP ) {
+			// do nothing
+			return;
+		}
+		program.typeErrorOccurred();
+
+	}
+
+}

@@ -2,6 +2,7 @@ package worms.model;
 
 import java.util.ArrayList;
 
+import worms.model.programs.ProgramFactory;
 import worms.model.programs.ProgramFactory.ForeachType;
 
 public class StatementForEach extends Statement {
@@ -10,7 +11,7 @@ public class StatementForEach extends Statement {
 	private final String variable;
 	
 	public StatementForEach(int line, int column, ForeachType type, String variable, Statement s) {
-		super(line, column, new Statement[] {s}, new Expression[0]);
+		super(line, column, new Statement[] {s});
 		this.type = type;
 		this.variable = variable;
 	}
@@ -188,7 +189,7 @@ public class StatementForEach extends Statement {
 	@Override
 	public boolean isWellFormed() {
 		for ( Statement s : getAllStatements() ) {
-			if ( s instanceof StatementAction )
+			if ( s instanceof StatementAction ) //TODO check static and dynamic type. What does "instanceof" check? SAction is an abstract class, so only object of its children classes can exist. Does that mean that this always retrn false? or does it return true also if an object is an object of a childclass?
 				return false;
 		}
 		return true;

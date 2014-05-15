@@ -1,0 +1,14 @@
+package worms.model;
+
+public class ExpressionIsWorm extends Expression {
+	
+	public ExpressionIsWorm(int line, int column, Expression e) {
+		super(line,column,e);
+	}
+
+	@Override
+	public Type<Boolean> evaluate() {
+		return new Type<Boolean>(getExpressions().get(0).evaluate().getValue() instanceof Worm);
+	}
+
+}

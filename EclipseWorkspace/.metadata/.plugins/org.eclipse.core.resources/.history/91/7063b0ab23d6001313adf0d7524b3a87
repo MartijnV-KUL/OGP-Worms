@@ -1,7 +1,0 @@
-package worms.model;
-
-public class Type<T> {
-	
-	private T value;
-
-}

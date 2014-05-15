@@ -1,0 +1,1353 @@
+package worms.model;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import worms.util.Util;
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
+
+/**
+ * A class to define all different aspects of a world and the objects contained in it.
+ * 
+ * @invar	Every dimension must be a valid dimension at all times.
+ * 			| isValidDimension(getWidth())
+ * 			| isValidDimension(getHeight())
+ * @invar	Every passable map must be a valid map at all times.
+ * 			| isValidPassableMap(getPassableMap())
+ * @invar	Every random seed must be a valid number at all times.
+ * 			| isValidRandomSeed(getRandomSeed())
+ * @invar	Every worm must be a valid worm at all times
+ * 			| isValidWorm(getWorms())
+ * @invar	Every active worm must be a valid active worm at all times.
+ * 			| isValidActiveWorm(getActiveWorm())
+ *
+ * @invar	Every world must can have a valid foodobject as food.
+ * 			| canHaveAsFood(getFood())
+ * @invar	Every world must can have a valid projectile as projectile.
+ * 			| canHaveAsProjectile(getProjectile())
+ * @invar	Every world must can have a valid team as team.
+ * 			| canHaveAsTeam(getTeam())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ */
+public class World {
+
+// {{ Constructors
+	
+	/**
+	 * Default constructor for the World class. Sets all attributes to dummy values.
+	 * 	
+	 * @effect	The passable map is set to a 10x10 false array.
+	 * 			| setPassableMap(new boolean[10][10])
+	 * @post	The Random object of the world is set to a new Random object.
+	 * 			| new.getRandom()==new Random()
+	 * @post	The width of the world is set to 1.
+	 * 			| new.getWidth()==1
+	 * @post	The height of the world is set to 1.
+	 * 			| new.getHeighth()==1
+	 * @post	The maximum amount of teams is set to 10.
+	 * 			| new.getMaxTeams()==10;
+	 */
+	public World() {
+		setPassableMap(new boolean[10][10]);
+		this.randomSeed = new Random();
+		this.width = 1;
+		this.height = 1;
+		maxTeams = 10;
+	}
+	
+	/**
+	 * Constructor for the World class.
+	 * 
+	 * @param 	width
+	 * 			The width of the world.
+	 * @param 	height
+	 * 			The height of the world.
+	 * @param 	passableMap
+	 * 			The boolean[][] type passable map.
+	 * @param 	random
+	 * 			A Random object.
+	 * 
+	 * @effect	The passable map is set to the input passable map.
+	 * 			| setPassableMap(passableMap)
+	 * @post	The random seed is set to the input random object.
+	 * 			| new.getRandomSeed() == random
+	 * @post	The width of the world is set to the specified width.
+	 * 			| new.getWidth()==width
+	 * @post	The height of the world is set to the specified height.
+	 * 			| new.getHeighth()==height
+	 * @post	The maximum amount of teams is set to 10.
+	 * 			| new.getMaxTeams()=10;
+	 * @throws	ModelException
+	 * 			Throws a ModelException if either the specified random object or width or height is invalid.
+	 * 			| if ( !isValidRandomSeed(random) || !isValidDimension(width) || !isValidDimension(height) )
+	 */
+	public World(double width, double height, boolean[][] passableMap, Random random) throws ModelException {
+		setPassableMap(passableMap);
+		maxTeams = 10;
+
+		if (!isValidRandomSeed(random))
+			throw new ModelException("Invalid random seed.");
+		this.randomSeed = random;
+
+		if (!isValidDimension(width))
+			throw new ModelException("Width is invalid.");
+		this.width = width;
+		
+		if (!isValidDimension(height))
+			throw new ModelException("Height is invalid.");
+		this.height = height;
+	}
+	
+// }}
+	
+// {{ Attributes and their Getters, Setters and Checkers
+
+	// {{ Gravitational Acceleration
+
+	/**
+	 * The gravitational acceleration of the world.
+	 * This attribute is only used for ballistic bodies, but it is an attribute of the world, not the ballistic bodies.
+	 */
+	private static final double gravitationalAcceleration = 9.80665;
+
+	/**
+	 * Basic inspector that returns the gravitational acceleration.
+	 * 
+	 * @return The gravitational acceleration.
+	 */
+	@Basic
+	@Immutable
+	public static double getGravitationalAcceleration() {
+		return gravitationalAcceleration;
+	}
+	
+	// }}
+	
+	// {{ Width & Height
+
+	/**
+	 * The width of the game world in meters.
+	 */
+	private final double width;
+
+	/**
+	 * Basic inspector that returns the width of the world.
+	 * 
+	 * @return	The width of the world.
+	 */
+	@Basic
+	public double getWidth() {
+		return this.width;
+	}
+
+	/**
+	 * The height of the game world in meters.
+	 */
+	private final double height;
+	
+	/**
+	 * Basic inspector that returns the height of the world.
+	 * 
+	 * @return	The height of the world.
+	 */
+	@Basic
+	public double getHeight() {
+		return this.height;
+	}
+	
+	/**
+	 * Checks if the given dimension is valid.
+	 * 
+	 * @param	dim
+	 * 			The given dimension.
+	 * 
+	 * @return	The dimension is valid if it lies between 0 (inclusive) and the maximal value a double can represent (inclusive).
+	 * 			| if (dim < 0)
+	 * 			|	then return false;
+	 * 			| elseif (dim > Double.MAX_VALUE)
+	 * 			|	then return false
+	 * 			| else return true;
+	 */
+	private static boolean isValidDimension(double dim) {
+		if (dim < 0)
+			return false;
+		if (dim > Double.MAX_VALUE)
+			return false;
+		return true;
+	}
+	
+	// }}
+
+	// {{ PassableMap
+
+	/**
+	 * The boolean array passable map.
+	 */
+	private boolean[][] passableMap;
+	
+	/**
+	 * Basic inspector that returns the passable map.
+	 * 
+	 * @return	The passable map.
+	 */
+	@Basic
+	public boolean[][] getPassableMap() {
+		return passableMap;
+	}
+	
+	/**
+	 * Inspector that returns the amont of horizontal pixels of the world.
+	 * 
+	 * @return	The amount of horizontal pixels of the world.
+	 */
+	public int getHorizontalPixels() {
+		return getPassableMap()[0].length;
+	}
+	
+	/**
+	 * Inspector that returns the amount of vertical pixels of the world.
+	 * 
+	 * @return	The amount of vertical pixels of the world.
+	 */
+	public int getVerticalPixels() {
+		return getPassableMap().length;
+	}
+	
+	/**
+	 * Inspector that returns the horizontal resolution the passable map has in meters per pixel.
+	 * 
+	 * @return	The horizontal resolution in meters per pixel.
+	 */
+	public double getResolutionX() {
+		return ( getWidth() / ((double) getHorizontalPixels()) );
+	}
+
+	/**
+	 * Inspector that returns the vertical resolution the passable map has in meters per pixel.
+	 * 
+	 * @return	The vertical resolution in meters per pixel.
+	 */
+	public double getResolutionY() {
+		return ( getHeight() / ((double) getVerticalPixels()) );
+	}
+	
+	/**
+	 * Method to set the passable map.
+	 * 
+	 * @param 	passableMap
+	 * 			The new passable map.
+	 * 
+	 * @post	Sets the passable map to the input passable map.
+	 * 			| new.getPassableMap() == passableMap
+	 * @throws	ModelException
+	 * 			Throws a ModelException if the specified passable map is invalid.
+	 * 			| if (!isValidPassableMap(passableMap))
+	 */
+	protected void setPassableMap(boolean[][] passableMap) throws ModelException {
+		if (!isValidPassableMap(passableMap))
+			throw new ModelException("Invalid passable map specified.");
+		this.passableMap = passableMap;
+	}
+	
+	/**
+	 * Checks if the passable map is valid.
+	 * 
+	 * @param 	passableMap
+	 * 			The passable map to check.
+	 * 
+	 * @return	The passable map is valid if it is not null.
+	 * 			| return (passableMap != null)
+	 */
+	private static boolean isValidPassableMap(boolean[][] passableMap) {
+		return (passableMap!=null);
+	}
+	
+	// }}
+	
+// }}
+	
+// {{ Map & passability & related methods
+	
+	/**
+	 * Converts a position expressed in meters to its corresponding pixel.
+	 * The x- and y-coordinates have their origin in the lower left corner of the game world.
+	 * The pixels have their origin in the upper left corner of the game world.
+	 * This method converts the near-continuous x- and y-coordinates to discrete pixel locations. 
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param	y
+	 * 			The y-coordinate
+	 * 
+	 * @return	The position of the pixel the specified x- and y-coordinates are in,
+	 * 			expressed as an array of integers (pixelPosition).
+	 * 			pixelPosition[0] equals the x-coordinate of the pixel, pixelPosition[1] equals
+	 * 			the y-coordinate of the pixel. 
+	 * 			| return pixelPosition
+	 * @throws	ModelException
+	 * 			Throws a ModelException if the specified x- and y-coordinates are outside the boundaries of the game world.
+	 * 			| if (!isWithinBoundaries(x,y))
+	 */
+	private int[] positionToPixel(double x, double y) throws ModelException {
+		if (!isWithinBoundaries(x,y))
+			throw new ModelException("Specified x & y not within boundaries!");
+		if (Util.fuzzyEquals(x,0))
+			x = x+((double)getResolutionX())/2;
+		if (Util.fuzzyEquals(y,0))
+			y = y+((double)getResolutionY())/2;
+		if (Util.fuzzyEquals(x,getWidth()))
+			x = x-((double)getResolutionX())/2;
+		if (Util.fuzzyEquals(y,getHeight()))
+			y = y-((double)getResolutionY())/2;
+		
+		int pixelX = (int) Math.floor(               x * ((double) getHorizontalPixels() ) / getWidth() );
+		int pixelY = (int) Math.floor( (getHeight()-y) * ((double) getVerticalPixels()   ) / getHeight() );
+		int[] pixelPosition = new int[2];
+		pixelPosition[0] = pixelX;
+		pixelPosition[1] = pixelY;
+		return pixelPosition;
+	}
+	
+	/**
+	 * Checks if a position is within the boundaries of the game world.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * 
+	 * @return	Return true if the coordinates lie within the boundaries of the map.
+	 * 			| if (x < 0)
+	 * 			| 	return false;
+	 * 			| if (x > getWidth))
+	 * 			| 	return false;
+	 * 			| if (y < 0)
+	 * 			| 	return false;
+	 * 			| if (y > getHeight())
+	 * 			| 	return false;
+	 * 			| else
+	 * 			| 	return true;
+	 */
+	public boolean isWithinBoundaries(double x, double y) {
+		if (x< (double) 0)
+			return false;
+		if (x>getWidth())
+			return false;
+		if (y< (double) 0)
+			return false;
+		if (y>getHeight())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if a pixel is passable.
+	 * 
+	 * @param 	pixelX
+	 * 			The x-location of a pixel.
+	 * @param 	pixelY
+	 * 			The y-location of a pixel.
+	 * 
+	 * @return	Return true if the pixel is passable.
+	 * 			| return (getPassableMap()[pixelY][pixelX]);
+	 */
+	private boolean isPassable(int pixelX, int pixelY) {
+		return getPassableMap()[pixelY][pixelX];
+	}
+	
+	/**
+	 * Checks if a position in x- and y-coordinates is passable.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate in meters.
+	 * @param 	y
+	 * 			The y-coordinate in meters.
+	 * 
+	 * @return	Returns true if the x- and y-coordinates lie within the boundaries of the map and the corresponding pixel is passable.
+	 * 			| if (!isWithinBoundaries(x,y))
+	 * 			|	return false;
+	 * 			| else
+	 * 			|	return isPassable(pixelXY[0], pixelXY[1]);
+	 * @note	pixelXY[] is an array of integers that contains the x- and y-coordinates of the pixel.
+	 * 			pixelXY[0] is the x-coordinate, pixelXY[1] is the y-coordinate. Then the passability is checked.
+	 */
+	public boolean isPassable(double x, double y) {
+		if (!isWithinBoundaries(x,y))
+			return false;
+		int[] pixelXY = positionToPixel(x,y);
+		return isPassable(pixelXY[0],pixelXY[1]);
+	}
+	
+	/**
+	 * Checks if a circular area around the given location is passable.
+	 * The area that is checked has its origin in the specified x- and y-coordinates and has a radius of one tenth of the specified radius.
+	 * First, it is calculated what the size of the area to be checked is in pixels.
+	 * Then, the method loops over every pixel and checks the passability of that pixel if it lies within the search area.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * @param 	radius
+	 * 			The radius.
+	 * 
+	 * @return	Returns false if the specified location itself isn't passable.
+	 * 			| if (!isPassable(x,y))
+	 * 			| 	return false
+	 * 			| for all radius <= 0.1*radius {
+	 * 			|	for all angles < 2*Math.PI {
+	 * 			|		if (isWithinBoundaries(xOffset, yOffset)
+	 * 			|			if (!isPassable(xOffset, yOffset)
+	 * 			|				return false
+	 * 			|	}
+	 * 			| }
+	 * 			| else
+	 * 			|	return true
+	 */
+//	public boolean isPassable(double x, double y, double radius) { //TODO update documentation using the new function
+//		//TODO is this function still necessary? Is it still used somewhere? it is nly a gateway for the other function now.
+//		return isPassable(x,y,0,radius);
+//	}
+	
+	//TODO add documentation; new function; re-use most of the documentation of the other function
+	public boolean isPassable(double x, double y, double startRadius, double stopRadius) {
+		if (!isPassable(x, y))
+			return false;
+		
+		double testX;
+		double testY;
+		double testRadius;
+		double resX = 0.1*(stopRadius-startRadius);
+		double resY = 0.1*(stopRadius-startRadius);
+		double border = 0.001*Math.min(resX, resY);
+		for (     int i=0; Util.fuzzyLessThanOrEqualTo(i*resX,stopRadius-border); i++ ) {
+			for ( int j=0; Util.fuzzyLessThanOrEqualTo(j*resY,stopRadius-border); j++ ) {
+				//Loop from big to small. There is a bigger chance that impassable terrain is further away from the worm. This ends the loop sooner.
+				testX = stopRadius-border-i*resX;
+				testY = stopRadius-border-j*resY;
+				testRadius = Math.sqrt(Math.pow(testX,2)+Math.pow(testY,2));
+				if (testRadius<startRadius) {
+					break; //gone too far --> stop inner loop
+				}
+				else if (testRadius>stopRadius) {
+					// do nothing, skip to next y-position
+				}
+				else {
+					if (isWithinBoundaries( testX+x, testY+y) && !isPassable( testX+x, testY+y)) { return false; }
+					if (isWithinBoundaries( testX+x,-testY+y) && !isPassable( testX+x,-testY+y)) { return false; }
+					if (isWithinBoundaries(-testX+x, testY+y) && !isPassable(-testX+x, testY+y)) { return false; }
+					if (isWithinBoundaries(-testX+x,-testY+y) && !isPassable(-testX+x,-testY+y)) { return false; }
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Checks if an object is adjacent to impassable terrain.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * @param 	radius
+	 * 			The radius.
+	 * 
+	 * @return	Returns false if the object is not in a passable location.
+	 * 			| return ( isPassable(x, y, radius) && !isPassable(x, y, 1.1*radius) )
+	 * 
+	 * @note	A different technique is suggested in the assignment.
+	 * 			This implementation results in a more homogeneous distribution of objects.
+	 * 			Objects can now get into the nooks and crannies of a map,
+	 * 			something that is almost impossible with the suggested implementation...
+	 */
+	public boolean isAdjacent(double x, double y, double radius) {
+		return ( isPassable(x,y,0,radius) && !isPassable(x, y, radius, 1.1*radius) );
+
+/*		TODO is this correct? this makes partialFacadeTest not work, so... but is asys like this in the assignment...
+*		double searchRadius = 0.1*radius;
+*		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
+*		double testAngleInterval = 2*Math.PI/40;
+*		
+*		// Loop over the entire resolution
+*		for (double testRadius=1.1*radius; testRadius>=radius; testRadius-=testRadiusInterval) {
+*			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
+*				// Calculate the x- and y-offsets at the current angle
+*				double deltaX = (testRadius) * Math.cos(testAngle);
+*				double deltaY = (testRadius) * Math.sin(testAngle);
+*				
+*				if (isWithinBoundaries(x+deltaX, y+deltaY)) {
+*					if (!isPassable(x+deltaX,y+deltaY))
+*						return true;
+*				}
+*			}
+*		}
+*		return false;
+*/
+	}
+	
+	/**
+	 * Checks if two locations (circle around each location) are overlapping.
+	 * 
+	 * @param 	x1
+	 * 			The x-coordinate of the first location.
+	 * @param 	y1
+	 * 			The y-coordinate of the first location.
+	 * @param 	r1
+	 * 			The radius of the first location.
+	 * @param 	x2
+	 * 			The x-coordinate of the second location.
+	 * @param 	y2
+	 * 			The y-coordinate of the second location.
+	 * @param 	r2
+	 * 			The radius of the second location.
+	 * 
+	 * @return 	Return true if the distance between the centers of the objects is smaller than the sum of teir radii.
+	 * 			| delta = sqrt((x2-x1)^2+(y2-y1)^2);
+	 * 			| return (delta < (r1+r2));
+	 */
+	public static boolean isOverlapping(double x1, double y1, double r1, double x2, double y2, double r2) {
+		double deltaX = x2 - x1;
+		double deltaY = y2 - y1;
+		
+		double normDelta = Math.sqrt( Math.pow(deltaX,2) + Math.pow(deltaY,2) );
+		double sumRadii = r1 + r2;
+		
+		return (normDelta < sumRadii);
+	}
+	
+	// }}
+	
+// {{ Add new food / new worm
+	
+	/**
+	 * Method to create a new random location.
+	 * 
+	 * @return	An array with a random created position.
+	 * 			| return { getWidth()  * getRandomSeed().nextDouble(), 
+	 * 			|		   getHeight() * getRandomSeed().nextDouble() };
+	 */
+	private double[] getRandomXY() {
+		double[] output = new double[2];
+		output[0] = getWidth()  * getRandomSeed().nextDouble();
+		output[1] = getHeight() * getRandomSeed().nextDouble();
+		
+		return output;
+	}
+	
+	/**
+	 * Method to add food to the map at a random location.
+	 * 
+	 * @effect	The new food is added to the world in a new random location that is adjacent to impassable terrain.
+	 * 			| addFood(new Food(randX, randY))
+	 * @note	randX and randY are the new random coordinates that are adjacent to impassable terrain.
+	 */
+	public void addNewFood() {
+		double randX = 0;
+		double randY = 0;
+		do {
+			double[] randomXY = getRandomXY();
+			randX = randomXY[0];
+			randY = randomXY[1];
+		} while( !isAdjacent(randX, randY, Food.getRadius()) );
+		//} while( !isPassable(randX,randY,Food.getRadius()) || !isOnSolidGround(randX,randY,Food.getRadius()) ); //more sensible implementation for future iterations.
+		addFood( new Food( randX, randY ) );
+	}
+	
+	/**
+	 * Method to add food to the map at a given location.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * 
+	 * @effect	| addFood(newFood)
+	 * @return	The food object at the specified location.
+	 */
+	public Food addNewFood(double x,double y) {
+		Food newFood = new Food(x,y);
+		addFood(newFood);
+		return newFood;
+	}
+	
+	// TODO new function; add documentation (can be re-used)
+	public Worm createRandomWorm() {
+		double newX = 0;
+		double newY = 0;
+		Worm newWorm;
+		do {
+			double[] randomXY = getRandomXY();
+			newX = randomXY[0];
+			newY = randomXY[1];
+			newWorm = new Worm(newX,newY,0,"JohnDoe");
+		} while( !isAdjacent(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
+		//} while( !isPassable(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) || !isOnSolidGround(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
+		// more sensible implementation for future iterations.
+		if (getTeams().size()>0)
+			getTeams().get(getRandomSeed().nextInt(getTeams().size())).addWorm(newWorm);
+		return newWorm;
+	}
+	
+	/**
+	 * Method to add a new worm at a random location and assign it to a random team.
+	 * 
+	 * @effect 	The new worm is added to the world in a new random location that is adjacent to impassable terrain
+	 * 			and is assigned a random team if there are teams in the world.
+	 *			| addWorm(newWorm)
+	 */
+	public void addNewWorm() {//TODO update documentation
+		Worm newWorm = createRandomWorm();
+		addWorm(newWorm);
+	}
+	
+	/**
+	 * Method to add a worm with a specified position, direction, radius and name to the map.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate of the worm.
+	 * @param 	y
+	 * 			The y-coordinate of the worm.
+	 * @param 	direction
+	 * 			The direction of the worm.
+	 * @param 	radius
+	 * 			The radius of the worm.
+	 * @param 	name
+	 * 			The name of the worm.
+	 * 
+	 * @effect	The worm is added to the world.
+	 * 			| addWorm(newWorm)
+	 * @return	A worm object with a specified location, direction, radius and name.
+	 */
+	public Worm addNewWorm(double x, double y, double direction, double radius, String name) {
+		Worm newWorm = new Worm(x,y,direction,radius,name);
+		addWorm(newWorm);
+		return newWorm;
+	 }
+	
+	//TODO new function add documentation
+	public void addNewWorm(Program program) {
+		Worm newWorm = createRandomWorm();
+		addWorm(newWorm);
+		if (program!=null)
+			newWorm.setProgram(program);
+	}
+
+	//TODO new function add documentation
+	public Worm addNewWorm(double x, double y, double direction, double radius, String name, Program program) {
+		Worm newWorm = new Worm(x,y,direction,radius,name);
+		addWorm(newWorm);
+		if (program!=null)
+			newWorm.setProgram(program);
+		return newWorm;
+	 }
+	
+	// }}
+
+// {{ At Runtime
+	
+	/**
+	 * The worm that is currently active.
+	 */
+	private Worm activeWorm;
+	
+	/**
+	 * Basic inspector to return the currently active worm.
+	 * 
+	 * @return	The currently active worm.
+	 */
+	@Basic
+	public Worm getActiveWorm() {
+		return activeWorm;
+	}
+	
+	/**
+	 * Method to set the given worm to active.
+	 * This also sets the action points of the worm back to its maximum.
+	 * 
+	 * @param 	worm
+	 * 			The given worm.
+	 * 
+	 * @post	The active worm is set to the given worm.
+	 * 			| new.getActiveWorm() == worm
+	 * @post	The new active worm gets all of its action points back.
+	 * 			| new.getAxtiveWorm().getActionPoints() == new.getActiveWorm().getMaximumActionPoints()
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the given worm isn't valid.
+	 * 			| if (!isValidActiveWorm(worm)
+	 */
+	protected void setActiveWorm(Worm worm) throws ModelException {
+		if (!isValidActiveWorm(worm))
+			throw new ModelException("Invalid worm.");
+		worm.resetActionPoints();
+		activeWorm = worm;
+		
+	}
+	
+	/**
+	 * Checks if the given worm is a valid active worm.
+	 * 
+	 * @param 	worm
+	 * 			The given worm.
+	 * 
+	 * @return	The given worm is valid as an active worm if the world contains the worm.
+	 * 			This immediately also excludes the null case and a terminated worm, since those cannot belong to the world.
+	 * 			| return hasAsWorm(worm)
+	 * @note	The method hasAsWorm(worm) verifies null and isTerminated().
+	 */
+	private boolean isValidActiveWorm(Worm worm) {
+		return (hasAsWorm(worm));
+	}
+	
+	/**
+	 * Checks whether or not the game is finished.
+	 * The game is finished unless two or more worms are still alive and if some worms belong to different teams or if at least one of the alive worms does not belong to a team.
+	 * 
+	 * @return 	Returns true if the game is finished.
+	 * 			| for (Worm aliveWorm : getAliveWorms() ) {
+	 * 			|	if (aliveWorm != getAliveWorms().get(0))
+	 * 			|		if (aliveWorm.getTeam() != getAliveWorms().get(0).getTeam())
+	 * 			|			return false
+	 * 			|		if (aliveWorm.getTeam() == null)
+	 * 			|			return false
+	 * 			| }
+	 * 			| else
+	 * 			|	return true
+	 */
+	public boolean isGameFinished() {
+		for ( Worm aliveWorm : getAliveWorms() ) {
+			if (aliveWorm!=getAliveWorms().get(0)) { // There is a second worm alive.
+				if (aliveWorm.getTeam()!=getAliveWorms().get(0).getTeam()) // The second worm belongs to a different team.
+					return false;
+				if (aliveWorm.getTeam()==null) // The second worm does not belong to a team.
+					return false;
+			}
+		}
+		return true; // Default
+	}
+	
+	/**
+	 * Method to start the game.
+	 * 
+	 * @effect	Sets the active worm to the first worm in the world, if the world contains any worms.
+	 * 			| if (!getWorms().isEmpty())
+	 * 			| 	then setActiveWorm(getWorms().get(0));
+	 */
+	public void startGame() {
+		if (!getWorms().isEmpty())
+			setActiveWorm(getWorms().get(0));
+	}
+	
+	/**
+	 * Method to initiate the next turn (select the next worm).
+	 * 
+	 * @effect	If the current active worm is dead, terminate it and activate the worm that took its place in the list.
+	 * 			| int index = getWorms().indexOf(getActiveWorm());
+	 * 			| if (!getActiveWorm().isAlive())
+	 * 			| 	then 
+	 * 			|		getActiveWorm().terminate();
+	 * 			| setActiveWorm(getWorms().get(index));
+	 * @effect	If the current active worm is still alive, select the next worm in the list.
+	 * 			If the active worm is the last worm in the list, select the first worm in the list.
+	 * 			| int index = getWorms().indexOf(getActiveWorm());
+	 * 			| if (getActiveWorm().isAlive())
+	 * 			| 	then
+	 * 			|		if (index==(getWorms().size()-1)
+	 * 			|			then index = 0;
+	 * 			|		else index += 1; 
+	 * 			| setActiveWorm(getWorms().get(index));
+	 */
+	public void nextTurn() {
+		int index = getWorms().indexOf(getActiveWorm());
+		if (!getActiveWorm().isAlive()){
+			getActiveWorm().die();
+		}
+		else {
+			if (index==(getWorms().size()-1))
+				index = 0;
+			else
+				index += 1;
+		}
+		setActiveWorm(getWorms().get(index));
+	}
+	
+	/**
+	 * Method to return the name of the winning worm.
+	 * 
+	 * @return	The name of the winning worm if the game is finished.
+	 * 			| if (isGameFinished())
+	 * 			| 	then
+	 * 			| 		if (getAliveWorms().size()==0)
+	 * 			|			return "";
+	 * 			| 		if (getAliveWorms().size()==1)
+	 * 			|			return getAliveWorms().get(0).getName();
+	 * 			| 		else
+	 * 			|			return getAliveWorms().get(0).getTeamName();
+	 * 			| else return "";
+	 * @note	If there is more than one worm present in the world and they both belong to the same team,
+	 * 			it is logical to return the name of the winning team in stead of a wormname.
+	 */
+	public String getWinner() {
+		if (isGameFinished()) {
+			if (getAliveWorms().size()==0)
+				return ""; //All worms died (suicide action or something, may be possible with later iterations, not right now)
+			else if (getAliveWorms().size()==1)
+				return getAliveWorms().get(0).getName();
+			else
+				return getAliveWorms().get(0).getTeamName();
+		}
+		return ""; // Game finishes and winner is announced.
+	}
+	
+	/**
+	 * Method that return all worms that are alive in the world.
+	 * 
+	 * @return	Returns all worms that are still alive.
+	 * 			| for (Worm testWorm : getWorms())
+	 * 			|	if (testWorm.isAlive())
+	 * 			|		aliveWorms.add(testWorm)
+	 * 			| return aliveWorms
+	 */
+	public ArrayList<Worm> getAliveWorms() {
+		ArrayList<Worm> aliveWorms = new ArrayList<Worm>();
+		for (Worm testWorm : getWorms()) {
+			if (testWorm.isAlive())
+				aliveWorms.add(testWorm);
+		}
+		return aliveWorms;
+	}
+	
+	
+// }}
+
+// {{ Random Seed
+	
+	/**
+	 * The random seed of the world.
+	 */
+	private final Random randomSeed;
+	
+	/**
+	 * Basic inspector to return the Random object.
+	 * 
+	 * @return	A random generated number.
+	 */
+	@Basic
+	public Random getRandomSeed() {
+		return randomSeed;
+	}
+	
+	/**
+	 * Checks if the random generated number is valid.
+	 * 
+	 * @param 	random
+	 * 			The random generated number.
+	 * 
+	 * @return	if (random != null)
+	 */
+	private static boolean isValidRandomSeed(Random random) {
+		if (random==null)
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// {{ Associations
+	
+	// {{ Worm Association
+
+	/**
+	 * The collection of worms in the world.
+	 */
+	private final ArrayList<Worm> wormCollection = new ArrayList<Worm>();
+	
+	/**
+	 * Basic inspector that returns the collection of worms.
+	 * 
+	 * @return	The collection of worms.
+	 */
+	@Basic
+	public ArrayList<Worm> getWorms() {
+		return wormCollection;
+	}
+	
+	/**
+	 * Method to add a new worm to the existing collection of worms.
+	 * 
+	 * @param 	newWorm
+	 * 			The new worm that has to be added.
+	 * 
+	 * @effect	Sets the world of the specified worm to this world.
+	 * 			| newWorm.setWorld(this);
+	 * @effect	Adds the worm to the collection.
+	 * 			| wormCollection.add(newWorm)
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the worm is invalid or if the worm is already in this world.
+	 * 			| if (!isValidWorm(newWorm))
+	 * 			| if (hasAsWorm(newWorm)
+	 */
+	public void addWorm(Worm newWorm) throws ModelException {
+		if (!isValidWorm(newWorm))
+			throw new ModelException("Invalid worm specified.");
+		if (hasAsWorm(newWorm))
+			throw new ModelException("Worm already in world.");
+		newWorm.setWorld(this);
+		wormCollection.add(newWorm);
+	}
+	
+	/**
+	 * Checks if the given worm is a valid worm.
+	 * 
+	 * @param 	worm
+	 * 			The given worm.
+	 * 
+	 * @return	The worms is invalid if it is null of it is terminated.
+	 * 			| if (worm == null)
+	 * 			|	return false
+	 * 			| if (worm.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean isValidWorm(Worm worm) {
+		if (worm==null)
+			return false;
+		if (worm.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Method to remove a worm from the collection of worms.
+	 * 
+	 * @param 	worm
+	 * 			The worm that has to be removed.
+	 * 
+	 * @effect	Remove the world from the worm.
+	 * 			| worm.removeWorld();
+	 * @effect	Remove the worm from the collection of worms in this world.
+	 * 			| wormCollection.remove(worm)
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the specified worm is not in the current world.
+	 * 			| if (!hasAsWorm(worm))
+	 */
+	public void removeWorm(Worm worm) throws ModelException {
+		if (!hasAsWorm(worm)) {
+			throw new ModelException("Worm not found.");
+		}
+		worm.removeWorld();
+		wormCollection.remove(worm);
+	}
+	
+	/**
+	 * Method to remove all worms from the collection.
+	 * 
+	 * @effect	Removes each worm from the world.
+	 * 			| for ( Worm worm : wormCollection )
+	 * 			| 	removeWorm(worm);
+	 */
+	private void removeAllWorms() {
+		for ( Worm worm : wormCollection ) {
+			removeWorm(worm);
+		}
+	}
+	
+	/**
+	 * Checks if the collection of worms contains the given worm.
+	 * 
+	 * @param 	worm
+	 * 			The given worm.
+	 * 
+	 * @return	Returns true if the worm is found in this world.
+	 * 			| wormCollection.contains(worm)
+	 */
+	private boolean hasAsWorm(Worm worm) {
+		return wormCollection.contains(worm);
+	}
+	
+	// }}
+	
+	// {{ Team Association
+	
+	/**
+	 * Collection of teams in the world.
+	 */
+	private final ArrayList<Team> teamCollection = new ArrayList<Team>();
+	
+	/**
+	 * Basic inspector to return the collection of teams.
+	 * 
+	 * @return	The collection of teams.
+	 */
+	@Basic
+	public ArrayList<Team> getTeams() {
+		return teamCollection;
+	}
+
+	/**
+	 * Thea maximum amount of teams.
+	 */
+	private final int maxTeams;
+	
+	/**
+	 * Basic inspector to return the maximum amount of teams.
+	 * 
+	 * @return	The maximum amount of teams.
+	 */
+	@Basic
+	private int getMaxTeams() {
+		return maxTeams;
+	}
+	
+	/**
+	 * Method to add a new team to the existing collection of teams.
+	 * 
+	 * @param 	newTeam
+	 * 			The new team that has to be added.
+	 * 
+	 * @effect	The world of the team is set to this world.
+	 * 			| newTeam.setWorld(this);
+	 * @effect	The new team is added to the world.
+	 * 			| teamCollection.add(newTeam)
+	 * @throws 	ModelException
+	 * 			Throws a ModeException if the newTeam is invalid, if the team is already in the world or if the maximum amount of teams is already reached.
+	 * 			| if (!canHaveAsTeam(newTeam))
+	 * 			| if (hasAsTeam(newTeam))
+	 * 			| if (teamCollection.size() >= getMaxTeams())
+	 */
+	public void addTeam(Team newTeam) throws ModelException {
+		if (!canHaveAsTeam(newTeam))
+			throw new ModelException("Invalid team specified.");
+		if (hasAsTeam(newTeam))
+			throw new ModelException("Team already in world.");
+		if (getTeams().size()>=getMaxTeams())
+			throw new ModelException("Maximum amount of teams reached.");
+		newTeam.setWorld(this);
+		teamCollection.add(newTeam);
+	}
+	
+	/**
+	 * Checks if the given team is valid.
+	 * 
+	 * @param 	newteam
+	 * 			The given team.
+	 * @return	True if the given team is not null and if it is not terminated.
+	 * 			| if (newTeam == null)
+	 * 			|	return false
+	 * 			| if (newTeam.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean canHaveAsTeam(Team newTeam) {
+		if (newTeam==null)
+			return false;
+		if (newTeam.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if the collection of teams contains the given team.
+	 * 
+	 * @param 	team
+	 * 			The given team.
+	 * 
+	 * @return	Returns true if the team is found in this world.
+	 * 			| teamCollection.contains(team)
+	 */
+	private boolean hasAsTeam(Team team) {
+		return teamCollection.contains(team);
+	}
+	
+	/**
+	 * Method to remove the given team from the team.
+	 * 
+	 * @param 	team
+	 * 			The team that has to be removed.
+	 * 
+	 * @effect	Remove the world from the team.
+	 * 			| team.removeWorld();
+	 * @effect	Remove the team from the world.
+	 * 			| teamCollection.remove(team)
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the team is not found in this world.
+	 * 			| if (!hasAsTeam(team)
+	 */
+	public void removeTeam(Team team) throws ModelException {
+		if (!hasAsTeam(team))
+			throw new ModelException("Team not found.");
+		team.removeWorld();
+		teamCollection.remove(team);
+	}
+	
+	/**
+	 * Method to remove all teams from the collection.
+	 * 
+	 * @effect	Removes each team from the world.
+	 * 			| for ( Team team : teamCollection )
+	 * 			| 	removeTeam(team);
+	 */
+	private void removeAllTeams() {
+		for ( Team team : teamCollection ) {
+			removeTeam(team);
+		}
+	}
+	
+	//}}
+	
+	// {{ Food Association
+
+	/**
+	 * The collection of food in this world.
+	 */
+	private final ArrayList<Food> foodCollection = new ArrayList<Food>();
+	
+	/**
+	 * Basic inspector to return the collection of food.
+	 * 
+	 * @return	The collection of food.
+	 */
+	@Basic
+	public ArrayList<Food> getFood() {
+		return foodCollection;
+	}
+	
+	/**
+	 * Method to add a food object to the world.
+	 * 
+	 * @param 	newFood
+	 * 			The food that has to be added.
+	 * 
+	 * @effect 	Sets the world of the food to this world.
+ * 				| newFood.setWorld(this);
+	 * @effect	Adds the specified food to the world.
+	 * 			| foodCollection.add(newFood)
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the food is invalid or if the food is already present in this world.
+	 * 			| if (!canHaveAsFood(newFood))
+	 * 			| if (hasAsFood(newFood))
+	 */
+	public void addFood(Food newFood) throws ModelException {
+		if (!canHaveAsFood(newFood))
+			throw new ModelException("Invalid food specified.");
+		if (hasAsFood(newFood))
+			throw new ModelException("Food already in world.");
+		newFood.setWorld(this);
+		foodCollection.add(newFood);
+	}
+	
+	/**
+	 * Checks if the given food is valid.
+	 * 
+	 * @param 	food
+	 * 			The given food.
+	 * 
+	 * @return	The food is valid if it isn't null and it sn't terminated.
+	 * 			| if (food == null)
+	 * 			| 	return false
+	 * 			| if (food.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			| 	return true
+	 */
+	private static boolean canHaveAsFood(Food food) {
+		if (food==null)
+			return false;
+		if (food.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if the collecion of food contains the given food object.
+	 * 
+	 * @param 	food
+	 * 			The given food object.
+	 * 
+	 * @return	Return true if the food collection contains the specified food object.
+	 * 			| foodCollection.contains(food)
+	 */
+	private boolean hasAsFood(Food food) {
+		return foodCollection.contains(food);
+	}
+	
+	/**
+	 * Method to remove food from the collection.
+	 * 
+	 * @param	food
+	 * 			The food that has to be removed.
+	 * 
+	 * @effect	Removes the world from the food object.
+	 * 			| food.removeWorld();
+	 * @effect	Remove the food object from this world.
+	 * 			| foodCollection.remove(food)
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the food object is not found in this world.
+	 * 			| if (!hasAsFood(food))
+	 */
+	public void removeFood(Food food) throws ModelException {
+		if (!hasAsFood(food))
+			throw new ModelException("Food not found.");
+		food.removeWorld();
+		foodCollection.remove(food);
+	}
+	
+	/**
+	 * Method to remove all food from the collection.
+	 * 
+	 * @effect	Removes each food object from the world.
+	 * 			| for ( Foo food : foodCollection) )
+	 * 			| 	removeFood(food);
+	 * 
+	 */
+	private void removeAllFood() {
+		for ( Food food : foodCollection ) {
+			removeFood(food);
+		}
+	}
+	
+// }}
+	
+	// {{ Projectile Association
+
+	/**
+	 * The projectil in this world.
+	 */
+	private Projectile projectile;
+	
+	/**
+	 * Basic inspector to return the current projectile.
+	 * 
+	 * @return	The current projectile.
+	 */
+	@Basic
+	public Projectile getProjectile() {
+		return projectile;
+	}
+	
+	/**
+	 * Method to set the projectile to the given projectile if it is valid.
+	 * 
+	 * @param 	projectile
+	 * 			The given projectile.
+	 * 
+	 * @effect	Sets the world of the projectile to this world.
+	 * 			| projectile.setWorld(this)
+	 * @post	Sets the projectile of this world to the specified projectile.
+	 * 			| new.getProjectile() == projectile
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the specified projectile is invalid or if this world already has a projectile.
+	 * 			| if (!canHaveAsProjectile(projectile))
+	 * 			| if (hasAProjectile())
+	 */
+	public void setProjectile(Projectile projectile) throws ModelException {
+		if (!canHaveAsProjectile(projectile))
+			throw new ModelException("Invalid projectile specified.");
+		if (hasAProjectile())
+			throw new ModelException("Already has a projectile.");
+		projectile.setWorld(this);
+		this.projectile = projectile;
+	}
+	
+	/**
+	 * Checks if the given projectile is valid.
+	 * 
+	 * @param 	projectile
+	 * 			The given projectile.
+	 * 
+	 * @return	The specified projectile is valid if it isn't null and isn't terminated.
+	 * 			| if (projectile == null)
+	 * 			|	return false
+	 * 			| if (projectile.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean canHaveAsProjectile(Projectile projectile) {
+		if (projectile==null)
+			return false;
+		if (projectile.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if this world already has a projectile.
+	 * 
+	 * @return	Returns true if the projectile isn't null.
+	 * 			| return (projectile != null)
+	 */
+	private boolean hasAProjectile() {
+		return(projectile!=null);
+	}
+	
+	/**
+	 * Removes the current projectile and the weapon associated with it.
+	 * 
+	 * @effect	Removes the world from the projectile.
+	 * 			| projectile.removeWorld();
+	 * @post	Removes the projectile from the current world.
+	 * 			| new.getProjectile() == null
+	 */
+	public void removeProjectile() {
+		if (hasAProjectile()) {
+			projectile.removeWorld();
+			projectile = null;
+		}
+	}
+	
+	
+	
+	
+	
+	// }}
+	
+// }}
+
+// {{ Terminated
+	
+	/**
+	 * Attribute to determine whether the object is terminated or not.
+	 */
+	private boolean terminated;
+	
+	/**
+	 * Returns whether or not the object is terminated..
+	 * 
+	 * @return	Return true if the object is terminated..
+	 */
+	@Basic
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	/**
+	 * Method to terminate the world and all objects associated with it.
+	 * 
+	 * @effect	Removes all worms.
+	 * 			| removeAllWorms();
+	 * @effect	Removes all teams.
+	 * 			| removeAllTeams();
+	 * @effect	Removes all food.
+	 * 			| removeAllWFood();
+	 * @effect	Removes te projectile.
+	 * 			| removeProjectile();
+	 * @post	Terminates the object.
+	 * 			| new.isTerminated()==true;
+	 */
+	public void terminate() {
+		removeAllWorms();
+		removeAllTeams();
+		removeAllFood();
+		removeProjectile();
+		terminated = true;
+	}
+	
+// }}
+
+}
+	

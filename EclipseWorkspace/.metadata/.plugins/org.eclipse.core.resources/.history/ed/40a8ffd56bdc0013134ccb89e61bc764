@@ -1,0 +1,14 @@
+package worms.model;
+
+public class ExpressionNull extends Expression {
+	
+	public ExpressionNull(int line, int column) {
+		super(line,column);
+	}
+
+	@Override
+	public Type<Boolean> evaluate() {
+		return new Type<Boolean>(false);
+	}
+
+}

@@ -1,0 +1,21 @@
+package worms.model;
+
+public class StatementActionToggleWeapon extends StatementAction {
+	
+	public StatementActionToggleWeapon(int line, int column, Expression e) {
+		super(line,column,e);
+	}
+
+	@Override
+	protected void doAction() {
+		Program program = getRootProgram();
+		Worm worm = program.getWorm();
+		if ( !(getExpressions().get(0).evaluate().getValue() instanceof Number) )
+			program.typeErrorOccurred();
+		if ( !worm.canTurn((double)(getExpressions().get(0).evaluate()).getValue()) )
+			program.stopProgram();
+		getRootProgram().getHandler().turn(worm, (double)(getExpressions().get(0).evaluate()).getValue());
+		return;
+	}
+
+}

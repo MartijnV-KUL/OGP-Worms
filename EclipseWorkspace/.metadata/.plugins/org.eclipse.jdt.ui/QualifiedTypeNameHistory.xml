@@ -12,13 +12,11 @@
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="worms.model.programs.ProgramFactory"/>
 <fullyQualifiedTypeName name="worms.model.programs.ProgramFactory.ForeachType"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="worms.model.StatementSequence"/>
 <fullyQualifiedTypeName name="worms.model.StatementForEach"/>
 <fullyQualifiedTypeName name="worms.model.StatementWhile"/>
 <fullyQualifiedTypeName name="worms.model.StatementIfThenElse"/>
 <fullyQualifiedTypeName name="worms.model.StatementAssignment"/>
-<fullyQualifiedTypeName name="worms.model.StatementAction"/>
 <fullyQualifiedTypeName name="worms.model.StatementAction.ActionTypes"/>
 <fullyQualifiedTypeName name="worms.model.ExpressionSingular"/>
 <fullyQualifiedTypeName name="worms.model.ExpressionVariable"/>
@@ -26,4 +24,9 @@
 <fullyQualifiedTypeName name="worms.model.Expression.Types"/>
 <fullyQualifiedTypeName name="worms.model.programs.ProgramParser"/>
 <fullyQualifiedTypeName name="worms.model.ProgramFactoryImpl"/>
+<fullyQualifiedTypeName name="worms.model.programs.ParseOutcome"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="worms.model.StatementAction"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="worms.model.ExpressionsSquareRoot"/>
 </qualifiedTypeNameHistroy>

@@ -2,6 +2,7 @@ package worms.model;
 
 import java.util.ArrayList;
 
+import worms.model.ModelException;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
@@ -10,10 +11,30 @@ public abstract class Statement {
 	private int line;
 	private int column;
 	
+	public Statement(int line, int column) {
+		setLine(line);
+		setColumn(column);
+	}
+	
+	public Statement(int line, int column, Statement[] statements) {
+		setLine(line);
+		setColumn(column);
+		for ( int i=0; i<statements.length; i++ ) {
+			addStatement(statements[i]);
+		}
+	}
+	
+	public Statement(int line, int column, Expression[] expressions) {
+		setLine(line);
+		setColumn(column);
+		for ( int i=0; i<expressions.length; i++ ) {
+			addExpression(expressions[i]);
+		}
+	}
+	
 	public Statement(int line, int column, Statement[] statements, Expression[] expressions) {
 		setLine(line);
 		setColumn(column);
-		
 		for ( int i=0; i<statements.length; i++ ) {
 			addStatement(statements[i]);
 		}
