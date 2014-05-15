@@ -793,10 +793,10 @@ public class Worm extends BallisticBody {
 	public boolean canJump() {
 		if (getActionPoints() == 0)
 			return false;
-//		if (getDirection() < 0)
-//			return false;
-//		if (getDirection() > Math.PI)
-//			return false;
+		if (getDirection() < 0)
+			return false;
+		if (getDirection() > Math.PI)
+			return false;
 		return true;
 	}
 	
