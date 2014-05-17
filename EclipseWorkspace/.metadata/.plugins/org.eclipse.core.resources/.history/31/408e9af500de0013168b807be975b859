@@ -1,0 +1,31 @@
+package worms.model;
+
+public class ExpressionSubtraction extends Expression {
+	
+	public ExpressionSubtraction(int line, int column, Expression e1, Expression e2) {
+		super(line,column,e1,e2);
+	}
+
+	@Override
+	public Type<Double> evaluate() {
+		try {
+			System.out.println("eval1");
+			Object val1 = getExpressions().get(0).evaluate().getValue();
+			System.out.println("eval2");
+			double val2 = (Double) getExpressions().get(1).evaluate().getValue();
+			System.out.println("eval3");
+			return new Type<Double>( val1 - val2 );
+		} catch (Exception e) {
+			//do nothing
+		}
+		return null;
+//		System.out.println("eval");
+//		System.out.println("eval2");
+//		if ( (val1 instanceof D) && (val2 instanceof Number) ) { //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+//			System.out.println(getLine() + " - " + getColumn());
+//		}
+//		getRootProgram().typeErrorOccurred();
+//		return null;
+	}
+
+}

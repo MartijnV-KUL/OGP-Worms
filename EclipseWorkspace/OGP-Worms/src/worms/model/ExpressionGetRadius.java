@@ -13,7 +13,7 @@ public class ExpressionGetRadius extends Expression {
 			return new Type<Double>(((Worm)val).getRadius());
 		if ( val instanceof Food ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
 			return new Type<Double>(Food.getRadius());
-		getStatement().getRootProgram().typeErrorOccurred();
+		getRootProgram().typeErrorOccurred();
 		return null;
 	}
 

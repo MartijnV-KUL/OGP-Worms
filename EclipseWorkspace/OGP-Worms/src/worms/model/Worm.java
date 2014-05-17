@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import worms.gui.GUIConstants;
 import worms.model.ModelException;
-import worms.model.weapons.Bazooka;
-import worms.model.weapons.Rifle;
 import worms.util.Util;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;

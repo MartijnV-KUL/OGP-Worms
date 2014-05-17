@@ -65,8 +65,11 @@ public abstract class Statement {
 	public abstract void execute();
 	
 	public void preExecute() {
+		System.out.println("Executing statement at line " + getLine() + " and column " + getColumn() + ".");
 		Program program = getRootProgram();
 		if (!program.continueExecution())
+			program.stopProgram();
+		if (program.getNbStatementsExecuted()>=program.getMaxNbStatementsExecutions())
 			program.stopProgram();
 		program.setCurrentLine(getLine());
 		program.setCurrentColumn(getColumn());
@@ -251,9 +254,9 @@ public abstract class Statement {
 	
 	public void removeExpression(Expression expression) throws ModelException {
 		if (!hasAsExpression(expression))
-			throw new ModelException("Statement not found.");
+			throw new ModelException("Expression not found.");
 		expression.removeStatement();
-		statements.remove(expression);
+		expressions.remove(expression);
 	}
 	
 	private void removeAllExpressions() {

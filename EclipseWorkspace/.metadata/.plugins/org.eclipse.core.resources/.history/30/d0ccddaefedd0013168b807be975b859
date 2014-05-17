@@ -1,0 +1,20 @@
+package worms.model;
+
+public class ExpressionSquareRoot extends Expression {
+	
+	public ExpressionSquareRoot(int line, int column, Expression e) {
+		super(line,column,e);
+	}
+
+	@Override
+	public Type<Double> evaluate() {
+		System.out.println(getLine() + " - " + getColumn());
+		Object val = getExpressions().get(0).evaluate().getValue();
+		if ( !(val instanceof Number) ) { //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+			getRootProgram().typeErrorOccurred();
+			return null;
+		}
+		return new Type<Double>(Math.sqrt((double)(val)));
+	}
+
+}

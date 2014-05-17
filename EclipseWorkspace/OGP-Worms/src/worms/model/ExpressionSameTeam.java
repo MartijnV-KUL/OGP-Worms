@@ -11,7 +11,7 @@ public class ExpressionSameTeam extends Expression {
 		Object val = getExpressions().get(0).evaluate().getValue();
 		if ( val instanceof Worm ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
 			return new Type<Boolean>(getStatement().getRootProgram().getWorm().getTeam()==((Worm)val).getTeam());
-		getStatement().getRootProgram().typeErrorOccurred();
+		getRootProgram().typeErrorOccurred();
 		return null;
 	}
 

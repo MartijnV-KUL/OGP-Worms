@@ -12,7 +12,7 @@ public class ExpressionDisjunction extends Expression {
 		Object val2 = getExpressions().get(1).evaluate().getValue();
 		if ( (val1 instanceof Boolean) && (val2 instanceof Boolean) ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
 			return new Type<Boolean>( (boolean)val1 && (boolean)val2 );
-		getStatement().getRootProgram().typeErrorOccurred();
+		getRootProgram().typeErrorOccurred();
 		return null;
 	}
 

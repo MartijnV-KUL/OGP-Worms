@@ -12,7 +12,7 @@ public class ExpressionLessThan extends Expression {
 		Object val2 = getExpressions().get(1).evaluate().getValue();
 		if ( (val1 instanceof Number) && (val2 instanceof Number) ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
 			return new Type<Boolean>( (double)val1 < (double)val2 );
-		getStatement().getRootProgram().typeErrorOccurred();
+		getRootProgram().typeErrorOccurred();
 		return null;
 	}
 

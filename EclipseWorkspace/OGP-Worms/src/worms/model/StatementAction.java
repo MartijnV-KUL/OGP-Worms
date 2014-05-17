@@ -14,6 +14,7 @@ public abstract class StatementAction extends Statement {
 	
 	@Override
 	public void execute() {
+		System.out.println("test");
 		if (!getRootProgram().continueExecution())
 			return;
 		if (getRootProgram().getCurrentLine() > getLine())

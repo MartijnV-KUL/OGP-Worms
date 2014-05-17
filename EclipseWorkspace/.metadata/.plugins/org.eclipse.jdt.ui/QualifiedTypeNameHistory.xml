@@ -29,4 +29,5 @@
 <fullyQualifiedTypeName name="worms.model.StatementAction"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="worms.model.ExpressionsSquareRoot"/>
+<fullyQualifiedTypeName name="java.lang.Exception"/>
 </qualifiedTypeNameHistroy>

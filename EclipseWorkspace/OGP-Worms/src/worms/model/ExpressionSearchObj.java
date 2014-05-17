@@ -7,7 +7,7 @@ public class ExpressionSearchObj extends Expression {
 	}
 
 	@Override
-	public Type<Entity> evaluate() {
+	public Type<Worm> evaluate() {
 		Object val = getExpressions().get(0).evaluate().getValue();
 		if ( val instanceof Worm ) { //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
 			double x = getStatement().getRootProgram().getWorm().getX();
@@ -17,14 +17,14 @@ public class ExpressionSearchObj extends Expression {
 			while ( getStatement().getRootProgram().getWorm().getWorld().isWithinBoundaries(x,y) ) {
 				for ( Worm worm : getStatement().getRootProgram().getWorm().getWorld().getAliveWorms() ) {
 					if ( World.isOverlapping(worm.getX(), worm.getY(), worm.getRadius(), x, y, 0) )
-						return new Type<Entity>(new Entity(worm));
+						return new Type<Worm>(worm);
 					x = x + resolution*Math.cos(angle);
 					y = y + resolution*Math.sin(angle);
 				}
 			}
-			return new Type<Entity>();
+			return new Type<Worm>();
 		}
-		getStatement().getRootProgram().typeErrorOccurred();
+		getRootProgram().typeErrorOccurred();
 		return null;
 	}
 

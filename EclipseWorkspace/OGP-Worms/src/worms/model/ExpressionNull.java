@@ -7,8 +7,8 @@ public class ExpressionNull extends Expression {
 	}
 
 	@Override
-	public Type<Entity> evaluate() {
-		return new Type<Entity>(null);
+	public Type<Object> evaluate() {
+		return new Type<Object>(null);
 	}
 
 }
