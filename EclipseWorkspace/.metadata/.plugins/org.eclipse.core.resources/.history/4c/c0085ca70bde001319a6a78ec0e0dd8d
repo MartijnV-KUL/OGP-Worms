@@ -2,6 +2,7 @@ package worms.model;
 
 import java.util.ArrayList;
 
+import worms.model.ModelException;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
@@ -10,23 +11,42 @@ public abstract class Statement {
 	private int line;
 	private int column;
 	
-	public Statement(int line, int column, Statement[] newStatements, Expression[] newExpressions) {
-		//this.line = line;
-		//this.column = column;
+	public Statement(int line, int column) {
 		setLine(line);
 		setColumn(column);
-		
-		for ( int i=0; i<newStatements.length; i++ ) {
-			this.addStatement(newStatements[i]);
-		}
-		for ( int i=0; i<newExpressions.length; i++ ) {
-			this.addExpression(newExpressions[i]);
+	}
+	
+	public Statement(int line, int column, Statement[] statements) {
+		setLine(line);
+		setColumn(column);
+		for ( int i=0; i<statements.length; i++ ) {
+			addStatement(statements[i]);
 		}
 	}
 	
-	//TODO	I added setters for line and column to continue at the next line when the program stopped.
-	//		Could not do that in program through setCurrentLine, as the method execute() calls preExecute()
-	//		and that overrules the setCurrentLine() method in program through the program.setCurrentLine(getLine()) method.
+	public Statement(int line, int column, Expression[] expressions) {
+		setLine(line);
+		setColumn(column);
+		for ( int i=0; i<expressions.length; i++ ) {
+			addExpression(expressions[i]);
+		}
+	}
+	
+	public Statement(int line, int column, Statement[] statements, Expression[] expressions) {
+		setLine(line);
+		setColumn(column);
+		for ( int i=0; i<statements.length; i++ ) {
+			addStatement(statements[i]);
+		}
+		for ( int i=0; i<expressions.length; i++ ) {
+			addExpression(expressions[i]);
+		}
+	}
+	
+//		I added setters for line and column to continue at the next line when the program stopped.
+//		Could not do that in program through setCurrentLine, as the method execute() calls preExecute()
+//		and that overrules the setCurrentLine() method in program through the program.setCurrentLine(getLine()) method.
+	
 	public void setLine(int line) {
 		this.line = line;
 	}
@@ -44,20 +64,13 @@ public abstract class Statement {
 	
 	public abstract void execute();
 	
-	private Boolean programContinues = false;
-	
-	public void setProgramContinues(Boolean bool) {
-		this.programContinues = bool;
-	}
-	
-	public Boolean getProgramContinues() {
-		return programContinues;
-	}
-	
 	public void preExecute() {
-		if (!getRootProgram().continueExecution())
-			getRootProgram().stopProgram();
+//		System.out.println("Executing statement at line " + getLine() + " and column " + getColumn() + ".");
 		Program program = getRootProgram();
+		if (!program.continueExecution())
+			program.stopProgram();
+		if (program.getNbStatementsExecuted()>=program.getMaxNbStatementsExecutions())
+			program.stopProgram();
 		program.setCurrentLine(getLine());
 		program.setCurrentColumn(getColumn());
 		program.incNbStatementsExecuted();
@@ -70,12 +83,24 @@ public abstract class Statement {
 		}
 		return statement.getProgram();
 	}
+	
+	public ArrayList<Statement> getAllStatements() {
+		ArrayList<Statement> allStatements = new ArrayList<Statement>();
+		allStatements.add(this);
+		for ( Statement s : getStatements() ) {
+			if (s!=null)
+				allStatements.addAll(s.getAllStatements());
+		}
+		return allStatements;
+	}
 
 	public boolean isWellFormed() {
-		return true; //NOTE dummy implementation, is overridden by the for each statement 
+		for ( Statement s : getStatements() ) {
+			if (!s.isWellFormed())
+				return false;
+		}
+		return true;
 	}
-	
-	public abstract boolean containsActionStatement();
 	
 // {{ Program Association
 
@@ -229,9 +254,9 @@ public abstract class Statement {
 	
 	public void removeExpression(Expression expression) throws ModelException {
 		if (!hasAsExpression(expression))
-			throw new ModelException("Statement not found.");
+			throw new ModelException("Expression not found.");
 		expression.removeStatement();
-		statements.remove(expression);
+		expressions.remove(expression);
 	}
 	
 	private void removeAllExpressions() {
