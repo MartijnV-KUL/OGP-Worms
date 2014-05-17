@@ -3,6 +3,7 @@ package worms.model;
 import java.util.ArrayList;
 import java.util.Random;
 
+import worms.model.ModelException;
 import worms.util.Util;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
@@ -390,28 +391,23 @@ public class World {
 	 * 			The x-coordinate.
 	 * @param 	y
 	 * 			The y-coordinate.
-	 * @param 	radius
-	 * 			The radius.
+	 * @param 	startRadius
+	 * 			The radius with which the loop has to start checking.
+	 * @param	stopRadius
+	 * 			The radius at which the loop stops checking.
 	 * 
 	 * @return	Returns false if the specified location itself isn't passable.
 	 * 			| if (!isPassable(x,y))
 	 * 			| 	return false
-	 * 			| for all radius <= 0.1*radius {
-	 * 			|	for all angles < 2*Math.PI {
-	 * 			|		if (isWithinBoundaries(xOffset, yOffset)
-	 * 			|			if (!isPassable(xOffset, yOffset)
-	 * 			|				return false
+	 * 			| for all x <= x-comp of radius to check {
+	 * 			|	for all y <= y-comp of radius to check {
+	 * 			|		if (isWithinBoundaries(xOffset, yOffset) && !isPassable(xOffset, yOffset))
+	 * 			|			return false
 	 * 			|	}
 	 * 			| }
 	 * 			| else
 	 * 			|	return true
 	 */
-//	public boolean isPassable(double x, double y, double radius) { //TODO update documentation using the new function
-//		//TODO is this function still necessary? Is it still used somewhere? it is nly a gateway for the other function now.
-//		return isPassable(x,y,0,radius);
-//	}
-	
-	//TODO add documentation; new function; re-use most of the documentation of the other function
 	public boolean isPassable(double x, double y, double startRadius, double stopRadius) {
 		if (!isPassable(x, y))
 			return false;
@@ -466,8 +462,7 @@ public class World {
 	public boolean isAdjacent(double x, double y, double radius) {
 		return ( isPassable(x,y,0,radius) && !isPassable(x, y, radius, 1.1*radius) );
 
-/*		TODO is this correct? this makes partialFacadeTest not work, so... but is asys like this in the assignment...
-*		double searchRadius = 0.1*radius;
+/*		double searchRadius = 0.1*radius;
 *		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
 *		double testAngleInterval = 2*Math.PI/40;
 *		
@@ -573,7 +568,11 @@ public class World {
 		return newFood;
 	}
 	
-	// TODO new function; add documentation (can be re-used)
+	/**
+	 * Creates a new worm at a random location. The standard name of the worm is "JohnDoe".
+	 * 
+	 * @return	A new worm at a random location.
+	 */
 	public Worm createRandomWorm() {
 		double newX = 0;
 		double newY = 0;
@@ -595,10 +594,11 @@ public class World {
 	 * Method to add a new worm at a random location and assign it to a random team.
 	 * 
 	 * @effect 	The new worm is added to the world in a new random location that is adjacent to impassable terrain
-	 * 			and is assigned a random team if there are teams in the world.
+	 * 			and is assigned a random team if there are teams in the world. The worm is first created in the method createRandomWorm().
+	 * 			| Worm newWorm = createRandomWorm()
 	 *			| addWorm(newWorm)
 	 */
-	public void addNewWorm() {//TODO update documentation
+	public void addNewWorm() {
 		Worm newWorm = createRandomWorm();
 		addWorm(newWorm);
 	}
@@ -627,7 +627,19 @@ public class World {
 		return newWorm;
 	 }
 	
-	//TODO new function add documentation
+	/**
+	 * Adds a new random worm to a program.
+	 * 
+	 * @param 	program
+	 * 			The program to which the worm has to be added.
+	 * 
+	 * @effect	A new worm is created throught the method CreateRandomWorm() and added to the existing collection.
+	 * 			| Worm newWorm = createRandomWorm()
+	 * 			| addWorm(newWorm)
+	 * @effect	The given program is set to the newly created worm if the program is not null.
+	 * 			| if (program != null)
+	 * 			|	newWorm.setProgram(program)
+	 */
 	public void addNewWorm(Program program) {
 		Worm newWorm = createRandomWorm();
 		addWorm(newWorm);
@@ -635,7 +647,30 @@ public class World {
 			newWorm.setProgram(program);
 	}
 
-	//TODO new function add documentation
+	/**
+	 * Adds a new worm to a program, with given parameters.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate of the worm.
+	 * @param 	y
+	 * 			The y-coordinate of the worm.
+	 * @param 	direction
+	 * 			The direction of the worm.
+	 * @param 	radius
+	 * 			The radius of the worm.
+	 * @param 	name
+	 * 			The name of the worm.
+	 * @param 	program
+	 * 			The program to which the worm has to be added.
+	 * 
+	 * @effect	A new worm is created with the given parameters and added to the existing collection.
+	 * 			| Worm newWorm = new Worm(x, y, direction, radius, name)
+	 * 			| addWorm(newWorm)
+	 * @effect	The given program is set to the newly created worm if the program is not null.
+	 * 			| if (program != null)
+	 * 			|	newWorm.setProgram(program)
+	 * @return	A new worm with the given parameters.
+	 */
 	public Worm addNewWorm(double x, double y, double direction, double radius, String name, Program program) {
 		Worm newWorm = new Worm(x,y,direction,radius,name);
 		addWorm(newWorm);
@@ -764,15 +799,15 @@ public class World {
 	 */
 	public void nextTurn() {
 		int index = getWorms().indexOf(getActiveWorm());
-		//if (!getActiveWorm().isAlive()){
-	//		getActiveWorm().die();					//TODO
+//		if (!getActiveWorm().isAlive()){
+//		getActiveWorm().die();
 //		}
-		//else {
+//		else {
 			if (index==(getWorms().size()-1))
 				index = 0;
 			else
 				index += 1;
-	//	}
+//		}
 		setActiveWorm(getWorms().get(index));
 		if ( getWorms().get(index).hasAProgram() )
 			getWorms().get(index).getProgram().runProgram();

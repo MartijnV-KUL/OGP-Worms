@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Random;
 
 import worms.gui.game.IActionHandler;
+import worms.model.IFacade;
 import worms.model.programs.ParseOutcome;
 
 public class Facade implements IFacade {

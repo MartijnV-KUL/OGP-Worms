@@ -1,5 +1,6 @@
 package worms.model;
 
+import worms.model.ModelException;
 import be.kuleuven.cs.som.annotate.Basic;
 
 /**
@@ -297,8 +298,14 @@ public abstract class BallisticBody {
 	 * 			The timestep with which the trajectory is calculated.
 	 * 
 	 * @return	The time it takes to perform the ballistic trajectory.
+	 * 			| for all values i < Integer.MAX_VALUE {
+	 * 			|	double time = i * timeStep
+	 * 			|	double pos = ballisticTrajectory(force, duration, mass, time)
+	 * 			| }
+	 * 			| return (time - timeStep)
+	 * 			
 	 */
-	public double ballisticTrajectoryTime(World world, double radius, double force, double duration, double mass, double timeStep) { //TODO update doc
+	public double ballisticTrajectoryTime(World world, double radius, double force, double duration, double mass, double timeStep) {
 		double time = 0;
 		double[] pos = ballisticTrajectory(force, duration, mass, 0);
 		for (int i=1; i<Integer.MAX_VALUE; i++) {
@@ -319,16 +326,23 @@ public abstract class BallisticBody {
 	 * @param	y
 	 * 			The y-coordinate of an object.
 	 * 
+	 * @effect	If the worm jumps out of the world it dies.
+	 * 			| if (!getWorld.isWithinBoundaries(jumpStep(1e-4)[0], jumpStep(1e-4)[1]))
+	 * 			|	getWorld.getActiveWorm().die();
 	 * @return	False if the coordinates are within the boundaries of the field and
 	 * 			and when the position is not adjacent to invalid terrain.
 	 * 			| if (!getWorld().isWithinBoundaries(x, y))
 	 * 			|	return true
-	 * 			| if (getWorld.isAdjacent(x, y, getRadius()))
+	 * 			| if (getWorld.isPassable(x, y, 0, getRadius()))
 	 * 			|	return true
 	 * 			| else
 	 * 			| 	return false
 	 */
-	public boolean ballisticTrajectoryHasEnded(double x, double y) {//TODO update doc
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {//TODO update doc when method is complete.
+//		if (!getWorld().isWithinBoundaries(jumpStep(GUIConstants.JUMP_TIME_STEP)[0], jumpStep(GUIConstants.JUMP_TIME_STEP)[1])) {
+//			getWorld().getActiveWorm().die();
+//			return true;
+//		}
 		if (!getWorld().isWithinBoundaries(x, y))
 			return true;
 		if (!getWorld().isPassable( x, y, 0, getRadius() ))

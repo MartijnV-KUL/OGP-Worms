@@ -2,6 +2,7 @@ package worms.model;
 
 import java.util.ArrayList;
 
+import worms.model.ModelException;
 import be.kuleuven.cs.som.annotate.*;
 
 /**

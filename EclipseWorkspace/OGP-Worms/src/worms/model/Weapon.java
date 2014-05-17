@@ -1,5 +1,6 @@
 package worms.model;
 
+import worms.model.ModelException;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 

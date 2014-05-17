@@ -3,6 +3,9 @@ package worms.model;
 import java.util.ArrayList;
 
 import worms.gui.GUIConstants;
+import worms.model.ModelException;
+import worms.model.weapons.Bazooka;
+import worms.model.weapons.Rifle;
 import worms.util.Util;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
@@ -130,9 +133,14 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @effect	The hitpoints are set to 0.
 	 * 			| setHitPoints(0)
+	 * @effect	The actionpoints are set to 0.
 	 * 			| setActionPoints(0)
+	 * @effect	The next worm will be selected.
+	 * 			| getWorld().nextTurn()
+	 * @effect	The worm that has died will be terminated.
+	 * 			| terminate()
 	 */
-	public void die() { //TODO update doc
+	public void die() {
 		setHitPoints(0);
 		setActionPoints(0);
 		getWorld().nextTurn();
@@ -457,12 +465,20 @@ public class Worm extends BallisticBody {
 	 * @param	hitPoints
 	 * 			The amount of hitpoints of the worm.
 	 * 
-	 * @post	The amount of hitpoints is set to the given value.
-	 * 			| if (isValid
-	 * @throws
+	 * @post	The amount of hitpoints is set to the given value if that is valid.
+	 * 			| if (isValidHitPoints(hitPoints)) {
+	 * 			|	if (hitPoints < 0)
+	 * 			|		new.getHitPoints() == 0
+	 * 			|	if (hitPoints > getMaxHitPoints())
+	 * 			|		new.getHitPoints() == this.getMaxHitPoints()
+	 * 			| }
+	 * 			| else
+	 * 			|	new.getHitPoints() == hitPoints
+	 * @effect	The worm will die if the amount of hitpoints is negative.
+	 * 			| if (hitPoints < 0)
+	 * 			|	die()
 	 */
 	protected void setHitPoints(int hitPoints) { //All aspects related to hitpoints must be worked out in a total manner.
-		//TODO update doc with "die()"
 		if ( ! isValidHitPoints(hitPoints) ) {
 			if (hitPoints < 0) {
 				this.hitPoints = 0;
@@ -768,7 +784,13 @@ public class Worm extends BallisticBody {
 			fall();
 	}
 	
-	// TODO new function; add documentation
+	/**
+	 * Makes the selected worm jump with the standard jumpstep, which is 1e-4.
+	 * 
+	 * @throws 	ModelException
+	 * 			Throws a ModelException if the worm can not jump. This is done in the super method.
+	 * 			| if (!canJump())
+	 */
 	public void jump() throws ModelException {
 		jump(GUIConstants.JUMP_TIME_STEP);
 	}
@@ -777,15 +799,9 @@ public class Worm extends BallisticBody {
 	 * Verifies whether a worm can jump in its current state. As of now, the 
 	 * worm only has to be facing upwards.
 	 * 
-	 * @return 	True if the worm has actionpoints left and the direction is valid for a jump.
-	 * 			To be valid to perform a jump, the direction must lay between 0 and 2*pi.
-	 * 			The worm also has to have some actionpoints left.
+	 * @return 	True if the worm has actionpoints left.
 	 * 			| if (getActionPoints() == 0
 	 * 			| 	return false
-	 * 			| if (getPosition().getDirection() < 0)
-	 * 			|	return false
-	 * 			| if (getPosition().getDirection() > Math.PI)
-	 * 			|	return false
 	 * 			| else
 	 * 			|	return true
 	 * @note	This method can easily be adapted in the future to include other conditions.
@@ -793,10 +809,6 @@ public class Worm extends BallisticBody {
 	public boolean canJump() {
 		if (getActionPoints() == 0)
 			return false;
-//		if (getDirection() < 0)
-//			return false;
-//		if (getDirection() > Math.PI)
-//			return false;
 		return true;
 	}
 	
@@ -817,7 +829,7 @@ public class Worm extends BallisticBody {
 	 * 			|	die()
 	 * 			| }
 	 * @effect	The worm will hit the ground if it reaches impassable terrain when falling.
-	 * 			| if (!getWorld().isPassable(getX(), y, getRadius()))
+	 * 			| if (!getWorld().isPassable(getX(), y, getRadius(), 1.1 * getRadius()))
 	 * 			|	setPosition(getX(), y, getDirection)
 	 * @effect	The worm will loose hitpoints after falling and will die if they are less than zero.
 	 * 			| if (getHitPoints > 0)
@@ -825,26 +837,34 @@ public class Worm extends BallisticBody {
 	 * 			| else
 	 * 			|	die()
 	 */
-	public void fall() {//TODO update documentation
+	public void fall() {
 		if (canFall()) {
-//			double resolution = 0.1*getWorld().getResolutionY();
 			double resolution = 0.1*getRadius();
-			double y = getY();
-			for (int i=0; i<Integer.MAX_VALUE; i++) {
-				y = getY()-i*resolution;
+			double startPosition = getY();
+			int distanceFallen = 0;
+
+			for (int i = 0; i < Integer.MAX_VALUE; i++) {
+				double y = getY() - i * resolution;
 				if (!getWorld().isWithinBoundaries(getX(),y)) {
 					// Fell out of world.
 					setPosition(getX(),y,getDirection());
 					die();
 					break;
 				}
-//				if ( getWorld().isAdjacent( getX(), y, getRadius() ) ) {
-				if ( !getWorld().isPassable( getX(), y, getRadius(), 1.1*getRadius() ) ) {
+				if ( !getWorld().isPassable( getX(), y, getRadius(), 1.1 * getRadius() ) ) {
 					// Can't fall anymore --> Worm has hit the ground.
 					setPosition(getX(), y, getDirection());
-					int newHitPoints = getHitPoints() - (int) Math.floor((getY()-y) * 3);
-					if (newHitPoints>0)
+					distanceFallen = (int) (startPosition - y);
+					
+					//System.out.println("prev HP: " + getHitPoints());
+
+					int newHitPoints = (int) (getHitPoints() - Math.floor(distanceFallen * 3));
+					//System.out.println("HP: " + newHitPoints);
+					//System.out.println("Distance fallen: " + distanceFallen);
+					if (newHitPoints > 0){
 						setHitPoints(newHitPoints);
+						//System.out.println("new HP: " + getHitPoints());
+					}
 					else
 						die();
 					break;
@@ -861,18 +881,15 @@ public class Worm extends BallisticBody {
 	 * 			|	return false
 	 * 			| if (getWorld().isAdjacent( getX(), getY(), getRadius() ))
 	 * 			|	return false
-	 * 			| if (!getWorld().isPassable( getX(), getY(), getRadius() ))
-	 * 			|	return false
 	 * 			| else
 	 * 			|	return true
 	 */
-	public boolean canFall() {//TODO updated function --> update documentation
+	public boolean canFall() {
 		if (!hasAWorld())
 			return false;
 		if ( getWorld().isAdjacent( getX(), getY(), getRadius() ) )
 			return false;
 		return true;
-		//return ( !getWorld().isOnSolidGround( getX(), getY(), getRadius() ) ); // better implementation for future iterations.	
 	}
 	
 	// }}
@@ -1324,8 +1341,22 @@ public class Worm extends BallisticBody {
 	
 	/**
 	 * Method to terminate the worm and all corresponding objects from the world.
+	 * 
+	 * @effect	The worm will be removed from the world if it has a world.
+	 * 			| if (hasAWorld())
+	 * 			|	world.removeWorm(this)
+	 * @effect	The worm will be removed from the team if it has a team.
+	 * 			| if (hasATeam())
+	 * 			|	team.removeWorm(this)
+	 * @effect	The program will be removed from the worm if it has a program.
+	 * 			| if (hasAProgram())
+	 * 			|	program.removeWorm();
+	 * @effect	All the weapons the worm has will be removed.
+	 * 			| removeAllWeapons();
+	 * @post	The boolean value terminated is set to true.
+	 * 			| new.isTerminated() == true;
 	 */
-	public void terminate() {//TODO update doc
+	public void terminate() {
 		if (hasAWorld())
 			world.removeWorm(this);
 		if (hasATeam())

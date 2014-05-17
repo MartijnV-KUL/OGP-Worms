@@ -1,5 +1,6 @@
 package worms.model;
 
+import worms.model.ModelException;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
@@ -47,14 +48,17 @@ public class Projectile extends BallisticBody {
 	 * @param	y
 	 * 			The y-coordinate.
 	 * 
+	 * @effect	The hitpoints of a worm hit will be reduced.
+	 * 			| if (wormHit(x, y) != null)
+	 * 			|	worm.setHitPoints(worm.getHitPoints() - getWeapon().getHitPointsDamage())
 	 * @return	| if (worm != null)
 	 * 			|	return true
 	 * 			| else
 	 * 			|	return super.ballisticTrajectoryHasEnded(x, y)
 	 * 			
 	 */
-	public boolean ballisticTrajectoryHasEnded(double x, double y) { //TODO update doc
-		Worm worm = wormHit(x,y);		//TODO: the worm shoots at itself instead of the targeted worm.
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {
+		Worm worm = wormHit(x,y);
 		if (worm!=null) {
 			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
 			return true;
@@ -204,11 +208,13 @@ public class Projectile extends BallisticBody {
 	 * Method to get the radius of a projectile.
 	 * 
 	 * @return	The radius of a projectile.
-	 * 
+	 * 			| return getWeapon().getProjectileRadius()
 	 * @throws 	ModelException
+	 * 			Throws a modelexception if the projectile has no weapon assigned to it.
 	 * 			if (!hasAWeapon())
+	 * 
 	 */
-	public double getRadius() throws ModelException { //TODO update doc
+	public double getRadius() throws ModelException {
 		if (!hasAWeapon())
 			throw new ModelException("This projectile does not have a weapon assigned to it.");
 		return getWeapon().getProjectileRadius();
