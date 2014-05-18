@@ -1,0 +1,7 @@
+entity w;
+
+foreach(worm, w) {
+	print 5;
+}
+
+print 456;

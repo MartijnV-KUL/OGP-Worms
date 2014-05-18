@@ -1,7 +1,54 @@
 package worms.model;
 
 import java.util.List;
+
+import worms.model.expressions.ExpressionAddition;
+import worms.model.expressions.ExpressionConjunction;
+import worms.model.expressions.ExpressionCosine;
+import worms.model.expressions.ExpressionDifferentFrom;
+import worms.model.expressions.ExpressionDisjunction;
+import worms.model.expressions.ExpressionDivision;
+import worms.model.expressions.ExpressionDouble;
+import worms.model.expressions.ExpressionEqualTo;
+import worms.model.expressions.ExpressionFalse;
+import worms.model.expressions.ExpressionGetAP;
+import worms.model.expressions.ExpressionGetDirection;
+import worms.model.expressions.ExpressionGetHP;
+import worms.model.expressions.ExpressionGetMaxAP;
+import worms.model.expressions.ExpressionGetMaxHP;
+import worms.model.expressions.ExpressionGetRadius;
+import worms.model.expressions.ExpressionGetX;
+import worms.model.expressions.ExpressionGetY;
+import worms.model.expressions.ExpressionGreaterThan;
+import worms.model.expressions.ExpressionGreaterThanOrEqualTo;
+import worms.model.expressions.ExpressionIsFood;
+import worms.model.expressions.ExpressionIsWorm;
+import worms.model.expressions.ExpressionLessThan;
+import worms.model.expressions.ExpressionLessThanOrEqualTo;
+import worms.model.expressions.ExpressionMultiplication;
+import worms.model.expressions.ExpressionNegation;
+import worms.model.expressions.ExpressionNull;
+import worms.model.expressions.ExpressionSameTeam;
+import worms.model.expressions.ExpressionSearchObj;
+import worms.model.expressions.ExpressionSelf;
+import worms.model.expressions.ExpressionSine;
+import worms.model.expressions.ExpressionSquareRoot;
+import worms.model.expressions.ExpressionSubtraction;
+import worms.model.expressions.ExpressionTrue;
+import worms.model.expressions.ExpressionVariable;
 import worms.model.programs.*;
+import worms.model.statements.StatementActionFire;
+import worms.model.statements.StatementActionJump;
+import worms.model.statements.StatementActionMove;
+import worms.model.statements.StatementActionSkip;
+import worms.model.statements.StatementActionToggleWeapon;
+import worms.model.statements.StatementActionTurn;
+import worms.model.statements.StatementAssignment;
+import worms.model.statements.StatementForEach;
+import worms.model.statements.StatementIfThenElse;
+import worms.model.statements.StatementPrint;
+import worms.model.statements.StatementSequence;
+import worms.model.statements.StatementWhile;
 
 public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement, Type<?>> {
 	

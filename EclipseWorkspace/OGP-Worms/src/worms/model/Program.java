@@ -106,7 +106,19 @@ public class Program {
 		return continueExecution;
 	}
 	
+	public void setContinueExecution(boolean bool) {
+		this.continueExecution = bool;
+	}
+	
 	private boolean hasReachedEnd;
+	
+	public boolean getHasReachedEnd() {
+		return hasReachedEnd;
+	}
+	
+	public void setHasReachedEnd(boolean bool) {
+		this.hasReachedEnd = bool;
+	}
 	
 	public void runProgram() {
 		nbStatementsExecuted=0;
@@ -122,9 +134,14 @@ public class Program {
 			setCurrentColumn(0);
 		}
 		continueExecution = true;
+
+//		for (Statement s : getStatement().getStatements())
+//				s.execute();
 		getStatement().execute();
+		System.out.println("Re-entered runProgram() method.");
 		if (continueExecution)
 			hasReachedEnd=true;
+		System.out.println("runProgram() has reached end. Next turn initiating.");
 		getWorm().getWorld().nextTurn();
 	}
 	

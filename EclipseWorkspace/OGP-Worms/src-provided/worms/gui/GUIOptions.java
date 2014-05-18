@@ -8,7 +8,7 @@ public class GUIOptions {
 	 * 
 	 * Full screen can also be disabled from the command line by providing the -window argument
 	 */
-	public boolean disableFullScreen = false;
+	public boolean disableFullScreen = true;
 	
 	/**
 	 * Random seed for the game
@@ -32,8 +32,12 @@ public class GUIOptions {
 	 * 
 	 * Can also be set from the command line with the -program argument
 	 */
-	public String programFile = "programs/program.txt";
+//	public String programFile = "programs/program.txt";
 //	public String programFile = "programs/program_simple.txt";
 //	public String programFile = "programs/program_example.txt";
 //	public String programFile = "programs/syntax_test.txt";
+	
+	
+	//Own programs
+	public String programFile = "programs/own_program.txt";
 }

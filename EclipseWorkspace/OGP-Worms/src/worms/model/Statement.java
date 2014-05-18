@@ -65,7 +65,7 @@ public abstract class Statement {
 	public abstract void execute();
 	
 	public void preExecute() {
-		System.out.println("Executing statement at line " + getLine() + " and column " + getColumn() + ".");
+		//System.out.println("Executing statement at line " + getLine() + " and column " + getColumn() + ".");
 		Program program = getRootProgram();
 		if (!program.continueExecution())
 			program.stopProgram();
