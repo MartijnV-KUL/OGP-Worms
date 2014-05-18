@@ -19,8 +19,8 @@ public class StatementAssignment extends Statement {
 			return;
 		if (getRootProgram().getCurrentLine() > getLine())
 			return;
-		if (getRootProgram().getCurrentColumn() > getColumn())
-			return;
+		//if (getRootProgram().getCurrentColumn() > getColumn())
+			//return;
 		preExecute();
 		getRootProgram().assignVariable(variable, getExpressions().get(0).evaluate());
 	}

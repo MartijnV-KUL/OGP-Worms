@@ -22,8 +22,8 @@ public abstract class StatementAction extends Statement {
 			return;
 		if (getRootProgram().getCurrentLine() > getLine())
 			return;
-		if (getRootProgram().getCurrentColumn() > getColumn())
-			return;
+		//if (getRootProgram().getCurrentColumn() > getColumn())
+		//	return;
 		preExecute();
 		doAction();
 	}

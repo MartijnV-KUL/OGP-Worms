@@ -23,6 +23,7 @@ public class StatementActionFire extends StatementAction {
 			program.stopProgram();
 			return;
 		}
+		System.out.println("WORM FIRING, " + (int)Math.floor((double)(val)) + " YIELD.");
 		program.getHandler().fire(worm, (int)Math.floor((double)(val)));
 	}
 

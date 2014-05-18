@@ -116,10 +116,6 @@ public class Program {
 		return hasReachedEnd;
 	}
 	
-	public void setHasReachedEnd(boolean bool) {
-		this.hasReachedEnd = bool;
-	}
-	
 	public void runProgram() {
 		nbStatementsExecuted=0;
 		if (typeErrorOccurred) {
@@ -135,8 +131,6 @@ public class Program {
 		}
 		continueExecution = true;
 
-//		for (Statement s : getStatement().getStatements())
-//				s.execute();
 		getStatement().execute();
 		System.out.println("Re-entered runProgram() method.");
 		if (continueExecution)

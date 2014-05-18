@@ -11,6 +11,7 @@ public class StatementActionToggleWeapon extends StatementAction {
 	@Override
 	protected void doAction() {
 		Program program = getRootProgram();
+		System.out.println("WEAPON TOGGLED.");
 		program.getHandler().toggleWeapon(program.getWorm());
 	}
 

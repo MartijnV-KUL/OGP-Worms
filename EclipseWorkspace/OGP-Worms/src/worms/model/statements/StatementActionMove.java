@@ -17,6 +17,7 @@ public class StatementActionMove extends StatementAction {
 			program.stopProgram();
 			return;
 		}
+		System.out.println("WORM MOVING.");
 		program.getHandler().move(worm);
 	}
 

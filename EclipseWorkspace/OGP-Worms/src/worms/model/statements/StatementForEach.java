@@ -20,54 +20,7 @@ public class StatementForEach extends Statement {
 		this.variable = variable;
 	}
 
-	@Override
-	public void execute() {
-		if (!getRootProgram().continueExecution())
-			return;
-		if (getRootProgram().getCurrentLine() > getLine())
-			return;
-		if (getRootProgram().getCurrentColumn() > getColumn())
-			return;
-		preExecute();
-		Program program = getRootProgram();
-		
-		if ( type == ForeachType.WORM ) {
-			for ( Worm w : program.getWorm().getWorld().getWorms() ) {
-				System.out.println("Next execution.");
-				getRootProgram().setCurrentLine(getLine());
-				getRootProgram().setCurrentColumn(getColumn());
-				
-				program.assignVariable(variable, new Type<Worm>(w));
-				getStatements().get(0).execute();
-				System.out.println("reached end: " + program.getHasReachedEnd());
-				System.out.println("program continues: " + program.continueExecution() + "\n");
-			}
-		}
-		if ( type == ForeachType.FOOD ) {
-			for ( Food f : program.getWorm().getWorld().getFood() ) {
-				getRootProgram().setCurrentLine(getLine());
-				getRootProgram().setCurrentColumn(getColumn());
-				
-				program.assignVariable(variable, new Type<Food>(f));
-				getStatements().get(0).execute();
-			}
-		}
-		if ( type == ForeachType.ANY ) {
-			ArrayList<Object> objects = new ArrayList<Object>();
-			objects.addAll(program.getWorm().getWorld().getWorms());
-			objects.addAll(program.getWorm().getWorld().getFood());
-			for ( Object obj : objects ) {
-				getRootProgram().setCurrentLine(getLine());
-				getRootProgram().setCurrentColumn(getColumn());
-				
-				program.assignVariable(variable, new Type<Object>(obj));
-				getStatements().get(0).execute();
-			}
-		}
-	}
-	
-	/*
-
+	private boolean firstTimeExecuted = true;
 	private Object lastObject;
 	private int counter = 0;
 	
@@ -77,24 +30,35 @@ public class StatementForEach extends Statement {
 			return;
 		if (getRootProgram().getCurrentLine() > getLine())
 			return;
-		if (getRootProgram().getCurrentColumn() > getColumn())
-			return;
 		preExecute();
 		Program program = getRootProgram();
 		
-//		 	Starting from lastObject is easily done with a regular for-loop instead of an enhanced for-loop.
-//		 		I don't know how to do it with an enhanced for-loop, but I guess that must be possible.
-//		 		I have set the old code in comments.
-//		 
+//		if ( type == ForeachType.WORM ) {
+//			for ( Worm w : program.getWorm().getWorld().getWorms() ) {
+//				System.out.println("Next execution.");
+//				getRootProgram().setCurrentLine(getLine());
+//				getRootProgram().setCurrentColumn(getColumn());
+				
+//				program.assignVariable(variable, new Type<Worm>(w));
+//				getStatements().get(0).execute();
+//				System.out.println("reached end: " + program.getHasReachedEnd());
+//				System.out.println("program continues: " + program.continueExecution() + "\n");
+//			}
+//		}
+		
 		//For-loop for worms.
 		if ( type == ForeachType.WORM ) {
 			ArrayList<Worm> worms = new ArrayList<Worm>();
-			worms.addAll(getProgram().getWorm().getWorld().getWorms());
-			if (getProgramContinues() == false) { //The next for-loop is executed for the first time, getProgramContinues = default FALSE
+			worms.addAll(program.getWorm().getWorld().getWorms());
+			if (firstTimeExecuted == true) { //The next for-loop is executed for the first time.
 				for (int i = 0; i < worms.size(); i++ ) {
+					firstTimeExecuted = false;
 					lastObject = worms.get(i);
 					counter = i;
-					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
+					getRootProgram().setCurrentLine(getLine());
+					getRootProgram().setCurrentColumn(getColumn());
+					
+					program.assignVariable(variable, new Type<Worm>((Worm) lastObject));
 					getStatements().get(0).execute();
 				}
 			}
@@ -102,11 +66,108 @@ public class StatementForEach extends Statement {
 				for (int i = counter; i < worms.size(); i++) {
 					lastObject = worms.get(i);
 					counter = i;
-					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
+					getRootProgram().setCurrentLine(getLine());
+					getRootProgram().setCurrentColumn(getColumn());
+					
+					program.assignVariable(variable, new Type<Worm>((Worm) lastObject));
+					getStatements().get(0).execute();
+				}
+			}
+			firstTimeExecuted = true;	//reset firstTimeExecuted when exiting if-loop. This means the program has run through all the worms.
+		}
+//		if ( type == ForeachType.FOOD ) {
+//		for ( Food f : program.getWorm().getWorld().getFood() ) {
+//			getRootProgram().setCurrentLine(getLine());
+//			getRootProgram().setCurrentColumn(getColumn());
+//			
+//			program.assignVariable(variable, new Type<Food>(f));
+//			getStatements().get(0).execute();
+//		}
+//	}
+		if ( type == ForeachType.FOOD ) {
+			ArrayList<Food> foods = new ArrayList<Food>();
+			foods.addAll(program.getWorm().getWorld().getFood());
+			if (firstTimeExecuted == true) {	//The for-loop is executed for the first time.
+				for (int i = 0; i < foods.size(); i++) {
+					firstTimeExecuted = false;
+					lastObject = foods.get(i);
+					counter = i;
+					getRootProgram().setCurrentLine(getLine());
+					getRootProgram().setCurrentColumn(getColumn());
+					
+					program.assignVariable(variable, new Type<Food>((Food) lastObject));
+					getStatements().get(0).execute();
+				}
+			}
+			else {	//The program was interrupted and continues from the last foodobject in the loop.
+				for (int i = counter; i < foods.size(); i++) {
+					lastObject = foods.get(i);
+					counter = i;
+					getRootProgram().setCurrentLine(getLine());
+					getRootProgram().setCurrentColumn(getColumn());
+					
+					program.assignVariable(variable, new Type<Food>((Food) lastObject));
+					getStatements().get(0).execute();
+				}
+			}
+			firstTimeExecuted = true; //reset.
+		}
+//		if ( type == ForeachType.ANY ) {
+//			ArrayList<Object> objects = new ArrayList<Object>();
+//			objects.addAll(program.getWorm().getWorld().getWorms());
+//			objects.addAll(program.getWorm().getWorld().getFood());
+//			for ( Object obj : objects ) {
+//				getRootProgram().setCurrentLine(getLine());
+//				getRootProgram().setCurrentColumn(getColumn());
+//				
+//				program.assignVariable(variable, new Type<Object>(obj));
+//				getStatements().get(0).execute();
+//			}
+//		}
+		if ( type == ForeachType.ANY ) {
+			ArrayList<Object> objects = new ArrayList<Object>();
+			objects.addAll(program.getWorm().getWorld().getWorms());
+			objects.addAll(program.getWorm().getWorld().getFood());
+			if (firstTimeExecuted == true) {
+				for (int i = 0; i < objects.size(); i++) {
+					firstTimeExecuted = false;
+					lastObject = objects.get(i);
+					counter = i;
+					getRootProgram().setCurrentLine(getLine());
+					getRootProgram().setCurrentColumn(getColumn());
+					
+					program.assignVariable(variable, new Type<Object>(lastObject));
+					getStatements().get(0).execute();
+				}
+			}
+			else {
+				for (int i = counter; i < objects.size(); i++) {
+					lastObject = objects.get(i);
+					counter = i;
+					getRootProgram().setCurrentLine(getLine());
+					getRootProgram().setCurrentColumn(getColumn());
+					
+					program.assignVariable(variable, new Type<Object>(lastObject));
 					getStatements().get(0).execute();
 				}
 			}
 		}
+	}
+	
+// {{ Commented methods.
+//
+//	@Override
+//	public void execute() {
+//		if (!getRootProgram().continueExecution())
+//			return;
+//		if (getRootProgram().getCurrentLine() > getLine())
+//			return;
+//		if (getRootProgram().getCurrentColumn() > getColumn())
+//			return;
+//		preExecute();
+//		Program program = getRootProgram();
+//			 
+//
 //		if ( type == ForeachType.WORM ) {
 //			if (getProgramContinues() == false) {	//The for-loop is executed for the first time.
 //				for ( Worm worm : getProgram().getWorm().getWorld().getWorms() ) {
@@ -123,29 +184,29 @@ public class StatementForEach extends Statement {
 //				}
 //			}
 //		}
-		
-		//For-loop for food.
-		if ( type == ForeachType.FOOD ) {
-			int counter = 0;
-			ArrayList<Food> foods = new ArrayList<Food>();
-			foods.addAll(getProgram().getWorm().getWorld().getFood());
-			if (getProgramContinues() == false) {
-				for (int i = 0; i < foods.size(); i++ ) {
-					lastObject = foods.get(i);
-					counter = i;
-					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
-					getStatements().get(0).execute();
-				}
-			}
-			else {
-				for (int i = counter; i < foods.size(); i++) {
-					lastObject = foods.get(i);
-					counter = i;
-					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
-					getStatements().get(0).execute();
-				}
-			}
-		}
+//		
+//		//For-loop for food.
+//		if ( type == ForeachType.FOOD ) {
+//			int counter = 0;
+//			ArrayList<Food> foods = new ArrayList<Food>();
+//			foods.addAll(getProgram().getWorm().getWorld().getFood());
+//			if (getProgramContinues() == false) {
+//				for (int i = 0; i < foods.size(); i++ ) {
+//					lastObject = foods.get(i);
+//					counter = i;
+//					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
+//					getStatements().get(0).execute();
+//				}
+//			}
+//			else {
+//				for (int i = counter; i < foods.size(); i++) {
+//					lastObject = foods.get(i);
+//					counter = i;
+//					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
+//					getStatements().get(0).execute();
+//				}
+//			}
+//		}
 //		if ( type == ForeachType.FOOD ) {
 //			if (getProgramContinues() == false) {
 //				for ( Food food : getProgram().getWorm().getWorld().getFood() ) {
@@ -162,28 +223,28 @@ public class StatementForEach extends Statement {
 //				}
 //			}
 //		}
-		//For-loop for objects.
-		if ( type == ForeachType.ANY ) {
-			int counter = 0;
-			ArrayList<Object> objects = new ArrayList<Object>();
-			objects.addAll(getProgram().getWorm().getWorld().getWorms());
-			objects.addAll(getProgram().getWorm().getWorld().getFood());
-			if (getProgramContinues() == false) {
-				for (int i = counter; i < objects.size(); i++) {
-					lastObject = objects.get(i);
-					counter = i;
-					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
-					getStatements().get(0).execute();
-				}
-			}
-			else {
-				for (int i = counter; i < objects.size(); i++) {
-					lastObject = objects.get(i);
-					counter = i;
-					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
-					getStatements().get(0).execute();
-				}
-			}
+//		//For-loop for objects.
+//		if ( type == ForeachType.ANY ) {
+//			int counter = 0;
+//			ArrayList<Object> objects = new ArrayList<Object>();
+//			objects.addAll(getProgram().getWorm().getWorld().getWorms());
+//			objects.addAll(getProgram().getWorm().getWorld().getFood());
+//			if (getProgramContinues() == false) {
+//				for (int i = counter; i < objects.size(); i++) {
+//					lastObject = objects.get(i);
+//					counter = i;
+//					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
+//					getStatements().get(0).execute();
+//				}
+//			}
+//			else {
+//				for (int i = counter; i < objects.size(); i++) {
+//					lastObject = objects.get(i);
+//					counter = i;
+//					program.assignVariable(variable, new Type<Entity>(new Entity(lastObject)));
+//					getStatements().get(0).execute();
+//				}
+//			}
 //			if (getProgramContinues() == false) {
 //				for ( Object obj : objects ) {
 //					lastObject = obj;
@@ -195,12 +256,13 @@ public class StatementForEach extends Statement {
 //				for (Object obj : objects ) {
 //					lastObject = obj;
 //					program.assignVariable(variable, new Type<Entity>(new Entity(obj)));
-//					getStatements().get(0).execute();
+//			getStatements().get(0).execute();
 //				}
 //			}
-		}
-	}
-	*/
+//		}
+//	}
+	// }}
+
 	
 	@Override
 	public boolean isWellFormed() {

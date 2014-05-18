@@ -17,6 +17,7 @@ public class StatementActionJump extends StatementAction {
 			program.stopProgram();
 			return;
 		}
+		System.out.println("WORM JUMPING.");
 		program.getHandler().jump(worm);
 	}
 

@@ -16,8 +16,8 @@ public class StatementIfThenElse extends Statement {
 			return;
 		if (getRootProgram().getCurrentLine() > getLine())
 			return;
-		if (getRootProgram().getCurrentColumn() > getColumn())
-			return;
+		//if (getRootProgram().getCurrentColumn() > getColumn())
+		//	return;
 		preExecute();
 		Object val = getExpressions().get(0).evaluate().getValue();
 		if ( !(val instanceof Boolean) )

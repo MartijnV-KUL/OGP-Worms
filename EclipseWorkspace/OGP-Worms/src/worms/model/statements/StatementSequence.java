@@ -16,8 +16,8 @@ public class StatementSequence extends Statement {
 			return;
 		if (getRootProgram().getCurrentLine() > getLine())
 			return;
-		if (getRootProgram().getCurrentColumn() > getColumn())
-			return;
+		//if (getRootProgram().getCurrentColumn() > getColumn())
+		//	return;
 		
 		preExecute();
 		for ( Statement s : getStatements() ) {

@@ -23,6 +23,7 @@ public class StatementActionTurn extends StatementAction {
 			program.stopProgram();
 			return;
 		}
+		System.out.println("WORM IS TURNING, " + (double)(val) + " ANGLE.");
 		program.getHandler().turn(worm, (double)(val));
 	}
 
