@@ -39,5 +39,7 @@ public class GUIOptions {
 	
 	
 	//Own programs
-	public String programFile = "programs/own_program.txt";
+	public String programFile = "wormprograms/own_program.txt";
+//	public String programFile = "wormprograms/typeCheckingTest.txt";
+//	public String programFile = "wormprograms/wellFormedTest.txt";
 }

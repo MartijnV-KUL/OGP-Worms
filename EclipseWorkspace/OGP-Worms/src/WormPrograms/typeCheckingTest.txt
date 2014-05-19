@@ -1,0 +1,11 @@
+//Program for testing typechecking.
+
+entity w;
+double ap;
+
+foreach(food, f) {
+		ap := getap ap;
+		print ap;
+}
+		
+

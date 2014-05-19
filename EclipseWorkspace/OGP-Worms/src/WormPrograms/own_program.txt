@@ -1,0 +1,14 @@
+entity w;
+double ap;
+
+foreach(worm, w) {
+	print 5;
+}
+
+print 456;
+ap := getap self;
+print ap;
+
+turn(5);
+
+print 555;
