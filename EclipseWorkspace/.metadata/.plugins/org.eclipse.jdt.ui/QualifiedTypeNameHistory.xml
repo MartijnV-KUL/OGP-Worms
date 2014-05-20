@@ -1,33 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="be.kuleuven.cs.som.annotate.Basic"/>
-<fullyQualifiedTypeName name="worms.model.Bazooka"/>
-<fullyQualifiedTypeName name="java.lang.NullPointerException"/>
-<fullyQualifiedTypeName name="worms.model.Position"/>
-<fullyQualifiedTypeName name="be.kuleuven.cs.som.annotate.Raw"/>
-<fullyQualifiedTypeName name="worms.util.Util"/>
-<fullyQualifiedTypeName name="worms.model.ModelException"/>
-<fullyQualifiedTypeName name="worms.model.Statement.Types"/>
-<fullyQualifiedTypeName name="java.util.HashMap"/>
-<fullyQualifiedTypeName name="java.util.List"/>
-<fullyQualifiedTypeName name="worms.model.programs.ProgramFactory"/>
-<fullyQualifiedTypeName name="worms.model.programs.ProgramFactory.ForeachType"/>
-<fullyQualifiedTypeName name="worms.model.StatementSequence"/>
-<fullyQualifiedTypeName name="worms.model.StatementForEach"/>
-<fullyQualifiedTypeName name="worms.model.StatementWhile"/>
-<fullyQualifiedTypeName name="worms.model.StatementIfThenElse"/>
-<fullyQualifiedTypeName name="worms.model.StatementAssignment"/>
-<fullyQualifiedTypeName name="worms.model.StatementAction.ActionTypes"/>
-<fullyQualifiedTypeName name="worms.model.ExpressionSingular"/>
-<fullyQualifiedTypeName name="worms.model.ExpressionVariable"/>
-<fullyQualifiedTypeName name="worms.model.Expression"/>
-<fullyQualifiedTypeName name="worms.model.Expression.Types"/>
-<fullyQualifiedTypeName name="worms.model.programs.ProgramParser"/>
-<fullyQualifiedTypeName name="worms.model.ProgramFactoryImpl"/>
-<fullyQualifiedTypeName name="worms.model.programs.ParseOutcome"/>
-<fullyQualifiedTypeName name="java.util.Map"/>
-<fullyQualifiedTypeName name="worms.model.StatementAction"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="worms.model.ExpressionsSquareRoot"/>
-<fullyQualifiedTypeName name="java.lang.Exception"/>
+<fullyQualifiedTypeName name="worms.gui.GUIConstants"/>
 </qualifiedTypeNameHistroy>

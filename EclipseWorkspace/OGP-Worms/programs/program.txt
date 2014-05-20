@@ -12,12 +12,12 @@ double wr;
 double distance;
 entity w;
 
-//while(true) do {
+while(true) do {
   x := getx self;
   y := gety self;
   r := getradius self;
   nearestWorm := null;
-  foreach(worm, w) { //do {
+  foreach(worm, w) do {
     if (w != self) {
       wx := getx w;
       wy := gety w;

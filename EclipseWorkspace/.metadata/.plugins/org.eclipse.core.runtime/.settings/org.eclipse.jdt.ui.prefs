@@ -1,33 +1,17 @@
-content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"><lhs name\="worms.model.Position"><rhs name\="worms.model.Position"/></lhs><lhs name\="java.lang.Enum"><rhs name\="worms.model.Statement$Types"/><rhs name\="worms.model.programs.ProgramFactory$ForeachType"/><rhs name\="worms.model.StatementAction$ActionTypes"/><rhs name\="worms.model.Expression$Types"/></lhs><lhs name\="worms.model.Statement$Types"><rhs name\="worms.model.Statement$Types"/></lhs><lhs name\="worms.model.StatementAction$ActionTypes"><rhs name\="worms.model.StatementAction$ActionTypes"/></lhs><lhs name\="worms.model.programs.ProgramFactory$ForeachType"><rhs name\="worms.model.programs.ProgramFactory$ForeachType"/></lhs><lhs name\="worms.model.Statement"><rhs name\="worms.model.StatementSequence"/><rhs name\="worms.model.StatementForEach"/><rhs name\="worms.model.StatementWhile"/><rhs name\="worms.model.StatementIfThenElse"/><rhs name\="worms.model.StatementAssignment"/><rhs name\="worms.model.StatementAction"/></lhs><lhs name\="worms.model.Expression"><rhs name\="worms.model.ExpressionSingular"/><rhs name\="worms.model.ExpressionVariable"/></lhs><lhs name\="worms.model.Expression$Types"><rhs name\="worms.model.Expression$Types"/></lhs><lhs name\="worms.model.programs.ProgramFactory"><rhs name\="worms.model.ProgramFactoryImpl"/></lhs></history>
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"/>
 content_assist_number_of_computers=13
 content_assist_proposals_background=255,255,255
 content_assist_proposals_foreground=0,0,0
 eclipse.preferences.version=1
-editor_folding_provider=com.cb.eclipse.folding.provider1
 fontPropagated=true
-hoverModifierMasks=org.eclipse.jdt.ui.BestMatchHover;0;org.eclipse.jdt.internal.debug.ui.JavaDebugHover;0;org.eclipse.jdt.ui.ProblemHover;0;org.eclipse.jdt.ui.NLSStringHover;327680;org.eclipse.jdt.ui.JavadocHover;393216;org.eclipse.jdt.ui.AnnotationHover;0;org.eclipse.jdt.ui.JavaSourceHover;131072;
-hoverModifiers=org.eclipse.jdt.ui.BestMatchHover;0;org.eclipse.jdt.internal.debug.ui.JavaDebugHover;\!0;org.eclipse.jdt.ui.ProblemHover;\!0;org.eclipse.jdt.ui.NLSStringHover;Ctrl+Alt;org.eclipse.jdt.ui.JavadocHover;Ctrl+Shift;org.eclipse.jdt.ui.AnnotationHover;\!0;org.eclipse.jdt.ui.JavaSourceHover;Shift;
 org.eclipse.jdt.ui.editor.tab.width=
 org.eclipse.jdt.ui.formatterprofiles.version=12
 org.eclipse.jdt.ui.javadoclocations.migrated=true
-org.eclipse.jdt.ui.text.code_templates_migrated=true
-org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
 org.eclipse.jdt.ui.text.custom_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
 org.eclipse.jdt.ui.text.templates_migrated=true
 org.eclipse.jface.textfont=1|Consolas|10.0|0|WINDOWS|1|0|0|0|0|0|0|0|0|1|0|0|0|0|Consolas;
 proposalOrderMigrated=true
-sourceHoverBackgroundColor=255,255,225
-spelling_ignore_ampersand_in_properties=true
-spelling_ignore_digits=true
-spelling_ignore_java_strings=true
-spelling_ignore_mixed=true
-spelling_ignore_non_letters=true
-spelling_ignore_sentence=true
-spelling_ignore_single_letters=true
-spelling_ignore_upper=true
-spelling_ignore_urls=true
 spelling_locale_initialized=true
-spelling_user_dictionary_encoding=
 tabWidthPropagated=true
 useAnnotationsPrefPage=true
 useQuickDiffPrefPage=true

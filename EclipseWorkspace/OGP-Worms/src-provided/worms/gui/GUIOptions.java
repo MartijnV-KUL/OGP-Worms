@@ -24,7 +24,7 @@ public class GUIOptions {
 	 *  
 	 * Can also be enabled from the command line with the -clickselect argument
 	 */
-	public boolean enableClickToSelect = false;
+	public boolean enableClickToSelect = true;
 	
 	/**
 	 * The program that is executed by computer-controlled worms.
@@ -32,14 +32,5 @@ public class GUIOptions {
 	 * 
 	 * Can also be set from the command line with the -program argument
 	 */
-//	public String programFile = "programs/program.txt";
-//	public String programFile = "programs/program_simple.txt";
-//	public String programFile = "programs/program_example.txt";
-//	public String programFile = "programs/syntax_test.txt";
-	
-	
-	//Own programs
-	public String programFile = "wormprograms/own_program.txt";
-//	public String programFile = "wormprograms/typeCheckingTest.txt";
-//	public String programFile = "wormprograms/wellFormedTest.txt";
+	public String programFile = "programs/program.txt";
 }

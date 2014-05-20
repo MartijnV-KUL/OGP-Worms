@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 3 elements from project &apos;OGP-Worms&apos;&#x0D;&#x0A;- Original project: &apos;OGP-Worms&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     OGP-Worms/resources/images&#x0D;&#x0A;     OGP-Worms/resources/levels&#x0D;&#x0A;     OGP-Worms/resources/programs" description="Delete elements" element1="/resources&lt;programs" element2="/resources&lt;levels" element3="/resources&lt;images" elements="3" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1400577694322" subPackages="false" version="1.0"/>
+</session>

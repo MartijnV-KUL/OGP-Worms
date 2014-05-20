@@ -38,23 +38,7 @@ public abstract class BallisticBody {
 		setDirection(direction);
 	}
 	
-	/**
-	 * Method to let the worm or projectile perform a jump.
-	 * 
-	 * @param 	timeStep
-	 * 			The timestep with which the jump is calculated.
-	 * @throws 	ModelException
-	 * 			Throws a modelexception if the worm or projectile can not jump.
-	 * 			| if (!canJump())
-	 */
-	public void jump(double timeStep) throws ModelException {
-		if (!canJump())
-			throw new ModelException("Can't jump");
-		
-		double[] newPos = jumpStep(jumpTime(timeStep));
-		setPosition(newPos[0],newPos[1],getDirection());
-	}
-	
+	public abstract void jump(double timeStep);
 	public abstract World getWorld();
 	public abstract double getRadius();
 	protected abstract double getJumpForce();

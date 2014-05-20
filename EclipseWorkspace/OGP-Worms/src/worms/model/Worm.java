@@ -103,8 +103,6 @@ public class Worm extends BallisticBody {
 	 * @param 	name
 	 * 			The name of the worm.
 	 * 
-	 * @pre		The given radius is valid.
-	 * 			| isValidRadius(radius)
 	 * @effect 	The X and Y coördinates and the direction of the worm are set to the given values in the class BallisticBody.
 	 * 			| setPosition(x, y, direction)
 	 * @effect 	The name of the worm is equal to the given string if it is valid.
@@ -119,7 +117,7 @@ public class Worm extends BallisticBody {
 	 */
 	public Worm(double x, double y, double direction, String name) {
 		setPosition(x, y, direction);
-		setRadius(getMinimalRadius());
+		setRadius(2*getMinimalRadius());
 		setName(name);
 		addNewWeapon(new Rifle());
 		addNewWeapon(new Bazooka());
@@ -566,8 +564,13 @@ public class Worm extends BallisticBody {
 		
 		double[] delta = getMoveDistance();
 
-		setActionPoints( getActionPoints() - getActionPointCostMove(delta) );
-		setPosition(getX()+delta[0],getY()+delta[1],getDirection());
+		//TODO update doc
+		if (!getWorld().isWithinBoundaries(getX()+delta[0],getY()+delta[1]))
+			die();
+		else {
+			setActionPoints( getActionPoints() - getActionPointCostMove(delta) );
+			setPosition(getX()+delta[0],getY()+delta[1],getDirection());
+		}
 	}
 	
 	/**
@@ -628,11 +631,11 @@ public class Worm extends BallisticBody {
 		}
 		
 		if (!adjacentFound) {
-			for (int i=0; getRadius()-i*testRadiusInterval>=0.1; i--) {
+			for (int i=0; getRadius()-i*testRadiusInterval>=0.1; i++) {
 				testRadius = getRadius()-i*testRadiusInterval;
 				testX = getX() + testRadius*Math.cos(getDirection());
 				testY = getY() + testRadius*Math.sin(getDirection());
-				if (getWorld().isPassable(testX, testY)) {
+				if ( !getWorld().isWithinBoundaries(testX, testY) || getWorld().isPassable(testX, testY, 0, getRadius()) ) {
 					optimX = testX;
 					optimY = testY;
 					break;
@@ -774,12 +777,25 @@ public class Worm extends BallisticBody {
 	 */
 	@Override
 	public void jump(double timeStep) throws ModelException {
-		super.jump(timeStep);
+		if (!canJump())
+			throw new ModelException("Can't jump");
+
 		
-		setActionPoints(0);
+		double[] newPos = jumpStep(jumpTime(timeStep));
+		double[] nextPos = jumpStep(jumpTime(timeStep)+timeStep);
 		
-		if (canFall())
-			fall();
+		if (!getWorld().isWithinBoundaries(nextPos[0], nextPos[1]))
+			die();
+		else if ( Math.sqrt(Math.pow(newPos[0]-getX(),2)+Math.pow(newPos[1]-getY(),2))<getRadius())//TODO update doc
+			return;
+		else { //the worm has actually jumped
+			setActionPoints(0);
+			setPosition(newPos[0],newPos[1],getDirection());
+			if (canFall())
+				fall();
+		}
+		//TODO update doc with the above
+		
 	}
 	
 	/**
@@ -969,6 +985,8 @@ public class Worm extends BallisticBody {
 	 */
 	public boolean canShoot() {
 		if (!isValidActionPoints(getActionPoints()-getEquippedWeapon().getActionPointsCost()))
+			return false;
+		if (!getWorld().isPassable(getX(), getY(), 0, getRadius())) //TODO update doc with this.
 			return false;
 		return true;
 	}

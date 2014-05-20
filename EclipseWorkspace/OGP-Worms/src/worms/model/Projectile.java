@@ -132,8 +132,12 @@ public class Projectile extends BallisticBody {
 	 * @param	timeStep
 	 * 			The timestep with which the jump is calculated.
 	 */
-	public void jump(double timeStep) throws ModelException {
-		super.jump(timeStep);
+	public void jump(double timeStep) throws ModelException {//TODO update doc
+		if (!canJump())
+			throw new ModelException("Can't jump");
+		
+		double[] newPos = jumpStep(jumpTime(timeStep));
+		setPosition(newPos[0],newPos[1],getDirection());
 		terminate();
 	}
 	
