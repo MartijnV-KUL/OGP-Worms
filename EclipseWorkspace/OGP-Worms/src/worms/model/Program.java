@@ -132,7 +132,6 @@ public class Program {
 		continueExecution = true;
 
 		getStatement().execute();
-		System.out.println("Re-entered runProgram() method.");
 		if (continueExecution)
 			hasReachedEnd=true;
 		System.out.println("runProgram() has reached end. Next turn initiating.");
@@ -142,50 +141,6 @@ public class Program {
 	public void stopProgram() {
 		continueExecution = false;
 		hasReachedEnd = false;
-		
-		
-		
-		
-		
-//		currentExecutionLine = getCurrentLine();
-//		
-//		if (getNbStatementsExecuted() >= getMaxNbStatementsExecutions())
-//			getWorm().terminate();		//removes program if the worm has reached its maximum number of statement executions.
-//		
-//		else {
-//			//TODO is this a correct implementation? Not sure if it is "squishy" to use "instanceof"...
-//			//Could do this with 2 if-loops, 1 for StatementForEach and 1 for the other statements,
-//			//but this gives a little bit more control as each statement is handled separately.
-//			//TODO What to do with the column?
-//			if (getStatement() instanceof StatementAction) {
-//				getStatement().setLine(currentExecutionLine + 1);//The program will continue on the next line.
-//				getStatement().execute();
-//			}
-//			if (getStatement() instanceof StatementAssignment) {
-//				getStatement().setLine(currentExecutionLine + 1);
-//				getStatement().execute();
-//			}
-//			if (getStatement() instanceof StatementForEach) {
-//				getStatement().setProgramContinues(true);
-//				getStatement().execute();
-//			}
-//			if (getStatement() instanceof StatementIfThenElse) {
-//				getStatement().setLine(currentExecutionLine + 1);
-//				getStatement().execute();
-//			}
-//			if (getStatement() instanceof StatementPrint) {
-//				getStatement().setLine(currentExecutionLine + 1);
-//				getStatement().execute();
-//			}
-//			if (getStatement() instanceof StatementSequence) {
-//				getStatement().setLine(currentExecutionLine + 1);
-//				getStatement().execute();
-//			}
-//			if (getStatement() instanceof StatementWhile) {
-//				getStatement().setLine(currentExecutionLine + 1);
-//				getStatement().execute();
-//			}
-//		}
 	}
 	
 

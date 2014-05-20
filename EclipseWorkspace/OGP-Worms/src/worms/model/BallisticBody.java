@@ -322,11 +322,7 @@ public abstract class BallisticBody {
 	 * 			| else
 	 * 			| 	return false
 	 */
-	public boolean ballisticTrajectoryHasEnded(double x, double y) {//TODO update doc when method is complete.
-//		if (!getWorld().isWithinBoundaries(jumpStep(GUIConstants.JUMP_TIME_STEP)[0], jumpStep(GUIConstants.JUMP_TIME_STEP)[1])) {
-//			getWorld().getActiveWorm().die();
-//			return true;
-//		}
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {
 		if (!getWorld().isWithinBoundaries(x, y))
 			return true;
 		if (!getWorld().isPassable( x, y, 0, getRadius() ))

@@ -503,9 +503,10 @@ public abstract class Weapon {
 	 * Method to get the radius of a projectile.
 	 * 
 	 * @return	The radius of a projectile.
+	 * 			| return Math.pow( (getRadius() / 7800)*0.75*(1/PI), 1/3)
 	 * 
 	 */
-	public double getProjectileRadius() throws ModelException { //TODO update doc
+	public double getProjectileRadius() throws ModelException {
 		// m = rho*V
 		// V = (4/3)*pi*r^3
 		// r = ((m/rho)*(3/4)/pi)^(1/3)

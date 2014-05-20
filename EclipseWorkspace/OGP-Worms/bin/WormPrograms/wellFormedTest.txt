@@ -1,0 +1,16 @@
+//Checks if a program is well formed.
+
+entity w;
+
+double x;
+
+//This is well-formed
+foreach(worm, w) {
+	x := getx self;
+	print x;
+}
+
+//This is not well-formed
+foreach(worm, w) {
+	fire 100;
+}

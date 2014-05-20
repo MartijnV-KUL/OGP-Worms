@@ -127,12 +127,21 @@ public class Projectile extends BallisticBody {
 	
 	@Override
 	/**
-	 * Method to let a projectile perform a jump.
+	 * Method to let a ballistic body perform a jump.
 	 * 
 	 * @param	timeStep
 	 * 			The timestep with which the jump is calculated.
+	 * 
+	 * @effect	The position of the ballistic body is set to it's new coordinates.
+	 * 			| double[] newPos = jumpStep(jumpTime(timeStep))
+	 * 			| setPosition(newPos[0[, newPos[1], getDirection())
+	 * @effect	The ballistic body is terminated after performing the jump (a projectile in this case).
+	 * 			| terminate()
+	 * @throws	ModelException
+	 * 			Throws a ModelException if the ballistic body can not jump.
+	 * 			| if (!canJump())
 	 */
-	public void jump(double timeStep) throws ModelException {//TODO update doc
+	public void jump(double timeStep) throws ModelException {
 		if (!canJump())
 			throw new ModelException("Can't jump");
 		

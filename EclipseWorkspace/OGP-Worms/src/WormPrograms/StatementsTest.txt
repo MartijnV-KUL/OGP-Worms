@@ -1,0 +1,35 @@
+//A program to test all the different statements.
+
+
+bool boolean;
+
+entity w;
+
+boolean := true;
+
+foreach(worm, w) {
+	print 1;
+}
+
+if(boolean == true) {
+	print 2;
+	boolean := false;
+}
+if(boolean == true) {
+	print 222;
+}
+else {
+	print 3;
+}
+
+turn(5);
+
+move;
+
+toggleweap;
+
+fire 50;
+
+skip;
+
+jump;

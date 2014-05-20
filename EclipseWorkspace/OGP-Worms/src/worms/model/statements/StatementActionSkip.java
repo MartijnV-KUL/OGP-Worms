@@ -8,6 +8,7 @@ public class StatementActionSkip extends StatementAction {
 
 	@Override
 	protected void doAction() {
+		System.out.println("WORM IS SKIPPING");
 		// do nothing
 	}
 

@@ -36,6 +36,7 @@ import worms.model.expressions.ExpressionSquareRoot;
 import worms.model.expressions.ExpressionSubtraction;
 import worms.model.expressions.ExpressionTrue;
 import worms.model.expressions.ExpressionVariable;
+import worms.model.expressions.ExpressionVariableAccess;
 import worms.model.programs.*;
 import worms.model.statements.StatementActionFire;
 import worms.model.statements.StatementActionJump;
@@ -304,8 +305,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 	@Override
 	public Expression createVariableAccess(int line, int column, String name,
 			Type<?> type) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ExpressionVariableAccess(line, column, name, type);
 	}
 
 }

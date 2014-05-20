@@ -32,5 +32,10 @@ public class GUIOptions {
 	 * 
 	 * Can also be set from the command line with the -program argument
 	 */
-	public String programFile = "programs/program.txt";
+//	public String programFile = "programs/program.txt";
+//	public String programFile = "programs/program_example.txt";
+
+	//Own programs
+//	public String programFile = "src/WormPrograms/StatementsTest.txt";
+	public String programFile = "src/WormPrograms/ExpressionsTest.txt";
 }

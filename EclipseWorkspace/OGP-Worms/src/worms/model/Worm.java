@@ -34,7 +34,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 public class Worm extends BallisticBody {
 	
 	
-//	TODO Questions:
+// Questions:
 //	-	Direction boundaries?
 //	-	Method isAdjacent => computations fast enough?
 //	-	Method getMoveDistance => computations fast enough?
@@ -549,10 +549,16 @@ public class Worm extends BallisticBody {
 	/**
 	 * Moves the worm.
 	 * 
-	 * @effect	The position is set to the calculated value.
-	 * 			| setPosition(getX() + delta [0], getY() + delta[1], getDirection())
-	 * @effect	The amount of actionpoints diminishes when moving the worm.
-	 * 			| double [] delta = getMoveDistance()
+	 * @effect	The worm will die when if moves outside of the playfield boundaries.
+	 * 			| if (!getWorld().isWithinBoundaries( getX() + getMoveDistance()[0],
+	 * 			|									  getY() + getMoveDistance()[1], getDirection()))
+	 * 			|	die()
+	 * @effect	The position is set to the calculated value if the worm is
+	 * 			within the field boundaries.
+	 * 			| setPosition( getX() + getMoveDistance()[0], 
+	 * 			|			   getY() + getMoveDistance()[1], getDirection())
+	 * @effect	The amount of actionpoints diminishes when moving the worm, if the worm is
+	 * 			within the field boundaries.
 	 * 			| setActionPoints( getActionPoints() - getActionPointsCostMove(delta) )
 	 * @throws	ModelException
 	 * 			Throws a modelexception when the worm can not move.
@@ -564,7 +570,6 @@ public class Worm extends BallisticBody {
 		
 		double[] delta = getMoveDistance();
 
-		//TODO update doc
 		if (!getWorld().isWithinBoundaries(getX()+delta[0],getY()+delta[1]))
 			die();
 		else {
@@ -761,17 +766,26 @@ public class Worm extends BallisticBody {
 	 * @param	timeStep
 	 * 			The timestep with which the jump trajectory is calculated.
 	 * 
+	 * @note	The arrays of doubles used in this documentation are defined as:
+	 * 			| double[] newPos  = jumpStep(jumpTime(timeStep))
+	 * 			| double[] nextPos = jumpStep(jumpTime(timeStep) + timeStep)
+	 * @effect	The worm will die if it moves outside of the playfield boundaries.
+	 * 			| if (!getWorld().isWithinBoundaries(nextPos[0], nextPos[1]))
+	 * 			|	die();
+	 * @effect	Nothing will happen if the distance a worm will cover when jumping
+	 * 			is smaller than the radius of that worm
+	 * 			| if (distanceCoveredByJump < getRadius())
+	 * 			|	return
 	 * @effect	The amount of actionpoints is set to zero after performing the jump.
 	 * 			| setActionPoints(0)
-	 * @effect	The position of the worm is set to it's new coördinates. This is calculated in BallisticBody, as the method
-	 * 			calls a method from the superclass.
-	 * 			| super.jump(timeStep)
+	 * @effect	The position of the worm is set to it's new coordinates.
+	 * 			| setPosition(newPos[0], newPos[1], getDirection())
 	 * @effect	After the jump, checks if a worm can fall.
 	 * 			| if (canFall())
 	 * 			|	fall()
-	 * @note	If the player tries to jump when it's not possible he will get "punished" for trying.
-	 * 			The amount of actionpoints will always be set to 0, whether the worm actually jumps or not.
-	 * 			This is a choice of implementation.
+	 * @throws	ModelException
+	 * 			Throws a ModelException when the worm can not jump.
+	 * 			| if (!canJump())
 	 * @note	A worm will not receive damage when jumping. The assignment only specifies that a worm has to take damage
 	 * 			when falling, not when jumping.
 	 */
@@ -782,20 +796,18 @@ public class Worm extends BallisticBody {
 
 		
 		double[] newPos = jumpStep(jumpTime(timeStep));
-		double[] nextPos = jumpStep(jumpTime(timeStep)+timeStep);
+		double[] nextPos = jumpStep(jumpTime(timeStep) + timeStep);
 		
 		if (!getWorld().isWithinBoundaries(nextPos[0], nextPos[1]))
 			die();
-		else if ( Math.sqrt(Math.pow(newPos[0]-getX(),2)+Math.pow(newPos[1]-getY(),2))<getRadius())//TODO update doc
+		else if ( Math.sqrt(Math.pow(newPos[0] - getX(), 2)+Math.pow(newPos[1] - getY(), 2)) < getRadius())
 			return;
 		else { //the worm has actually jumped
 			setActionPoints(0);
-			setPosition(newPos[0],newPos[1],getDirection());
+			setPosition(newPos[0], newPos[1], getDirection());
 			if (canFall())
 				fall();
 		}
-		//TODO update doc with the above
-		
 	}
 	
 	/**
@@ -977,8 +989,11 @@ public class Worm extends BallisticBody {
 	/**
 	 * Checks whether a worm can shoot or not.
 	 * 
-	 * @return	The worm has to have a sufficient amount of actionpoints left.
+	 * @return	The worm has to have a sufficient amount of actionpoints left, and the
+	 * 			world has to be passable.
 	 * 			| if (!isValidActionPoints(getActionPoints() - getEquippedWeapon().getActionPointsCost()))
+	 * 			|	return false
+	 * 			| if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))
 	 * 			|	return false
 	 * 			| else
 	 * 			|	return true
@@ -986,7 +1001,7 @@ public class Worm extends BallisticBody {
 	public boolean canShoot() {
 		if (!isValidActionPoints(getActionPoints()-getEquippedWeapon().getActionPointsCost()))
 			return false;
-		if (!getWorld().isPassable(getX(), getY(), 0, getRadius())) //TODO update doc with this.
+		if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))
 			return false;
 		return true;
 	}
@@ -1281,7 +1296,7 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method to remove all weapons from the collection.
 	 */
-	private void removeAllWeapons() { //TODO update all other removeAll methods to this. The other way of doing does not work 
+	private void removeAllWeapons() {
 		while (!weaponCollection.isEmpty()) {
 			removeWeapon(weaponCollection.get(0));
 		}
