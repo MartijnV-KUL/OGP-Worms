@@ -374,7 +374,7 @@ public class Worm extends BallisticBody {
 	 * 			| else
 	 * 			| 		new.getActionPoints() == actionPoints
 	 */
-	protected void setActionPoints(int actionPoints) {		//All aspects related to actionpoints must be worked out in a total manner.
+	protected void setActionPoints(int actionPoints) {
 		if ( ! isValidActionPoints(actionPoints) ) {
 			if (actionPoints < 0)
 				this.actionPoints = 0;
@@ -414,7 +414,6 @@ public class Worm extends BallisticBody {
 			maxActionPoints = Integer.MAX_VALUE;
 		else
 			maxActionPoints = (int) Math.round(getMass());
-		// If AP > maxAP, then this sets it to the maximum, since it is worked out in a total manner
 		setActionPoints(getActionPoints());
 	}
 
@@ -479,7 +478,7 @@ public class Worm extends BallisticBody {
 	 * 			| if (hitPoints < 0)
 	 * 			|	die()
 	 */
-	protected void setHitPoints(int hitPoints) { //All aspects related to hitpoints must be worked out in a total manner.
+	protected void setHitPoints(int hitPoints) {
 		if ( ! isValidHitPoints(hitPoints) ) {
 			if (hitPoints < 0) {
 				this.hitPoints = 0;
@@ -611,7 +610,6 @@ public class Worm extends BallisticBody {
 		double optimY = testY;
 		double optimDivergence = testDivergence;
 
-//		double testRadiusInterval = Math.min(getWorld().getResolutionX(), getWorld().getResolutionY());
 		double testRadiusInterval = 0.1*getRadius();
 		double testAngleInterval = 0.0175;
 		double scaleDivergence = 1;

@@ -52,21 +52,10 @@ public class Projectile extends BallisticBody {
 	 * @param	y
 	 * 			The y-coordinate.
 	 * 
-	 * @effect	| Worm worm = wormHit(x, y)
-	 * 			| if (worm != null) {
-	 * 			|	worm.setHitPoints(worm.getHitPoints() - getWeapon().getHitPointsDamage())
-	 * @return	| if (wormHit(x,y) != null)
-	 * 			|	return true
-	 * 			| else
-	 * 			|	return super.ballisticTrajectoryHasEnded(x, y)
+	 * @return	| return super.ballisticTrajectoryHasEnded(x, y)
 	 * 			
 	 */
 	public boolean ballisticTrajectoryHasEnded(double x, double y) {
-		Worm worm = wormHit(x, y);		//TODO changed method
-		if (worm != null) {
-			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
-			return true;
-		}
 		return super.ballisticTrajectoryHasEnded(x, y);
 	}
 
@@ -146,17 +135,15 @@ public class Projectile extends BallisticBody {
 	 * @throws	ModelException
 	 * 			| if (!canJump())
 	 */
-	public void jump(double timeStep) throws ModelException {		//TODO changed method, check if correct?
+	public void jump(double timeStep) throws ModelException {
 		if (!canJump())
 			throw new ModelException("Can't jump");
 		
 		double[] newPos = jumpStep(jumpTime(timeStep));
 		
-		wormHit(newPos[0], newPos[1]);
-		//Worm worm = wormHit(newPos[0],newPos[1]);
-		//if (worm!=null) {
-		//	worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
-		//}
+		Worm worm = wormHit(newPos[0],newPos[1]);
+		if (worm != null)
+			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
 		
 		terminate();
 	}

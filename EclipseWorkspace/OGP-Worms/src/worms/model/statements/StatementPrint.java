@@ -16,11 +16,8 @@ public class StatementPrint extends Statement {
 			return;
 		if (getRootProgram().getCurrentLine() > getLine())
 			return;
-		//if (getRootProgram().getCurrentColumn() > getColumn())
-		//	return;
 		preExecute();
 		System.out.println(getExpressions().get(0).evaluate().getValue());
-		//TODO this kind of print? perhaps somewhere on the GUI?
 	}
 
 }

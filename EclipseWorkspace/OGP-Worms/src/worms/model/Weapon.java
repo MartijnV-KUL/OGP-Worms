@@ -470,9 +470,6 @@ public abstract class Weapon {
 	 * 
 	 */
 	public double getProjectileRadius() throws ModelException {
-		// m = rho*V
-		// V = (4/3)*pi*r^3
-		// r = ((m/rho)*(3/4)/pi)^(1/3)
 		double m = getProjectileMass();
 		double rho = 7800;
 		double pi = Math.PI;

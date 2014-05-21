@@ -834,7 +834,7 @@ public class World {
 	public String getWinner() {
 		if (isGameFinished()) {
 			if (getAliveWorms().size()==0)
-				return ""; //All worms died (suicide action or something, may be possible with later iterations, not right now)
+				return "";
 			else if (getAliveWorms().size()==1)
 				return getAliveWorms().get(0).getName();
 			else

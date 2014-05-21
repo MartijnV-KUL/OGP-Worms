@@ -14,23 +14,6 @@ public class ExpressionGetX extends Expression {
 	@Override
 	public Type<Double> evaluate() {
 		Object val = getExpressions().get(0).evaluate().getValue();
-		
-		
-		
-		
-//		try {
-//			return new Type<Double>(((Worm)(((Entity)val).getEntity())).getX());
-//		} catch (Exception e1) {
-//			try {
-//				return new Type<Double>(((Food)(((Entity)val).getEntity())).getX());
-//			} catch (Exception e2) {
-//				System.out.println("derp");
-//				getRootProgram().typeErrorOccurred();
-//				return null;
-//			}
-//		}
-		
-		
 		if ( val instanceof Worm )
 			return new Type<Double>(((Worm)val).getX());
 		if ( val instanceof Food )

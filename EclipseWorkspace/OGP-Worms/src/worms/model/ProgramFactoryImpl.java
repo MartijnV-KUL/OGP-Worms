@@ -254,8 +254,7 @@ public class ProgramFactoryImpl implements ProgramFactory<Expression, Statement,
 
 	@Override
 	public Expression createVariableAccess(int line, int column, String name) {
-		return null; //note: documentation says to return null here, f the other createVariableAccess method is implemented.
-//		return new ExpressionVariable(line,column,name);
+		return null;
 	}
 
 	@Override

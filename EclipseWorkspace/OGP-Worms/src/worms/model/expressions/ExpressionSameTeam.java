@@ -12,9 +12,6 @@ public class ExpressionSameTeam extends Expression {
 
 	@Override
 	public Type<Boolean> evaluate() {
-		System.out.println(getExpressions());
-		System.out.println(getExpressions().get(0));
-		System.out.println(getExpressions().get(0).evaluate());
 		Object val = getExpressions().get(0).evaluate().getValue();
 		if ( val instanceof Worm ) 
 			if (getRootProgram().getWorm().getTeam() == null) {	//Checker if there are no teams created
@@ -22,11 +19,8 @@ public class ExpressionSameTeam extends Expression {
 				return new Type<Boolean>(false);
 			}
 			else {
-				System.out.println("Team not null, returning true/false");
-				System.out.println("Returntype: " + getRootProgram().getWorm().getTeamName());		//Team from PCworm
 				return new Type<Boolean>(getRootProgram().getWorm().getTeam() == ((Worm)val).getTeam());
 			}
-			//return new Type<Boolean>(getStatement().getRootProgram().getWorm().getTeam()==((Worm)val).getTeam());
 		getRootProgram().typeErrorOccurred();
 		return null;
 	}

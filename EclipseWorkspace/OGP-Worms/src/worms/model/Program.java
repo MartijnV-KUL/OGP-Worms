@@ -46,12 +46,6 @@ public class Program {
 		stopProgram();
 //		When a type error occurs, the program stops and a message is displayed on the console in which line and column
 //		it occurred. Afterwards subsequent runs of the program return again.
-		
-		/* Page 16 of assignment about type errors:
-		 * Such errors must be detected at runtime, i.e. during the execution of the
-		 * program. As explained before, runtime errors should be handled in a total
-		 * manner. That is, execution of the program stops and subsequent runs of the
-		 * program return immediately. */
 	}
 	
 	private Map<String,Type<?>> variables;
