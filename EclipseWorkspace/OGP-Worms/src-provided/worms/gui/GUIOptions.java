@@ -37,5 +37,6 @@ public class GUIOptions {
 
 	//Own programs
 //	public String programFile = "src/WormPrograms/StatementsTest.txt";
-	public String programFile = "src/WormPrograms/ExpressionsTest.txt";
+//	public String programFile = "src/WormPrograms/ExpressionsTest.txt";
+	public String programFile = "src/WormPrograms/ContinuationTest.txt";
 }

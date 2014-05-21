@@ -29,8 +29,11 @@ public class Projectile extends BallisticBody {
 	 * @param 	y
 	 * 			The y-coordinate.
 	 * 
-	 * @return	The worm that is hit.
-	 * TODO formal doc
+	 * @return	| forall worms {
+	 * 			|	if (world.isOverlapping(worm.getX(), worm.getY(), worm.getRadius(), x, y, getRadius()))
+	 * 			|		return worm
+	 * 			| }
+	 * 			| return null
 	 */
 	public Worm wormHit(double x, double y) {
 		for ( Worm worm : getWorld().getAliveWorms() ) {
@@ -49,6 +52,9 @@ public class Projectile extends BallisticBody {
 	 * @param	y
 	 * 			The y-coordinate.
 	 * 
+	 * @effect	| Worm worm = wormHit(x, y)
+	 * 			| if (worm != null) {
+	 * 			|	worm.setHitPoints(worm.getHitPoints() - getWeapon().getHitPointsDamage())
 	 * @return	| if (wormHit(x,y) != null)
 	 * 			|	return true
 	 * 			| else
@@ -56,7 +62,9 @@ public class Projectile extends BallisticBody {
 	 * 			
 	 */
 	public boolean ballisticTrajectoryHasEnded(double x, double y) {
-		if (wormHit(x,y)!=null) {
+		Worm worm = wormHit(x, y);		//TODO changed method
+		if (worm != null) {
+			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
 			return true;
 		}
 		return super.ballisticTrajectoryHasEnded(x, y);
@@ -129,27 +137,26 @@ public class Projectile extends BallisticBody {
 	 * 
 	 * @param	timeStep
 	 * 			The timestep with which the jump is calculated.
-	 * @effect	If a worm is hit, hit points are subtracted from the worm that is hit.
-	 * 			| newPos = jumpStep(jumpTime(timeStep));
+	 * 
+	 * @effect	| newPos = jumpStep(jumpTime(timeStep));
 	 * 			| worm = wormHit(newPos[0],newPos[1]);
 	 * 			| if (worm!=null)
 	 * 			| 	worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
-	 * @effect	The ballistic body is terminated after performing the jump (a projectile in this case).
-	 * 			| terminate()
+	 * @effect	| terminate()
 	 * @throws	ModelException
-	 * 			Throws a ModelException if the ballistic body can not jump.
 	 * 			| if (!canJump())
 	 */
-	public void jump(double timeStep) throws ModelException {
+	public void jump(double timeStep) throws ModelException {		//TODO changed method, check if correct?
 		if (!canJump())
 			throw new ModelException("Can't jump");
 		
 		double[] newPos = jumpStep(jumpTime(timeStep));
 		
-		Worm worm = wormHit(newPos[0],newPos[1]);
-		if (worm!=null) {
-			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
-		}
+		wormHit(newPos[0], newPos[1]);
+		//Worm worm = wormHit(newPos[0],newPos[1]);
+		//if (worm!=null) {
+		//	worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
+		//}
 		
 		terminate();
 	}
@@ -259,7 +266,12 @@ public class Projectile extends BallisticBody {
 	
 	/**
 	 * Method to terminate a projectile.
-	 *TODO formal @post
+	 * 
+	 * @post	| new.isTerminated() == true
+	 * @effect	| if (hasAWorld())
+	 * 			|	getWorld().removeProjectile()
+	 * @effect	| if (hasAWeapon())
+	 * 			|	getWeapon().removeProjectile()
 	 */
 	public void terminate() {
 		if (hasAWorld())
@@ -386,6 +398,7 @@ public class Projectile extends BallisticBody {
 	 * 
 	 * @param 	weapon
 	 * 			The weapon to check.
+	 * 
 	 * @return	| if (weapon == null)
 	 * 			|	return false
 	 * 			| if (weapon.isTerminated())

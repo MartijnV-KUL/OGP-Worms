@@ -247,51 +247,6 @@ public abstract class Weapon {
 	}
 	
 	// }}
-	
-//// {{ Ammunition
-//
-//	private int ammunition = 0;
-//	
-//	/**
-//	 * Returns the ammunition.
-//	 * 
-//	 * @return	The ammunition.
-//	 */
-//	public int getAmmunition() {
-//		return ammunition;
-//	}
-//	
-//	/**
-//	 * Method to set the ammunition.
-//	 * 
-//	 * @param 	ammunition
-//	 * 			The amount of ammunition
-//	 * 
-//	 * @post	| new.getAmmunition() == ammunition
-//	 * @throws 	ModelException
-//	 * 			| if (!isValidAmmunition(ammunition))
-//	 */
-//	protected void setAmmunition(int ammunition) throws ModelException {
-//		if (!isValidAmmunition(ammunition))
-//			throw new ModelException("Invalid ammunition.");
-//		this.ammunition = ammunition;
-//	}
-//	
-//	/**
-//	 * Checks if the given ammunition is valid.
-//	 * 
-//	 * @param 	ammunition
-//	 * 			The given ammunition.
-//	 * 
-//	 * @return	| return (ammunition > 0)
-//	 */
-//	private static boolean isValidAmmunition(int ammunition) {
-//		if (ammunition<0)
-//			return false;
-//		return true;
-//	}
-//	
-//	// }}
 
 // {{ Terminated
 	
@@ -309,7 +264,12 @@ public abstract class Weapon {
 	
 	/**
 	 * Method to terminate the weapon and all corresponding objects from the world.
-	 * TODO formal documentation
+	 * 
+	 * @post	| new.isTerminated() == true
+	 * @effect	| if (hasAWorm())
+	 * 			|	worm.removeWeapon(this)
+	 * @effect	| if (hasAProjectile())
+	 * 			|	removeProjectile()
 	 */
 	public void terminate() {
 		if (hasAWorm())
@@ -485,8 +445,10 @@ public abstract class Weapon {
 	 * @param 	propulsionYield
 	 * 			The yield the weapon is fired with.
 	 * 
-	 * TODO definitie van nexProjectile?
-	 * @effect	| getWorm().getWorld().setProjectile(newprojectile)
+	 * @note	The object newProjectile is a new projectile with coordinates that lie just outside the worm's radius.
+	 * 			The direction of the projectile is equal to the worm's direction.
+	 * 			The propulsionYield is a given parameter.
+	 * @effect	| getWorm().getWorld().setProjectile(newProjectile)
 	 * @effect	| setProjectile(newProjectile)
 	 */
 	public void shoot( int propulsionYield ) {

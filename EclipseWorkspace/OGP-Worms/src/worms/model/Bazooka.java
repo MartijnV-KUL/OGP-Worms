@@ -27,7 +27,12 @@ public class Bazooka extends Weapon {
 	@Override
 	/**
 	 * Method to return the force a bazooka projectile is fired with.
-	 * No formal return because this method is the implementation of an abstract method in the class "Weapon".
+	 *
+	 * @param	propulsionYield
+	 * 			The propulsionYield.
+	 * 
+	 * @return	The force a bazooka projectile is fired with.
+	 * 			| return 2.5 + 7 * (propulsionYield / 100)
 	 */
 	public double getForce(int propulsionYield) {
 		// Linear scaling

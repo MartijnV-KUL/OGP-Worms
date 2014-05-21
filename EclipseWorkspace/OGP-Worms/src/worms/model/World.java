@@ -195,7 +195,7 @@ public class World {
 	 * Basic inspector that returns the passable map.
 	 * 
 	 * @return	The passable map.
-	 * TODO formal documentation
+	 *			| return this.passableMap
 	 */
 	@Basic
 	public boolean[][] getPassableMap() {
@@ -206,7 +206,7 @@ public class World {
 	 * Inspector that returns the amont of horizontal pixels of the world.
 	 * 
 	 * @return	The amount of horizontal pixels of the world.
-	 * TODO formal documentation
+	 * 			| return getPassableMap()[0].length
 	 */
 	public int getHorizontalPixels() {
 		return getPassableMap()[0].length;
@@ -216,7 +216,7 @@ public class World {
 	 * Inspector that returns the amount of vertical pixels of the world.
 	 * 
 	 * @return	The amount of vertical pixels of the world.
-	 * TODO formal documentation
+	 * 			| return getPassableMap().length
 	 */
 	public int getVerticalPixels() {
 		return getPassableMap().length;
@@ -226,7 +226,7 @@ public class World {
 	 * Inspector that returns the horizontal resolution the passable map has in meters per pixel.
 	 * 
 	 * @return	The horizontal resolution in meters per pixel.
-	 * TODO formal documentation
+	 * 			| return (getWidth() / getHorizontalPixels())
 	 */
 	public double getResolutionX() {
 		return ( getWidth() / ((double) getHorizontalPixels()) );
@@ -236,7 +236,7 @@ public class World {
 	 * Inspector that returns the vertical resolution the passable map has in meters per pixel.
 	 * 
 	 * @return	The vertical resolution in meters per pixel.
-	 * TODO formal documentation
+	 * 			| return (getHeight() / getVerticalPixels())
 	 */
 	public double getResolutionY() {
 		return ( getHeight() / ((double) getVerticalPixels()) );
@@ -248,7 +248,7 @@ public class World {
 	 * @param 	passableMap
 	 * 			The new passable map.
 	 * 
-	 * @post	Sets the passable map to the input passable map.
+	 * @post	Sets the passable map to the given passable map.
 	 * 			| new.getPassableMap() == passableMap
 	 * @throws	ModelException
 	 * 			Throws a ModelException if the specified passable map is invalid.
@@ -541,9 +541,11 @@ public class World {
 	 * @param 	y
 	 * 			The y-coordinate.
 	 * 
-	 * @effect	| addFood(newFood)
+	 * @effect	A new foodobject is created and added to the collection of food.
+	 * 			| Food newFood = new Food(x, y)
+	 * 			| addFood(newFood)
 	 * @return	The food object at the specified location.
-	 * TODO formal documentation
+	 * 			| return newFood
 	 */
 	public Food addNewFood(double x,double y) {
 		Food newFood = new Food(x,y);
@@ -554,8 +556,13 @@ public class World {
 	/**
 	 * Creates a new worm at a random location. The standard name of the worm is "JohnDoe".
 	 * 
-	 * @return	A new worm at a random location.
-	 * TODO formal documentation
+	 * @return	A new worm at a random location, with direction 0 and name "JohnDoe".
+	 * 			| Worm newWorm = new Worm(newX, newY, 0, "JohnDoe")
+	 *			| return newWorm
+	 *@effect	The newly created worm is added to the collection of teams if
+	 * 			the size of that collection is not 0.
+	 *			| if (getTeams().size > 0)
+	 *			|	getTeams().addWorm(newWorm)
 	 */
 	public Worm createRandomWorm() {
 		double newX = 0;
@@ -567,8 +574,6 @@ public class World {
 			newY = randomXY[1];
 			newWorm = new Worm(newX,newY,0,"JohnDoe");
 		} while( !isAdjacent(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
-		//} while( !isPassable(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) || !isOnSolidGround(newWorm.getX(),newWorm.getY(),newWorm.getRadius()) );
-		// more sensible implementation for future iterations.
 		if (getTeams().size()>0)
 			getTeams().get(getRandomSeed().nextInt(getTeams().size())).addWorm(newWorm);
 		return newWorm;
@@ -676,7 +681,7 @@ public class World {
 	 * Basic inspector to return the currently active worm.
 	 * 
 	 * @return	The currently active worm.
-	 * TODO formal doc
+	 * 			| return this.activeWorm
 	 */
 	@Basic
 	public Worm getActiveWorm() {
@@ -749,19 +754,38 @@ public class World {
 		return true; // Default
 	}
 	
-	private boolean gameHasStarted;//TODO update doc
+	/**
+	 * A boolean type that determines whether the game has started or not.
+	 */
+	private boolean gameHasStarted;
+	
+	/**
+	 * A method to return the boolean-type gameHasStarted.
+	 * 
+	 * @return	The boolean-type gameHasStarted.
+	 * 			| return this.GameHasStarted
+	 */
+	public boolean getGameHasStarted() {
+		return this.gameHasStarted;
+	}
 	
 	/**
 	 * Method to start the game.
 	 * 
+	 * @post	Sets gameHasStarted to true if the world contains any worms.
+	 * 			| if (!getWorms().isEmpty())
+	 * 			|	new.getGameHasStarted() == true
 	 * @effect	Sets the active worm to the first worm in the world, if the world contains any worms.
 	 * 			| if (!getWorms().isEmpty())
 	 * 			| 	then setActiveWorm(getWorms().get(0));
+	 * @effect	If the worm has a program it will start to run.
+	 * 			| if (getWorms().get(0).hasAProgram())
+	 * 			|	getWorms().get(0).getProgram().runProgram()
 	 */
 	public void startGame() {
 		if (!getWorms().isEmpty()) {
 			setActiveWorm(getWorms().get(0));
-			gameHasStarted = true; // TODO update doc
+			gameHasStarted = true;
 			if ( getWorms().get(0).hasAProgram() )
 				getWorms().get(0).getProgram().runProgram();
 		}
@@ -770,26 +794,16 @@ public class World {
 	/**
 	 * Method to initiate the next turn (select the next worm).
 	 * 
-	 * @effect	If the current active worm is dead, terminate it and activate the worm that took its place in the list.
-	 * 			| int index = getWorms().indexOf(getActiveWorm());
-	 * 			| if (!getActiveWorm().isAlive())
-	 * 			| 	then 
-	 * 			|		getActiveWorm().terminate();
-	 * 			| setActiveWorm(getWorms().get(index));
-	 * @effect	If the current active worm is still alive, select the next worm in the list.
-	 * 			If the active worm is the last worm in the list, select the first worm in the list.
-	 * 			| int index = getWorms().indexOf(getActiveWorm());
-	 * 			| if (getActiveWorm().isAlive())
-	 * 			| 	then
-	 * 			|		if (index==(getWorms().size()-1)
-	 * 			|			then index = 0;
-	 * 			|		else index += 1; 
-	 * 			| setActiveWorm(getWorms().get(index));
+	 * @effect	The next worm will be selected.
+	 * 			The index is the place of the current active worm in the collection.
+	 * 			| setActiveWorm(getWorms().get(index))
+	 * @effect	If the next worm has a program it will start to run.
+	 * 			| if (getWorms().get(index).hasAProgram())
+	 * 			|	getWorms().get(index).getProgram().runProgram()
 	 */
-	public void nextTurn() {//TODO update doc
-		if (!isGameFinished()) {//TODO update doc, added this. Otherwise for a pc worm and human worm; if the human worm died, it gave a nullpointerexception because it tried to continue or something
+	public void nextTurn() {
+		if (!isGameFinished()) {
 			int index = getWorms().indexOf(getActiveWorm());
-			//TODO update doc, method became simpler
 			if (index==(getWorms().size()-1))
 				index = 0;
 			else
@@ -815,7 +829,7 @@ public class World {
 	 * 			|			return getAliveWorms().get(0).getTeamName();
 	 * 			| else return "";
 	 * @note	If there is more than one worm present in the world and they both belong to the same team,
-	 * 			it is logical to return the name of the winning team in stead of a wormname.
+	 * 			it is logical to return the name of the winning team instead of a wormname.
 	 */
 	public String getWinner() {
 		if (isGameFinished()) {
@@ -861,7 +875,7 @@ public class World {
 	 * Basic inspector to return the Random object.
 	 * 
 	 * @return	A random generated number.
-	 * TODO formal
+	 * 			return this.randomSeed
 	 */
 	@Basic
 	public Random getRandomSeed() {
@@ -897,7 +911,7 @@ public class World {
 	 * Basic inspector that returns the collection of worms.
 	 * 
 	 * @return	The collection of worms.
-	 * TODO formal
+	 * 			| return this.wormCollection
 	 */
 	@Basic
 	public ArrayList<Worm> getWorms() {
@@ -977,9 +991,10 @@ public class World {
 	
 	/**
 	 * Method to remove all worms from the collection.
-	 * @effect	| for (Worm w : wormCollection)
+	 * 
+	 * @effect	Removes all the worms from the collection.
+	 * 			| forall (Worm w : wormCollection)
 	 * 			| 	removeWorm(w);
-	 * TODO is this formal documentation correct?
 	 */
 	public void removeAllWorms() {
 		while (!wormCollection.isEmpty()) {
@@ -1013,7 +1028,7 @@ public class World {
 	 * Basic inspector to return the collection of teams.
 	 * 
 	 * @return	The collection of teams.
-	 * TODO formal
+	 * 			| return this.teamCollection
 	 */
 	@Basic
 	public ArrayList<Team> getTeams() {
@@ -1029,7 +1044,7 @@ public class World {
 	 * Basic inspector to return the maximum amount of teams.
 	 * 
 	 * @return	The maximum amount of teams.
-	 * TODO formal
+	 * 			| return this.maxTeams
 	 */
 	@Basic
 	private int getMaxTeams() {
@@ -1122,9 +1137,8 @@ public class World {
 	 * Method to remove all teams from the collection.
 	 * 
 	 * @effect	Removes each team from the world.
-	 * 			| for ( Team team : teamCollection )
+	 * 			| forall ( Team team : teamCollection )
 	 * 			| 	removeTeam(team);
-	 * TODO is this formal documentation correct?
 	 */
 	private void removeAllTeams() {
 		while (!teamCollection.isEmpty()) {
@@ -1145,7 +1159,7 @@ public class World {
 	 * Basic inspector to return the collection of food.
 	 * 
 	 * @return	The collection of food.
-	 * TODO formal
+	 * 			| return this.foodCollection
 	 */
 	@Basic
 	public ArrayList<Food> getFood() {
@@ -1163,12 +1177,16 @@ public class World {
 	 * @effect	Adds the specified food to the world.
 	 * 			| foodCollection.add(newFood)
 	 * @throws 	ModelException
-	 * 			Throws a ModelException if the food is invalid or if the food is already present in this world.
+	 * 			Throws a ModelException if the food is invalid,
+	 * 			or if the food is already present in this world.
+	 * 			A ModelException will also be thrown if the game has already started,
+	 * 			it is impossible to add food then.
+	 * 			| if (gameHasStarted)
 	 * 			| if (!canHaveAsFood(newFood))
 	 * 			| if (hasAsFood(newFood))
 	 */
 	public void addFood(Food newFood) throws ModelException {
-		if (gameHasStarted)//TODO update doc
+		if (gameHasStarted)
 			throw new ModelException("Game has already started. Can't add food anymore");
 		if (!canHaveAsFood(newFood))
 			throw new ModelException("Invalid food specified.");
@@ -1184,7 +1202,7 @@ public class World {
 	 * @param 	food
 	 * 			The given food.
 	 * 
-	 * @return	The food is valid if it isn't null and it sn't terminated.
+	 * @return	The food is valid if it is not null and it is not terminated.
 	 * 			| if (food == null)
 	 * 			| 	return false
 	 * 			| if (food.isTerminated())
@@ -1238,10 +1256,8 @@ public class World {
 	 * Method to remove all food from the collection.
 	 * 
 	 * @effect	Removes each food object from the world.
-	 * 			| for ( Food food : foodCollection) )
+	 * 			| forall ( Food food : foodCollection) )
 	 * 			| 	removeFood(food);
-	 * TODO is this formal documentation correct?
-	 * 
 	 */
 	private void removeAllFood() {
 		while (!foodCollection.isEmpty()) {
@@ -1262,7 +1278,7 @@ public class World {
 	 * Basic inspector to return the current projectile.
 	 * 
 	 * @return	The current projectile.
-	 * TODO formal
+	 *			| return this.projectile
 	 */
 	@Basic
 	public Projectile getProjectile() {
@@ -1328,7 +1344,7 @@ public class World {
 	/**
 	 * Removes the current projectile and the weapon associated with it.
 	 * 
-	 * @effect	Removes the world from the projectile.
+	 * @effect	Removes the world from the projectile
 	 * 			| projectile.removeWorld();
 	 * @post	Removes the projectile from the current world.
 	 * 			| new.getProjectile() == null
@@ -1355,7 +1371,7 @@ public class World {
 	 * Returns whether or not the object is terminated.
 	 * 
 	 * @return	Return true if the object is terminated.
-	 * TODO formal
+	 * 			| return this.terminated
 	 */
 	@Basic
 	public boolean isTerminated() {

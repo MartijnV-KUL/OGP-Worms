@@ -256,9 +256,9 @@ public abstract class BallisticBody {
 	 * @param 	time
 	 * 			The time at which the trajectory should be evaluated.
 	 * 
-	 * @return 	The x and y positions of the trajectory at a specified time.
-	 * TODO formal return statement
-	 * 
+	 * @return 	The x and y positions of the trajectory at a specified time,
+	 * 			returned as an array of doubles.
+	 * 			| return new double[] {getX() + deltaX, getY() + deltaY}
 	 * @throws	ModelException
 	 * 			Throws a ModelException if the time given is less than zero.
 	 * 			| if ( time < 0 )

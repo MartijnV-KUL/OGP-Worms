@@ -146,8 +146,8 @@ public class Worm extends BallisticBody {
 	/**
 	 * Basic inspector that returns the minimal radius of worms.
 	 * 
-	 * @return The minimal radius of worms.
-	 * TODO formal
+	 * @return 	The minimal radius of worms.
+	 * 			| return this.minimalradius
 	 */
 	@Basic
 	@Immutable
@@ -158,8 +158,8 @@ public class Worm extends BallisticBody {
 	/**
 	 * Basic inspector that returns the density of worms.
 	 * 
-	 * @return The density of worms.
-	 * TODO formal
+	 * @return 	The density of worms.
+	 * 			| return this.density
 	 */
 	@Basic
 	@Immutable
@@ -174,9 +174,18 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method that sets the position of the worm.
 	 * 
-	 * @param	position
-	 * 			The position of the worm.
-	 * TODO post (position) & effect (eating)
+	 * @param	x
+	 * 			The x-coordinate of the worm.
+	 * @param	y
+	 * 			The y-coordinate of the worm.
+	 * @param	direction
+	 * 			The direction of the worm.
+	 * 
+	 * @effect	The position is set to the given values. This is done in the BallisticBody class, through
+	 * 			the super method.
+	 * 			| super.setPosition(x, y, direction)
+	 * @effect	The worm will try to eat all the food that it is overlapping with.
+	 * 			| tryToEatAll()
 	 */
 	public void setPosition(double x, double y, double direction) {
 		super.setPosition(x, y, direction);
@@ -192,8 +201,8 @@ public class Worm extends BallisticBody {
 	/**
 	 * Basic inspector that returns the name of the worm.
 	 * 
-	 * @return The name of the worm.
-	 * TODO formal
+	 * @return 	The name of the worm.
+	 * 			| return this.name
 	 */
 	@Basic
 	public String getName() {
@@ -255,8 +264,8 @@ public class Worm extends BallisticBody {
 	/**
 	 * Basic inspector that returns the radius of the worm.
 	 * 
-	 * @return The radius of the worm.
-	 * TODO formal
+	 * @return 	The radius of the worm.
+	 * 			| return this.radius
 	 */
 	@Basic
 	public double getRadius() {
@@ -332,8 +341,8 @@ public class Worm extends BallisticBody {
 	/**
 	 * Basic inspector that returns the action points of the worm.
 	 * 
-	 * @return The action points of the worm.
-	 * TODO formal
+	 * @return 	The action points of the worm.
+	 * 			| return this.actionPoints
 	 */
 	@Basic
 	public int getActionPoints() {
@@ -344,7 +353,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the maximum amount of action points of the worm.
 	 * 
 	 * @return	The maximum amount of action points of the worm.
-	 * TODO formal
+	 * 			| return this.maxActionPoints
 	 */
 	@Basic
 	public int getMaxActionPoints()	{
@@ -389,24 +398,18 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method that updates the maximum number of actionpoints.
 	 * 
+	 * @post	If the mass of the worm is greater than the maximum value of an integer,
+	 * 			the maximum amount of actionpoints is set to the maximum integer value.
+	 * 			| if (getMass() > Integer.MAX_VALUE)
+	 * 			|	new.getMaxActionPoints() == Integer.MAX_VALUE
 	 * @post	The maximum amount of actionpoints is equal to the mass of the worm,
-	 * 			rounded to the nearest integer.
+	 * 			rounded to the nearest integer. The mass has to be smaller than the maximum value
+	 * 			of an integer.
 	 * 			| new.getMaxActionPoints() == (int) Math.round(getMass())
-	 * @effect	The number of actionpoints is set to the maximum amount of actionpoints times the fraction.
-	 * 			The result is rounded down to an integer.
-	 * 			| setActionPoints( (int) Math.floor(getMaxActionPoints() * apFrac) )
-	 * @note	apFrac is equal to 1 when the worm is first created, the if-loop prevents a DivideByZeroException
-	 * 			at the initialisation of the game.
-	 * 			During the rest of the game, apfrac is equal to the fraction of actionpoints the worm currently has left.
-	 * 			This is necessary to maintain control over how the actionpoints are displayed when changing the worm's radius.
-	 * 			Without this method the green bar of actionpoints would exceed the white bar of actionpoints when the radius is lowered.
-	 * @note	The second if-loop is implemented to prevent loss of numbers when typecasting to an integer.
-	 * 			If the value of getMass() is larger than the maximum value of an integer, all the numbers greater than that maximum will be lost.
-	 * 			As everything related to actionpoints has to be implemented in a total manner is the usage of exceptions out of the question.
-	 * 			The problem is solved by setting the maximum amount of actionpoints to the highest possible integer value in case the mass is
-	 * 			greater than Integer.MAX_VALUE.
+	 * @effect	The actionPoints are unchanged.
+	 * 			| setActionPoints(getActionPoints())
 	 */
-	private void updateMaxActionPoints() {//TODO update doc. assignment says current ap should be unchanged
+	private void updateMaxActionPoints() {
 		if ( getMass() > Integer.MAX_VALUE)
 			maxActionPoints = Integer.MAX_VALUE;
 		else
@@ -439,7 +442,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the hitpoints of the worm.
 	 * 
 	 * @return	The hitpoints of the worm.
-	 * TODO formal
+	 * 			| return this.hitPoints
 	 */
 	@Basic
 	public int getHitPoints() {
@@ -450,7 +453,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the maximum amount of hitpoints of the worm.
 	 * 
 	 * @return	The maximum amount of hitpoints of the worm.
-	 * TODO formal
+	 * 			| return this.maxHitPoints
 	 */
 	@Basic
 	public int getMaxHitPoints() {
@@ -492,24 +495,18 @@ public class Worm extends BallisticBody {
 	/**
 	 * Method that updates the maximum number of hitpoints.
 	 * 
+	 * @post	If the mass of the worm is greater than the maximum value of an integer,
+	 * 			the maximum amount of hitpoints is set to the maximum integer value.
+	 * 			| if (getMass() > Integer.MAX_VALUE)
+	 * 			|	new.getMaxHitonPoints() == Integer.MAX_VALUE
 	 * @post	The maximum amount of hitpoints is equal to the mass of the worm,
-	 * 			rounded to the nearest integer.
+	 * 			rounded to the nearest integer. The mass has to be smaller than the maximum value
+	 * 			of an integer.
 	 * 			| new.getMaxHitPoints() == (int) Math.round(getMass())
-	 * @effect	The number of hitpoints is set to the maximum amount of hitpoints times the fraction.
-	 * 			The result is rounded down to an integer.
-	 * 			| setHitPoints( (int) Math.floor(getMaxHitPoints() * hpFrac) )
-	 * @note	hpFrac is equal to 1 when the worm is first created, the if-loop prevents a DivideByZeroException
-	 * 			at the initialisation of the game.
-	 * 			During the rest of the game, hpfrac is equal to the fraction of hitpoints the worm currently has left.
-	 * 			This is necessary to maintain control over how the hitpoints are displayed when changing the worm's radius.
-	 * 			Without this method the bar of hitpoints would exceed the white bar of hitpoints when the radius is lowered.
-	 * @note	The second if-loop is implemented to prevent loss of numbers when typecasting to an integer.
-	 * 			If the value of getMass() is larger than the maximum value of an integer, all the numbers greater than that maximum will be lost.
-	 * 			As everything related to hitpoints has to be implemented in a total manner is the usage of exceptions out of the question.
-	 * 			The problem is solved by setting the maximum amount of hitpoints to the highest possible integer value in case the mass is
-	 * 			greater than Integer.MAX_VALUE.
+	 * @effect	The hitPoints are unchanged.
+	 * 			| setHitPoints(getHitPoints())
 	 */
-	private void updateMaxHitPoints() {//TODO update doc. idem as AP. method has become simpler
+	private void updateMaxHitPoints() {
 		if (getMass() > Integer.MAX_VALUE)
 			maxHitPoints = Integer.MAX_VALUE;
 		else
@@ -585,20 +582,25 @@ public class Worm extends BallisticBody {
 	 * 			If there is a slope present, the method will calculate the highest possible distance a worm can cover.
 	 * 			The result (output) is returned as an array of doubles. output[0] equals the new x-coordinate,
 	 * 			output[1] equals the new y-coordinate.
-	 * 			| return output
-	 * 
-	 * TODO formal documentation with sets. It should be done something like this
-	 * @return	
-	 * 			| { {dx1,dy1} | sqrt(dx1^2+dy1^2)<=getRadius() && atan(dy1/dx1)<getDirection()+0.7875 && getWorld().isAdjacent(getX()+dx1,getY()+dy1) }
-	 * 			| if (!isempty(XY))
-	 * 			| 	{ {dx,dy} | sqrt(dx^2+dy^2)-atan(dy/dx) >= sqrt(dx1^2+dy1^2)-atan(dy1/dx1) }
-	 * 			|	return { getX()+dx*cos(getDirection), getY()+dy*sin(getDirection() };
-	 * 			| else
-	 * 			| 	{ {dx2,dy2} | getWorld().isWithinBoundaries(getX()+dx2,getY()+dy2) && isPassable(getX()+dx2,getY()+dy2,0,getRadius()) }
-	 * 			|	{ {dx,dy} | sqrt(dx^2+dy^2) >= sqrt(dx2^2,dy2^2) }
-	 * 			|	return { getX()+dx*cos(getDirection), getY()+dy*sin(getDirection() };
+	 * 			| for the set {dx1,dy1} it holds that
+	 * 			|		sqrt(dx1^2 + dy1^2) <= getRadius() &&
+	 * 			| 		atan(dy1 / dx1) < getDirection() + 0.7875 &&
+	 * 			| 		getWorld().isAdjacent(getX() + dx1, getY() + dy1) }
+	 * 			| if (!isempty(XY)) {
+	 *			|	then for the set {dx, dy} it holds that
+	 * 			| 		sqrt(dx^2 + dy^2) - atan(dy / dx) >= sqrt(dx1^2 + dy1^2) - atan(dy1 / dx1)
+	 * 			|	return { getX() + dx*cos(getDirection), getY() + dy*sin(getDirection()
+	 * 			| }
+	 * 			| else {
+	 * 			|	for the set {dx2, dy2} it holds that
+	 * 			| 		getWorld().isWithinBoundaries(getX() + dx2, getY() + dy2) &&
+	 * 			|		isPassable(getX() + dx2, getY() + dy2, 0, getRadius())
+	 * 			|	for the set {dx, dy} it holds that
+	 * 			|		sqrt(dx^2 + dy^2) >= sqrt(dx2^2, dy2^2)
+	 * 			|	return { getX() + dx*cos(getDirection), getY() + dy*sin(getDirection()
+	 * 			| }
 	 */
-	protected double[] getMoveDistance() {//TODO update doc?
+	protected double[] getMoveDistance() {
 		
 		double testX = getX();
 		double testY = getY();
@@ -766,8 +768,12 @@ public class Worm extends BallisticBody {
 // {{ Jump
 	
 	@Override
-	//TODO documentation
-	//TODO formal return
+	/**
+	 * Method to calculate the force with which a worm jumps.
+	 * 
+	 * @return	The force with which a worm jumps.
+	 * 			| return (5 * getActionPoints()) + (getMass() * World.getGravitationalAcceleration())
+	 */
 	protected double getJumpForce() {
 		return ((double)5*getActionPoints()) + (getMass()*World.getGravitationalAcceleration());
 	}
@@ -837,19 +843,22 @@ public class Worm extends BallisticBody {
 	 * Verifies whether a worm can jump in its current state. As of now, the 
 	 * worm only has to be facing upwards.
 	 * 
-	 * @return 	True if the worm has actionpoints left.
+	 * @return 	True if the worm has actionpoints left, if it has a world and if the position is passable.
 	 * 			| if (getActionPoints() == 0
 	 * 			| 	return false
+	 * 			| if (!hasAWorld())
+	 * 			|	return false
+	 * 			| if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))
+	 * 			|	return false
 	 * 			| else
 	 * 			|	return true
-	 * @note	This method can easily be adapted in the future to include other conditions.
 	 */
 	public boolean canJump() {
 		if (getActionPoints() == 0)
 			return false;
-		if (!hasAWorld())//TODO update doc
+		if (!hasAWorld())
 			return false;
-		if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))//TODO update doc
+		if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))
 			return false;
 		return true;
 	}
@@ -874,10 +883,7 @@ public class Worm extends BallisticBody {
 	 * 			| if (!getWorld().isPassable(getX(), y, getRadius(), 1.1 * getRadius()))
 	 * 			|	setPosition(getX(), y, getDirection)
 	 * @effect	The worm will loose hitpoints after falling and will die if they are less than zero.
-	 * 			| if (getHitPoints > 0)
-	 * 			|	setHitPoints(newHitPoints)
-	 * 			| else
-	 * 			|	die()
+	 * 			| setHitPoints(newHitPoints)
 	 */
 	public void fall() {
 		if (canFall()) {
@@ -898,20 +904,8 @@ public class Worm extends BallisticBody {
 					setPosition(getX(), y, getDirection());
 					distanceFallen = (int) (startPosition - y);
 					
-					//System.out.println("prev HP: " + getHitPoints());
-
 					int newHitPoints = (int) (getHitPoints() - Math.floor(distanceFallen * 3));
-					//System.out.println("HP: " + newHitPoints);
-					//System.out.println("Distance fallen: " + distanceFallen);
 					setHitPoints(newHitPoints);
-//TODO the code is already checked in setHitpoints, right? so this isn't necessary anymore.
-//TODO update doc
-//					if (newHitPoints > 0){
-//						setHitPoints(newHitPoints);
-//						//System.out.println("new HP: " + getHitPoints());
-//					}
-//					else
-//						die();
 					break;
 				}
 			}
@@ -932,8 +926,6 @@ public class Worm extends BallisticBody {
 	public boolean canFall() {
 		if (!hasAWorld())
 			return false;
-		if (!hasAWorld())//TODO update doc
-			return false;
 		if ( getWorld().isAdjacent( getX(), getY(), getRadius() ) )
 			return false;
 		return true;
@@ -949,7 +941,7 @@ public class Worm extends BallisticBody {
 	 * Method to return the currently equipped weapon.
 	 * 
 	 * @return	The currently equipped weapon.
-	 * TODO formal
+	 * 			| return equippedWeapon
 	 */
 	public Weapon getEquippedWeapon() {
 		return equippedWeapon;
@@ -976,9 +968,8 @@ public class Worm extends BallisticBody {
 	 * Method to equip the next available weapon.
 	 * 
 	 * @effect	The next available weapon is equipped.
-	 * 			| equipWeapon(getWeapon().get(index))
-	 * TODO define index in formal doc
-	 * @note	The index is equal to the corresponding place in the array the weapon has.
+	 * 			| int index = getWeapons.indexOf(getEquippedWeapon())
+	 * 			| equipWeapon(getWeapons().get(index))
 	 */
 	public void equipNextWeapon() {
 		int index = 0;
@@ -998,10 +989,14 @@ public class Worm extends BallisticBody {
 	 * @param 	propulsionYield
 	 * 			The yield the weapon is fired with.
 	 * 
+	 * @effect	The amount of actionpoints diminishes when firing a weapon.
+	 * 			Every weapon costs a specific amount of actionpoints when firing.
+	 * 			| setActionPoints(getActionPoints() - getEquippedWeapon().getActionPointsCost())
+	 * @effect	The equipped weapon is fired with the given propulsionyield.
+	 * 			| getEquippedWeapon().shoot(propulsionYield)
 	 * @throws	ModelException
 	 * 			Throws a modelexception if the worm can not shoot.
 	 * 			if (!canShoot())
-	 *TODO post and/or effect
 	 */
 	public void shoot(int propulsionYield) throws ModelException {
 		if (!canShoot())
@@ -1013,9 +1008,11 @@ public class Worm extends BallisticBody {
 	/**
 	 * Checks whether a worm can shoot or not.
 	 * 
-	 * @return	The worm has to have a sufficient amount of actionpoints left, and the
-	 * 			world has to be passable.
+	 * @return	The worm has to have a sufficient amount of actionpoints left, has to have
+	 * 			a world and the location must be passable.
 	 * 			| if (!isValidActionPoints(getActionPoints() - getEquippedWeapon().getActionPointsCost()))
+	 * 			|	return false
+	 * 			| if (!hasAWorld())
 	 * 			|	return false
 	 * 			| if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))
 	 * 			|	return false
@@ -1025,7 +1022,7 @@ public class Worm extends BallisticBody {
 	public boolean canShoot() {
 		if (!isValidActionPoints(getActionPoints()-getEquippedWeapon().getActionPointsCost()))
 			return false;
-		if (!hasAWorld())//TODO update doc
+		if (!hasAWorld())
 			return false;
 		if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))
 			return false;
@@ -1041,7 +1038,11 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @note	A worm is able to eat a foodobject if the two objects (worm and food) are overlapping.
 	 * 
-	 * TODO post and/or effect
+	 * @effect	The worm will eat all the food it is overlapping with.
+	 * 			| forall food {
+	 * 			|	if (World.isOverlapping(getX(), getY(), getRadius(), food.getX(), food.getY(), Food.getRadius()))
+	 * 			|		eat(food)
+	 * 			| }
 	 */
 	private void tryToEatAll() {
 		if (hasAWorld()) {
@@ -1082,7 +1083,7 @@ public class Worm extends BallisticBody {
 	 * Returns the current world.
 	 * 
 	 * @return	The current world.
-	 * TODO formal
+	 * 			| return this.world
 	 */
 	public World getWorld() {
 		return world;
@@ -1165,7 +1166,7 @@ public class Worm extends BallisticBody {
 	 * Returns the current team.
 	 * 
 	 * @return	The current team
-	 * TODO formal
+	 * 			| return this.team
 	 */
 	@Basic
 	public Team getTeam() {
@@ -1249,7 +1250,7 @@ public class Worm extends BallisticBody {
 	 * Returns the collection of weapons.
 	 * 
 	 * @return	The collection of weapons.
-	 * TODO formal
+	 * 			| return this.weaponCollection
 	 */
 	@Basic
 	public ArrayList<Weapon> getWeapons() {
@@ -1328,10 +1329,8 @@ public class Worm extends BallisticBody {
 	 * Method to remove all weapons from the collection.
 	 * 
 	 * @effect	Removes each weapon object from the worm.
-	 * 			| for ( Weapon w : weaponCollection) )
+	 * 			| forall ( Weapon w : weaponCollection) )
 	 * 			| 	removeWeapon(w);
-	 * TODO is this formal documentation correct?
-	 * 
 	 */
 	private void removeAllWeapons() {
 		while (!weaponCollection.isEmpty()) {
@@ -1359,10 +1358,32 @@ public class Worm extends BallisticBody {
 	private Program program;
 	
 	@Basic
+	/**
+	 * Basic inspector to return the program.
+	 * 
+	 * @return	The program.
+	 * 			| return this.program
+	 */
 	public Program getProgram() {
 		return program;
 	}
 	
+	/**
+	 * Method to set the program to the given program.
+	 * 
+	 * @param 	program
+	 * 			The given program.
+	 * 
+	 * @post	The program is set to the given program.
+	 * 			| new.getProgram() == program
+	 * @effect	The current worm is associated with this program.
+	 * 			| program.setWorm(this)
+	 * @throws	ModelException
+	 * 			Throws a ModelException when the program is invalid or if the
+	 * 			worm already has a program.
+	 * 			| if (!canHaveAsProgram(program))
+	 * 			| if (hasAProgram)
+	 */
 	void setProgram(Program program) {
 		if (!canHaveAsProgram(program))
 			throw new ModelException("Invalid program specified.");
@@ -1372,6 +1393,19 @@ public class Worm extends BallisticBody {
 		this.program = program;
 	}
 	
+	/**
+	 * Method to check if the program is valid.
+	 * 
+	 * @param	program
+	 * 			The program that has to be checked.
+	 * @return	True if the program is not null and if it is not terminated.
+	 * 			| if (program == null)
+	 * 			|	return false
+	 * 			| if (program.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
 	private static boolean canHaveAsProgram(Program program) {
 		if (program == null)
 			return false;
@@ -1380,10 +1414,25 @@ public class Worm extends BallisticBody {
 		return true;
 	}
 	
+	/**
+	 * Method to check if the worm has a program.
+	 * 
+	 * @return	True if the program is not null.
+	 * 			| return (!(program == null))
+	 */
 	protected boolean hasAProgram() {
 		return (!(program == null));
 	}
 	
+	/**
+	 * Method to remove the program and worm association.
+	 * 
+	 * @effect	If the worm has a program it will be removed.
+	 * 			| if (hasAProgram())
+	 * 			|	program.removeWorm()
+	 * @post	The program will be set to null.
+	 * 			| new.getProgram() == null
+	 */
 	void removeProgram() {
 		if (hasAProgram()) {
 			program.removeWorm();

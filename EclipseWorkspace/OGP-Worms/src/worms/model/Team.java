@@ -268,9 +268,9 @@ public class Team {
 	
 	/**
 	 * Method to remove all worms from the collection.
-	 * @effect	| for (Worm w : wormCollection)
+	 * 
+	 * @effect	| forall (Worm w : wormCollection)
 	 * 			| 	removeWorm(w);
-	 * TODO is this formal documentation correct?
 	 */
 	public void removeAllWorms() {
 		while (!wormCollection.isEmpty()) {
@@ -298,8 +298,15 @@ public class Team {
 	
 	/**
 	 * Method to terminate the team and all corresponding objects from the world.
-	 * TODO formal documentation
+	 * 
+	 * @post	| if (hasAWorld())
+	 * 			|	new.getWorld() == null
+	 * @post	| new.isTerminated() == true
+	 * @effect	| if (hasAWorld())
+	 * 			|	world.removeTeam(this)
+	 * @effect	| removeAllWorms()
 	 */
+
 	public void terminate() {
 		if (hasAWorld()) {
 			world.removeTeam(this);

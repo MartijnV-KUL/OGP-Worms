@@ -412,8 +412,8 @@ public class WormTest {
 	}
 
 	@Test
-	public void test_canJump_LegalCase() {																	// . . . X
-		world = new World(4, 4, new boolean[][] {												// . . . X
+	public void test_canJump_LegalCase() {													// . . . X
+		world = new World(4, 4, new boolean[][] {											// . . . X
 				{true, true, true, false}, {true, true, true, false},						// w . . X
 				{true, true, true, false}, {false, false, false, false} }, random);			// X X X X
 		world.addWorm(worm);

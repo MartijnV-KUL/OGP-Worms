@@ -69,6 +69,7 @@ public class Food {
 	 * 
 	 * @param 	x
 	 * 			x-coordinate.
+	 * 
 	 * @throws 	ModelException
 	 * 			Throws a model exception if the x coordinate is invalid.
 	 * 			| if (!isValid(x))
@@ -157,7 +158,10 @@ public class Food {
 	
 	/**
 	 * Method to terminate the object.
-	 *TODO post statement
+	 * 
+	 * @post	| new.isTerminated() == true
+	 * @effect	| if (hasAWorld())
+	 * 			|	world.removeFood(this)
 	 */
 	public void terminate() {
 		if (hasAWorld())
