@@ -52,10 +52,15 @@ public class Projectile extends BallisticBody {
 	 * @param	y
 	 * 			The y-coordinate.
 	 * 
-	 * @return	| return super.ballisticTrajectoryHasEnded(x, y)
+	 * @return	| if (wormIsHit == true)
+	 * 			|	return true
+	 * 			| else
+	 * 			|	return super.ballisticTrajectoryHasEnded(x, y)
 	 * 			
 	 */
 	public boolean ballisticTrajectoryHasEnded(double x, double y) {
+		if (wormIsHit == true)
+			return true;
 		return super.ballisticTrajectoryHasEnded(x, y);
 	}
 
@@ -120,6 +125,9 @@ public class Projectile extends BallisticBody {
 	
 // {{ Jump related methods
 	
+	
+	private boolean wormIsHit;
+	
 	@Override
 	/**
 	 * Method to let a ballistic body perform a jump.
@@ -132,6 +140,7 @@ public class Projectile extends BallisticBody {
 	 * 			| if (worm!=null)
 	 * 			| 	worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
 	 * @effect	| terminate()
+	 * @post	| new.wormIsHit == true
 	 * @throws	ModelException
 	 * 			| if (!canJump())
 	 */
@@ -142,8 +151,10 @@ public class Projectile extends BallisticBody {
 		double[] newPos = jumpStep(jumpTime(timeStep));
 		
 		Worm worm = wormHit(newPos[0],newPos[1]);
-		if (worm != null)
+		if (worm != null) {
 			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
+			wormIsHit = true;
+		}
 		
 		terminate();
 	}
