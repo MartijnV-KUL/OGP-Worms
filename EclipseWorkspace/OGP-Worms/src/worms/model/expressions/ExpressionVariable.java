@@ -12,7 +12,7 @@ public class ExpressionVariable extends Expression {
 		this.variable = variable;
 	}
 	
-	public Type<?> evaluate() { //TODO this returns a "?", how can this be avoided?
+	public Type<?> evaluate() {
 		return getRootProgram().getVariable(variable);
 	}
 

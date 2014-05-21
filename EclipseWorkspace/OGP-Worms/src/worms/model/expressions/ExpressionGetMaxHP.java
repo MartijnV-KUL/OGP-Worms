@@ -13,7 +13,7 @@ public class ExpressionGetMaxHP extends Expression {
 	@Override
 	public Type<Double> evaluate() {
 		Object val = getExpressions().get(0).evaluate().getValue();
-		if ( val instanceof Worm ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+		if ( val instanceof Worm )
 			return new Type<Double>((double)((Worm)val).getMaxHitPoints());
 		getRootProgram().typeErrorOccurred();
 		return null;

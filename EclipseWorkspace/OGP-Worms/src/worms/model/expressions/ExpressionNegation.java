@@ -12,7 +12,7 @@ public class ExpressionNegation extends Expression {
 	@Override
 	public Type<Boolean> evaluate() {
 		Object val = getExpressions().get(0).evaluate().getValue();
-		if ( !(val instanceof Boolean) ) { //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+		if ( !(val instanceof Boolean) ) {
 			getRootProgram().typeErrorOccurred();
 			return null;
 		}

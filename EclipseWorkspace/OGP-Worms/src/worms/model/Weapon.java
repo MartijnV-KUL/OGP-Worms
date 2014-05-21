@@ -20,10 +20,10 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @invar	The amount of ammunition a weapon has must be a valid amount.
  * 			| isValidAmmunition(getAmmunition())
  * 
- * @invar	Every weapon must can have a valid projectile as projectile.
- * 			| canHaveAsProjectile(getProjectile())
- * @invar	Every weapon must can have a valid worm as worm.
- * 			| canHaveAsWorm(getWorms())
+ * @invar	Every weapon must can have a valid projectile or null as projectile.
+ * 			| getProjectile()==null || canHaveAsProjectile(getProjectile())
+ * @invar	Every weapon must can have a valid worm or null as worm.
+ * 			| getWorm()==null || canHaveAsWorm(getWorm())
  * 
  * @author Martijn Vermaut, Niels Claes
  *
@@ -248,50 +248,50 @@ public abstract class Weapon {
 	
 	// }}
 	
-// {{ Ammunition
-
-	private int ammunition = 0;
-	
-	/**
-	 * Returns the ammunition.
-	 * 
-	 * @return	The ammunition.
-	 */
-	public int getAmmunition() {
-		return ammunition;
-	}
-	
-	/**
-	 * Method to set the ammunition.
-	 * 
-	 * @param 	ammunition
-	 * 			The amount of ammunition
-	 * 
-	 * @post	| new.getAmmunition() == ammunition
-	 * @throws 	ModelException
-	 * 			| if (!isValidAmmunition(ammunition))
-	 */
-	protected void setAmmunition(int ammunition) throws ModelException {
-		if (!isValidAmmunition(ammunition))
-			throw new ModelException("Invalid ammunition.");
-		this.ammunition = ammunition;
-	}
-	
-	/**
-	 * Checks if the given ammunition is valid.
-	 * 
-	 * @param 	ammunition
-	 * 			The given ammunition.
-	 * 
-	 * @return	| return (ammunition > 0)
-	 */
-	private static boolean isValidAmmunition(int ammunition) {
-		if (ammunition<0)
-			return false;
-		return true;
-	}
-	
-	// }}
+//// {{ Ammunition
+//
+//	private int ammunition = 0;
+//	
+//	/**
+//	 * Returns the ammunition.
+//	 * 
+//	 * @return	The ammunition.
+//	 */
+//	public int getAmmunition() {
+//		return ammunition;
+//	}
+//	
+//	/**
+//	 * Method to set the ammunition.
+//	 * 
+//	 * @param 	ammunition
+//	 * 			The amount of ammunition
+//	 * 
+//	 * @post	| new.getAmmunition() == ammunition
+//	 * @throws 	ModelException
+//	 * 			| if (!isValidAmmunition(ammunition))
+//	 */
+//	protected void setAmmunition(int ammunition) throws ModelException {
+//		if (!isValidAmmunition(ammunition))
+//			throw new ModelException("Invalid ammunition.");
+//		this.ammunition = ammunition;
+//	}
+//	
+//	/**
+//	 * Checks if the given ammunition is valid.
+//	 * 
+//	 * @param 	ammunition
+//	 * 			The given ammunition.
+//	 * 
+//	 * @return	| return (ammunition > 0)
+//	 */
+//	private static boolean isValidAmmunition(int ammunition) {
+//		if (ammunition<0)
+//			return false;
+//		return true;
+//	}
+//	
+//	// }}
 
 // {{ Terminated
 	
@@ -309,6 +309,7 @@ public abstract class Weapon {
 	
 	/**
 	 * Method to terminate the weapon and all corresponding objects from the world.
+	 * TODO formal documentation
 	 */
 	public void terminate() {
 		if (hasAWorm())
@@ -479,14 +480,14 @@ public abstract class Weapon {
 	
 	
 	/**
-	 * Method to let a worm shoot with an equipped weapon, if it has a projectile.
+	 * Method to let a worm shoot with an equipped weapon.
 	 * 
 	 * @param 	propulsionYield
 	 * 			The yield the weapon is fired with.
 	 * 
-	 * @effect	| setProjectile(newProjectile)
-	 * @note	The object "newProjectile" is created when the worm doesn't have a projectile yet.
+	 * TODO definitie van nexProjectile?
 	 * @effect	| getWorm().getWorld().setProjectile(newprojectile)
+	 * @effect	| setProjectile(newProjectile)
 	 */
 	public void shoot( int propulsionYield ) {
 		

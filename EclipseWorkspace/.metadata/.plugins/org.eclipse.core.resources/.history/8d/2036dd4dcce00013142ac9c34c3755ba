@@ -1,0 +1,351 @@
+package worms.model;
+
+import worms.model.ModelException;
+import be.kuleuven.cs.som.annotate.Basic;
+
+/**
+ * An abstract class that defines all objects that perform ballistic actions.
+ * Note: At the moment, these includes worms and projectiles, but other may be added in the future.
+ * 
+ * @invar	The x-coordinate of an object of this class is a valid coordinate.
+ * 			| isValidX(getX())
+ * @invar	The y-coordinate of an object of this class is a valid coordinate.
+ * 			| isValidY(getY())
+ * @invar	The direction of an object of this class is a valid direction.
+ * 			| isValidDirection(getDirection())
+ */
+public abstract class BallisticBody {
+	
+	/**
+	 * Sets the position of a ballistic body.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * @param 	direction
+	 * 			The direction the body is facing.
+	 * 
+	 * @effect	The x-coordinate is set to the given value.
+	 * 			| setX(x)
+	 * @effect	The y-coordinate is set to the given value.
+	 * 			| setY(y)
+	 * @effect	The direction is set to the given value.
+	 * 			| setDirection(direction)
+	 */
+	public void setPosition(double x, double y, double direction) {
+		setX(x);
+		setY(y);
+		setDirection(direction);
+	}
+	
+	public abstract void jump(double timeStep);
+	public abstract World getWorld();
+	public abstract double getRadius();
+	protected abstract double getJumpForce();
+	protected abstract double getMass();
+	public abstract boolean canJump();
+	
+	/**
+	 * Method to calculate the duration of a jump.
+	 * 
+	 * @param	timeStep
+	 * 			The timestep with which the jump trajectory is calculated.
+	 * 
+	 * @return	The time needed to perform the jump.
+	 * 			| return getPosition().ballisticTrajectoryTime(getWorld(), force, 0.5, getMass, timeStep)
+	 * @note	The method "ballisticTrajectoryTime(...)" is used to calculate the ballistic trajectory of the ballistic body while jumping.
+	 */
+	public double jumpTime(double timeStep) {
+		return ballisticTrajectoryTime(getWorld(), getRadius(), getJumpForce(), 0.5, getMass(), timeStep);
+	}
+	
+	/**
+	 * Calculates and returns the x and y position of the balistic body during the jump at a specified time.
+	 * 
+	 * @param 	time
+	 * 			The time at which the jump should be evaluated.
+	 * 
+	 * @return 	The x and y positions of the worm during the jump at a specified time, returned in an array of doubles.
+				| if (canJump())
+				| 	return ballisticTrajectory(getJumpForce(), 0.5, getMass(), time);
+				| else
+				| 	double [] output = {getX(), getY()};
+	 * @throws	ModelException
+	 * 			Throws a ModelException if the time given is less than zero.
+	 * 			| time < 0
+	 * @note	If the code "if (canJump())" is not present a trajectory will still be displayed by the GUI, even if the worm can't jump.
+	 * 			This line is added to prevent the GUI from getting and displaying the trajectory if the worm can not jump.
+	 */
+	public double[] jumpStep(double time) throws ModelException {
+		if (time < 0)
+			throw new ModelException("The given time is less than zero.");
+		if (canJump())
+			return ballisticTrajectory(getJumpForce(), 0.5, getMass(), time);
+		return new double[] {getX(), getY()};
+	}
+	
+	
+	
+	
+// {{ x
+	
+	private double x;
+
+	@Basic
+	/**
+	 * Returns the x-coordinate.
+	 * 
+	 * @return	The x-coordinate
+	 */
+	public double getX() {
+		return x;
+	}
+
+	/**
+	 * Method to set the x-coordinate.
+	 * 
+	 * @param 	x
+	 *          The requested x coordinate of the worm expressed in meters.
+	 *          
+	 * @post	The x-coordinate of the worm is changed to the given value.
+	 * 			| new.getX() == x
+	 * @throws 	ModelException
+	 *          Throws a ModelException if the x coordinate is invalid.
+	 *          | if ( ! isValidX( x ) )
+	 *          |		throw new ModelException
+	 */
+	protected void setX(double x) {
+		if (!isValidX(x))
+			throw new ModelException("Invalid x coordinate.");
+		this.x = x;
+	}
+	
+	/**
+	 * Checks the validity of the specified x coordinate.
+	 * 
+	 * @param 	x
+	 * 			The specified x coordinate expressed in meters.
+	 * 
+	 * @return 	False if x is NaN. True otherwise.
+	 * 			| result = ( ! Double.isNaN(x) )
+	 */
+	private static boolean isValidX(double x) {
+		return (!Double.isNaN(x));
+	}
+	
+	// }}
+
+// {{ y
+	
+	private double y;
+
+	@Basic
+	/**
+	 * Returns the y-coordinate
+	 * 
+	 * @return	The y-coordinate
+	 */
+	public double getY() {
+		return y;
+	}
+	
+	/**
+	 * Method to set the y-coordinate.
+	 * 
+	 * @param 	y
+	 *          The requested y coordinate of the worm expressed in meters.
+	 *          
+	 * @post	The y-coordinate of the worm is changed to the given value.
+	 * 			| new.getY() == y
+	 * @throws 	ModelException
+	 *          Throws a ModelException if the y coordinate is invalid.
+	 *          | if ( ! isValidY( y ) )
+	 *          |		throw new ModelException
+	 */
+	protected void setY(double y) {
+		if (!isValidY(y))
+			throw new ModelException("Invalid y coordinate.");
+		this.y = y;
+	}
+	
+	/**
+	 * Checks the validity of the specified y coordinate.
+	 * 
+	 * @param 	y
+	 * 			The specified y coordinate expressed in meters.
+	 * 
+	 * @return 	False if y is NaN. True otherwise.
+	 * 			| result = ( ! Double.isNaN(y) )
+	 */
+	private static boolean isValidY(double y) {
+		return (!Double.isNaN(y));
+	}
+	
+	// }}
+
+// {{ direction
+
+	private double direction;
+	
+	/**
+	 * Returns the direction.
+	 * 
+	 * @return	The direction.
+	 */
+	@Basic
+	public double getDirection() {
+		return direction;
+	}
+	
+	/**
+	 * Method that sets the direction of the worm to the specified direction if
+	 * the direction is valid.
+	 * 
+	 * @param	direction
+	 * 			The specified direction expressed in radians.
+	 * 
+	 * @pre 	The specified direction has to be valid.
+	 * 			| isValidDirection(direction)
+	 * @post	The direction of the worm is changed in the given direction.
+	 * 			| new.getDirection() == direction
+	 */
+	public void setDirection(double direction) {
+		assert isValidDirection(direction);
+		this.direction = direction;
+	}
+	
+	/**
+	 * Checks the validity of the specified direction.
+	 * 
+	 * @param	direction
+	 *      	The direction of the worm, given as an angle in radians.
+	 *      
+	 * @return 	Returns true if the direction lies between 0 and 2*pi, including
+	 *         	0 and excluding 2*pi. Otherwise return false. 
+	 *         	| return (direction >= 0 && direction < 2*Math.PI)
+	 */
+	private static boolean isValidDirection(double direction) {
+		if (direction < 0 || direction >= 2 * Math.PI)
+			return false;
+		if (Double.isNaN(direction))
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// {{ Trajectory
+	
+	/**
+	 * 
+	 * Calculates and returns the x and y position of a trajectory at a specified time.
+	 * 
+	 * @param 	force
+	 * 			The force of the weapon that is fired.
+	 * @param 	duration
+	 * 			The duration of the exerted force.
+	 * @param 	mass
+	 * 			The mass of the projectile.
+	 * @param 	g
+	 * 			The gravitational accelleration.
+	 * @param 	time
+	 * 			The time at which the trajectory should be evaluated.
+	 * 
+	 * @return 	The x and y positions of the trajectory at a specified time.
+	 * 
+	 * @throws	ModelException
+	 * 			Throws a ModelException if the time given is less than zero.
+	 * 			| time < 0
+	 */
+	public double[] ballisticTrajectory(double force, double duration, double mass, double time) {
+		if ( time < 0 )
+			throw new ModelException("Time cannot be negative.");
+		
+		double v0 = ( force / mass ) * duration;
+		double deltaX = v0*Math.cos(getDirection()) * time;
+		double deltaY = v0*Math.sin(getDirection()) * time - 
+				        0.5*World.getGravitationalAcceleration()*Math.pow(time, 2);
+		double[] output = {getX()+deltaX, getY()+deltaY};
+		return output;
+		
+	}
+	
+	/**
+	 * Method to calculate the time it takes to perform the ballistic trajectory.
+	 * 
+	 * @param 	world
+	 * 			The world the trajectory is calculated in.
+	 * @param 	force
+	 * 			The force of the weapon fired.
+	 * @param 	duration
+	 * 			The duration of the exerted force.
+	 * @param 	mass
+	 * 			The mass of the projectile.
+	 * @param 	timeStep
+	 * 			The timestep with which the trajectory is calculated.
+	 * 
+	 * @return	The time it takes to perform the ballistic trajectory.
+	 * 			| for all values i < Integer.MAX_VALUE {
+	 * 			|	double time = i * timeStep
+	 * 			|	double pos = ballisticTrajectory(force, duration, mass, time)
+	 * 			| }
+	 * 			| return (time - timeStep)
+	 * 			
+	 */
+	public double ballisticTrajectoryTime(World world, double radius, double force, double duration, double mass, double timeStep) {
+		double time = 0;
+		double[] pos = ballisticTrajectory(force, duration, mass, 0);
+		for (int i=1; i<Integer.MAX_VALUE; i++) {
+			time = i*timeStep;
+			pos = ballisticTrajectory(force, duration, mass, time);
+			
+			if (ballisticTrajectoryHasEnded(pos[0],pos[1]))
+				break;
+		}
+		return (time-timeStep);
+	}
+	
+	/**
+	 * Method to calculate when the ballistic trajectory of an object ends.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate of an object.
+	 * @param	y
+	 * 			The y-coordinate of an object.
+	 * 
+	 * @effect	If the worm jumps out of the world it dies.
+	 * 			| if (!getWorld.isWithinBoundaries(jumpStep(1e-4)[0], jumpStep(1e-4)[1]))
+	 * 			|	getWorld.getActiveWorm().die();
+	 * @return	False if the coordinates are within the boundaries of the field and
+	 * 			and when the position is not adjacent to invalid terrain.
+	 * 			| if (!getWorld().isWithinBoundaries(x, y))
+	 * 			|	return true
+	 * 			| if (getWorld.isPassable(x, y, 0, getRadius()))
+	 * 			|	return true
+	 * 			| else
+	 * 			| 	return false
+	 */
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {
+		if (!getWorld().isWithinBoundaries(x, y))
+			return true;
+		if (!getWorld().isPassable( x, y, 0, getRadius() ))
+			return true;
+		return false;
+	}
+	
+	
+	// }}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+}

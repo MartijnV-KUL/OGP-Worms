@@ -23,12 +23,14 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * @invar	Every active worm must be a valid active worm at all times.
  * 			| isValidActiveWorm(getActiveWorm())
  *
- * @invar	Every world must can have a valid foodobject as food.
- * 			| canHaveAsFood(getFood())
- * @invar	Every world must can have a valid projectile as projectile.
- * 			| canHaveAsProjectile(getProjectile())
- * @invar	Every world must can have a valid team as team.
- * 			| canHaveAsTeam(getTeam())
+ * @invar	Every world must have valid food objects as food.
+ * 			| for (Food f : getFood() )
+ * 			|	canHaveAsFood(f)
+ * @invar	Every world must can have a valid projectile or null as projectile.
+ * 			| getProjectile()==null || canHaveAsProjectile(getProjectile())
+ * @invar	Every world must have a valid teams as team.
+ * 			| for (Team t : getTeams() )
+ * 			|	canHaveAsTeam(t)
  * 
  * @author Martijn Vermaut, Niels Claes
  */
@@ -110,6 +112,7 @@ public class World {
 	/**
 	 * The gravitational acceleration of the world.
 	 * This attribute is only used for ballistic bodies, but it is an attribute of the world, not the ballistic bodies.
+	 * If other classes would ever use a gravitational acceleration, they have to be the same, so it has to be a property of the world.
 	 */
 	private static final double gravitationalAcceleration = 9.80665;
 
@@ -192,6 +195,7 @@ public class World {
 	 * Basic inspector that returns the passable map.
 	 * 
 	 * @return	The passable map.
+	 * TODO formal documentation
 	 */
 	@Basic
 	public boolean[][] getPassableMap() {
@@ -202,6 +206,7 @@ public class World {
 	 * Inspector that returns the amont of horizontal pixels of the world.
 	 * 
 	 * @return	The amount of horizontal pixels of the world.
+	 * TODO formal documentation
 	 */
 	public int getHorizontalPixels() {
 		return getPassableMap()[0].length;
@@ -211,6 +216,7 @@ public class World {
 	 * Inspector that returns the amount of vertical pixels of the world.
 	 * 
 	 * @return	The amount of vertical pixels of the world.
+	 * TODO formal documentation
 	 */
 	public int getVerticalPixels() {
 		return getPassableMap().length;
@@ -220,6 +226,7 @@ public class World {
 	 * Inspector that returns the horizontal resolution the passable map has in meters per pixel.
 	 * 
 	 * @return	The horizontal resolution in meters per pixel.
+	 * TODO formal documentation
 	 */
 	public double getResolutionX() {
 		return ( getWidth() / ((double) getHorizontalPixels()) );
@@ -229,6 +236,7 @@ public class World {
 	 * Inspector that returns the vertical resolution the passable map has in meters per pixel.
 	 * 
 	 * @return	The vertical resolution in meters per pixel.
+	 * TODO formal documentation
 	 */
 	public double getResolutionY() {
 		return ( getHeight() / ((double) getVerticalPixels()) );
@@ -453,34 +461,9 @@ public class World {
 	 * 
 	 * @return	Returns false if the object is not in a passable location.
 	 * 			| return ( isPassable(x, y, radius) && !isPassable(x, y, 1.1*radius) )
-	 * 
-	 * @note	A different technique is suggested in the assignment.
-	 * 			This implementation results in a more homogeneous distribution of objects.
-	 * 			Objects can now get into the nooks and crannies of a map,
-	 * 			something that is almost impossible with the suggested implementation...
 	 */
 	public boolean isAdjacent(double x, double y, double radius) {
 		return ( isPassable(x,y,0,radius) && !isPassable(x, y, radius, 1.1*radius) );
-
-/*		double searchRadius = 0.1*radius;
-*		double testRadiusInterval = Math.min(getResolutionX(), getResolutionY());
-*		double testAngleInterval = 2*Math.PI/40;
-*		
-*		// Loop over the entire resolution
-*		for (double testRadius=1.1*radius; testRadius>=radius; testRadius-=testRadiusInterval) {
-*			for (double testAngle=0; testAngle<2*Math.PI; testAngle+=testAngleInterval) {
-*				// Calculate the x- and y-offsets at the current angle
-*				double deltaX = (testRadius) * Math.cos(testAngle);
-*				double deltaY = (testRadius) * Math.sin(testAngle);
-*				
-*				if (isWithinBoundaries(x+deltaX, y+deltaY)) {
-*					if (!isPassable(x+deltaX,y+deltaY))
-*						return true;
-*				}
-*			}
-*		}
-*		return false;
-*/
 	}
 	
 	/**
@@ -499,7 +482,7 @@ public class World {
 	 * @param 	r2
 	 * 			The radius of the second location.
 	 * 
-	 * @return 	Return true if the distance between the centers of the objects is smaller than the sum of teir radii.
+	 * @return 	Return true if the distance between the centers of the objects is smaller than the sum of their radii.
 	 * 			| delta = sqrt((x2-x1)^2+(y2-y1)^2);
 	 * 			| return (delta < (r1+r2));
 	 */
@@ -518,7 +501,7 @@ public class World {
 // {{ Add new food / new worm
 	
 	/**
-	 * Method to create a new random location.
+	 * Method to create a new random location within the boundaries of the map.
 	 * 
 	 * @return	An array with a random created position.
 	 * 			| return { getWidth()  * getRandomSeed().nextDouble(), 
@@ -547,7 +530,6 @@ public class World {
 			randX = randomXY[0];
 			randY = randomXY[1];
 		} while( !isAdjacent(randX, randY, Food.getRadius()) );
-		//} while( !isPassable(randX,randY,Food.getRadius()) || !isOnSolidGround(randX,randY,Food.getRadius()) ); //more sensible implementation for future iterations.
 		addFood( new Food( randX, randY ) );
 	}
 	
@@ -561,6 +543,7 @@ public class World {
 	 * 
 	 * @effect	| addFood(newFood)
 	 * @return	The food object at the specified location.
+	 * TODO formal documentation
 	 */
 	public Food addNewFood(double x,double y) {
 		Food newFood = new Food(x,y);
@@ -572,6 +555,7 @@ public class World {
 	 * Creates a new worm at a random location. The standard name of the worm is "JohnDoe".
 	 * 
 	 * @return	A new worm at a random location.
+	 * TODO formal documentation
 	 */
 	public Worm createRandomWorm() {
 		double newX = 0;
@@ -628,12 +612,12 @@ public class World {
 	 }
 	
 	/**
-	 * Adds a new random worm to a program.
+	 * Adds a new random worm with a specified program.
 	 * 
 	 * @param 	program
 	 * 			The program to which the worm has to be added.
 	 * 
-	 * @effect	A new worm is created throught the method CreateRandomWorm() and added to the existing collection.
+	 * @effect	A new worm is created with the method CreateRandomWorm() and added to the existing collection.
 	 * 			| Worm newWorm = createRandomWorm()
 	 * 			| addWorm(newWorm)
 	 * @effect	The given program is set to the newly created worm if the program is not null.
@@ -692,6 +676,7 @@ public class World {
 	 * Basic inspector to return the currently active worm.
 	 * 
 	 * @return	The currently active worm.
+	 * TODO formal doc
 	 */
 	@Basic
 	public Worm getActiveWorm() {
@@ -717,6 +702,7 @@ public class World {
 		if (!isValidActiveWorm(worm))
 			throw new ModelException("Invalid worm.");
 		worm.resetActionPoints();
+		worm.setHitPoints(worm.getHitPoints()+10); // note: total method, so HP is capped at maxHP
 		activeWorm = worm;
 		
 	}
@@ -763,6 +749,8 @@ public class World {
 		return true; // Default
 	}
 	
+	private boolean gameHasStarted;//TODO update doc
+	
 	/**
 	 * Method to start the game.
 	 * 
@@ -773,6 +761,7 @@ public class World {
 	public void startGame() {
 		if (!getWorms().isEmpty()) {
 			setActiveWorm(getWorms().get(0));
+			gameHasStarted = true; // TODO update doc
 			if ( getWorms().get(0).hasAProgram() )
 				getWorms().get(0).getProgram().runProgram();
 		}
@@ -797,20 +786,18 @@ public class World {
 	 * 			|		else index += 1; 
 	 * 			| setActiveWorm(getWorms().get(index));
 	 */
-	public void nextTurn() {
-		int index = getWorms().indexOf(getActiveWorm());
-//		if (!getActiveWorm().isAlive()){
-//		getActiveWorm().die();
-//		}
-//		else {
+	public void nextTurn() {//TODO update doc
+		if (!isGameFinished()) {//TODO update doc, added this. Otherwise for a pc worm and human worm; if the human worm died, it gave a nullpointerexception because it tried to continue or something
+			int index = getWorms().indexOf(getActiveWorm());
+			//TODO update doc, method became simpler
 			if (index==(getWorms().size()-1))
 				index = 0;
 			else
 				index += 1;
-//		}
-		setActiveWorm(getWorms().get(index));
-		if ( getWorms().get(index).hasAProgram() )
-			getWorms().get(index).getProgram().runProgram();
+			setActiveWorm(getWorms().get(index));
+			if ( getWorms().get(index).hasAProgram() )
+				getWorms().get(index).getProgram().runProgram();
+		}
 		
 	}
 	
@@ -874,6 +861,7 @@ public class World {
 	 * Basic inspector to return the Random object.
 	 * 
 	 * @return	A random generated number.
+	 * TODO formal
 	 */
 	@Basic
 	public Random getRandomSeed() {
@@ -886,7 +874,7 @@ public class World {
 	 * @param 	random
 	 * 			The random generated number.
 	 * 
-	 * @return	if (random != null)
+	 * @return	| (random != null)
 	 */
 	private static boolean isValidRandomSeed(Random random) {
 		if (random==null)
@@ -909,6 +897,7 @@ public class World {
 	 * Basic inspector that returns the collection of worms.
 	 * 
 	 * @return	The collection of worms.
+	 * TODO formal
 	 */
 	@Basic
 	public ArrayList<Worm> getWorms() {
@@ -926,11 +915,14 @@ public class World {
 	 * @effect	Adds the worm to the collection.
 	 * 			| wormCollection.add(newWorm)
 	 * @throws 	ModelException
-	 * 			Throws a ModelException if the worm is invalid or if the worm is already in this world.
+	 * 			Throws a ModelException if the game has already started or the worm is invalid or if the worm is already in this world.
+	 * 			| if (gameHasStarted)
 	 * 			| if (!isValidWorm(newWorm))
 	 * 			| if (hasAsWorm(newWorm)
 	 */
 	public void addWorm(Worm newWorm) throws ModelException {
+		if (gameHasStarted)
+			throw new ModelException("Game has already started. Can't add worms anymore");
 		if (!isValidWorm(newWorm))
 			throw new ModelException("Invalid worm specified.");
 		if (hasAsWorm(newWorm))
@@ -985,14 +977,13 @@ public class World {
 	
 	/**
 	 * Method to remove all worms from the collection.
-	 * 
-	 * @effect	Removes each worm from the world.
-	 * 			| for ( Worm worm : wormCollection )
-	 * 			| 	removeWorm(worm);
+	 * @effect	| for (Worm w : wormCollection)
+	 * 			| 	removeWorm(w);
+	 * TODO is this formal documentation correct?
 	 */
-	private void removeAllWorms() {
-		for ( Worm worm : wormCollection ) {
-			removeWorm(worm);
+	public void removeAllWorms() {
+		while (!wormCollection.isEmpty()) {
+			removeWorm(wormCollection.get(0));
 		}
 	}
 	
@@ -1022,6 +1013,7 @@ public class World {
 	 * Basic inspector to return the collection of teams.
 	 * 
 	 * @return	The collection of teams.
+	 * TODO formal
 	 */
 	@Basic
 	public ArrayList<Team> getTeams() {
@@ -1037,6 +1029,7 @@ public class World {
 	 * Basic inspector to return the maximum amount of teams.
 	 * 
 	 * @return	The maximum amount of teams.
+	 * TODO formal
 	 */
 	@Basic
 	private int getMaxTeams() {
@@ -1131,10 +1124,11 @@ public class World {
 	 * @effect	Removes each team from the world.
 	 * 			| for ( Team team : teamCollection )
 	 * 			| 	removeTeam(team);
+	 * TODO is this formal documentation correct?
 	 */
 	private void removeAllTeams() {
-		for ( Team team : teamCollection ) {
-			removeTeam(team);
+		while (!teamCollection.isEmpty()) {
+			removeTeam(teamCollection.get(0));
 		}
 	}
 	
@@ -1151,6 +1145,7 @@ public class World {
 	 * Basic inspector to return the collection of food.
 	 * 
 	 * @return	The collection of food.
+	 * TODO formal
 	 */
 	@Basic
 	public ArrayList<Food> getFood() {
@@ -1173,6 +1168,8 @@ public class World {
 	 * 			| if (hasAsFood(newFood))
 	 */
 	public void addFood(Food newFood) throws ModelException {
+		if (gameHasStarted)//TODO update doc
+			throw new ModelException("Game has already started. Can't add food anymore");
 		if (!canHaveAsFood(newFood))
 			throw new ModelException("Invalid food specified.");
 		if (hasAsFood(newFood))
@@ -1204,7 +1201,7 @@ public class World {
 	}
 	
 	/**
-	 * Checks if the collecion of food contains the given food object.
+	 * Checks if the collection of food contains the given food object.
 	 * 
 	 * @param 	food
 	 * 			The given food object.
@@ -1241,13 +1238,14 @@ public class World {
 	 * Method to remove all food from the collection.
 	 * 
 	 * @effect	Removes each food object from the world.
-	 * 			| for ( Foo food : foodCollection) )
+	 * 			| for ( Food food : foodCollection) )
 	 * 			| 	removeFood(food);
+	 * TODO is this formal documentation correct?
 	 * 
 	 */
 	private void removeAllFood() {
-		for ( Food food : foodCollection ) {
-			removeFood(food);
+		while (!foodCollection.isEmpty()) {
+			removeFood(foodCollection.get(0));
 		}
 	}
 	
@@ -1264,6 +1262,7 @@ public class World {
 	 * Basic inspector to return the current projectile.
 	 * 
 	 * @return	The current projectile.
+	 * TODO formal
 	 */
 	@Basic
 	public Projectile getProjectile() {
@@ -1341,10 +1340,6 @@ public class World {
 		}
 	}
 	
-	
-	
-	
-	
 	// }}
 	
 // }}
@@ -1357,9 +1352,10 @@ public class World {
 	private boolean terminated;
 	
 	/**
-	 * Returns whether or not the object is terminated..
+	 * Returns whether or not the object is terminated.
 	 * 
-	 * @return	Return true if the object is terminated..
+	 * @return	Return true if the object is terminated.
+	 * TODO formal
 	 */
 	@Basic
 	public boolean isTerminated() {

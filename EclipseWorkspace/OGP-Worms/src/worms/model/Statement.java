@@ -210,9 +210,8 @@ public abstract class Statement {
 	}
 	
 	private void removeAllStatements() {
-		for ( Statement statement : statements ) {
-			statement.removeParentStatement();
-			removeStatement(statement);
+		while (!statements.isEmpty()) {
+			removeStatement(statements.get(0));
 		}
 	}
 	
@@ -256,9 +255,8 @@ public abstract class Statement {
 	}
 	
 	private void removeAllExpressions() {
-		for ( Expression expression : expressions ) {
-			expression.removeStatement();
-			removeExpression(expression);
+		while (!expressions.isEmpty()) {
+			removeExpression(expressions.get(0));
 		}
 	}
 	

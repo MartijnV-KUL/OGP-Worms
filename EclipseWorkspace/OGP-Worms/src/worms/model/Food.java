@@ -11,8 +11,8 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar	The y-coordinate of a foodobject is a valid coordinate.
  * 			| isValidY(getY())
  * 
- * @invar	Every food must can have a valid world as world.
- * 			| canHaveAsWorld(getWorld())
+ * @invar	Every food must have a valid world as world or the world is null.
+ * 			| getWorld()==null || canHaveAsWorld(getWorld())
  * 
  * @author Martijn Vermaut, Niels Claes
  *
@@ -57,7 +57,8 @@ public class Food {
 	 * @param 	x 
 	 * 			The x-coordinate.
 	 * 
-	 * @return 	!isNaN(x)
+	 * @return 	Returns true if the x coordinate is not NaN.
+	 * 			| return (!isNaN(x));
 	 */
 	private static boolean isValidX(double x) {
 		return (!Double.isNaN(x));
@@ -69,7 +70,9 @@ public class Food {
 	 * @param 	x
 	 * 			x-coordinate.
 	 * @throws 	ModelException
-	 * 			| !isValid(x)
+	 * 			Throws a model exception if the x coordinate is invalid.
+	 * 			| if (!isValid(x))
+	 * 			| 	throw new ModelException
 	 */
 	public void setX(double x) throws ModelException {
 		if (!isValidX(x))
@@ -85,7 +88,8 @@ public class Food {
 	/**
 	 * Basic inspector for the y coordinate.
 	 *  
-	 * @return this.y
+	 * @return 	Return the y coordinate of the worm.
+	 * 			| return this.y
 	 */
 	@Basic
 	public double getY() {
@@ -98,7 +102,8 @@ public class Food {
 	 * @param 	y 
 	 * 			y-coordinate.
 	 * 
-	 * @return 	!isNaN(y)
+	 * @return 	Returns true if the y coordinate is not NaN.
+	 * 			| return (!isNaN(y));
 	 */
 	private static boolean isValidY(double y) {
 		return (!Double.isNaN(y));
@@ -110,7 +115,9 @@ public class Food {
 	 * @param 	y
 	 * 			y-coordinate.
 	 * @throws 	ModelException
-	 * 			| !isValid(y)
+	 * 			Throws a model exception if the y coordinate is invalid.
+	 * 			| if (!isValid(y))
+	 * 			| 	throw new ModelException
 	 */
 	public void setY(double y) throws ModelException {
 		if (!isValidY(y))
@@ -150,6 +157,7 @@ public class Food {
 	
 	/**
 	 * Method to terminate the object.
+	 *TODO post statement
 	 */
 	public void terminate() {
 		if (hasAWorld())
@@ -178,7 +186,7 @@ public class Food {
 	 * @param 	world
 	 * 			The given world.
 	 * 
-	 * @post	|new.getWorld() == world
+	 * @post	| new.getWorld() == world
 	 * @throws 	ModelException
 	 * 			| if (!canHaveAsWorld(world))
 	 *			| if (hasAWorld())

@@ -11,10 +11,10 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @invar	The propulsionyield a projectile has must be valid at all times.
  * 			| isValidPropulsionYield(getPropulsionYield())
  * 
- * @invar	A projectile must can have a valid weapon as weapon.
- * 			| canHaveAsWeapon(getWeapon())
- * @invar	A projectile must can have a valid world as world.
- * 			| canHaveAsWorld(getWorld())
+ * @invar	A projectile must have a valid weapon or null as weapon.
+ * 			| getWeapon()==null || canHaveAsWeapon(getWeapon())
+ * @invar	A projectile must have a valid world or null as world.
+ * 			| getWorld()==null || canHaveAsWorld(getWorld())
  * 
  * @author Martijn Vermaut, Niels Claes
  *
@@ -29,7 +29,8 @@ public class Projectile extends BallisticBody {
 	 * @param 	y
 	 * 			The y-coordinate.
 	 * 
-	 * @return	The worm which is hit.
+	 * @return	The worm that is hit.
+	 * TODO formal doc
 	 */
 	public Worm wormHit(double x, double y) {
 		for ( Worm worm : getWorld().getAliveWorms() ) {
@@ -48,19 +49,14 @@ public class Projectile extends BallisticBody {
 	 * @param	y
 	 * 			The y-coordinate.
 	 * 
-	 * @effect	The hitpoints of a worm hit will be reduced.
-	 * 			| if (wormHit(x, y) != null)
-	 * 			|	worm.setHitPoints(worm.getHitPoints() - getWeapon().getHitPointsDamage())
-	 * @return	| if (worm != null)
+	 * @return	| if (wormHit(x,y) != null)
 	 * 			|	return true
 	 * 			| else
 	 * 			|	return super.ballisticTrajectoryHasEnded(x, y)
 	 * 			
 	 */
 	public boolean ballisticTrajectoryHasEnded(double x, double y) {
-		Worm worm = wormHit(x,y);
-		if (worm!=null) {
-			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
+		if (wormHit(x,y)!=null) {
 			return true;
 		}
 		return super.ballisticTrajectoryHasEnded(x, y);
@@ -71,6 +67,7 @@ public class Projectile extends BallisticBody {
 	 * Method to calculate the force with which a projectile is fired.
 	 * 
 	 * @return	The force with which a projectile is fired.
+	 * 			| return getWeapon().getForce(getPropulsionYield());
 	 */
 	protected double getJumpForce() {
 		return getWeapon().getForce(getPropulsionYield());
@@ -82,6 +79,7 @@ public class Projectile extends BallisticBody {
 	 * Returns the mass of a projectile.
 	 * 
 	 * @return	The mass of a projectile.
+	 * 			| return getWeapon().getProjectileMass();
 	 */
 	protected double getMass() {
 		return getWeapon().getProjectileMass();
@@ -131,10 +129,11 @@ public class Projectile extends BallisticBody {
 	 * 
 	 * @param	timeStep
 	 * 			The timestep with which the jump is calculated.
-	 * 
-	 * @effect	The position of the ballistic body is set to it's new coordinates.
-	 * 			| double[] newPos = jumpStep(jumpTime(timeStep))
-	 * 			| setPosition(newPos[0[, newPos[1], getDirection())
+	 * @effect	If a worm is hit, hit points are subtracted from the worm that is hit.
+	 * 			| newPos = jumpStep(jumpTime(timeStep));
+	 * 			| worm = wormHit(newPos[0],newPos[1]);
+	 * 			| if (worm!=null)
+	 * 			| 	worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
 	 * @effect	The ballistic body is terminated after performing the jump (a projectile in this case).
 	 * 			| terminate()
 	 * @throws	ModelException
@@ -146,13 +145,21 @@ public class Projectile extends BallisticBody {
 			throw new ModelException("Can't jump");
 		
 		double[] newPos = jumpStep(jumpTime(timeStep));
-		setPosition(newPos[0],newPos[1],getDirection());
+		
+		Worm worm = wormHit(newPos[0],newPos[1]);
+		if (worm!=null) {
+			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
+		}
+		
 		terminate();
 	}
 	
 	@Override
 	/**
 	 * Checks if a projectile can jump.
+	 * 
+	 * @note	Currently, there are no constraints whether a projectile can jump or not.
+	 * 			It is an abstract method in the superclass "ballisticBody", so this method has to be here.
 	 * 
 	 * @return	Always true.
 	 */
@@ -171,6 +178,7 @@ public class Projectile extends BallisticBody {
 	 * Basic inspector to get the propulsionyield.
 	 * 
 	 * @return	The propulsionyield.
+	 * 			| return this.propulsionYield;
 	 */
 	private int getPropulsionYield() {
 		return propulsionYield;
@@ -251,6 +259,7 @@ public class Projectile extends BallisticBody {
 	
 	/**
 	 * Method to terminate a projectile.
+	 *TODO formal @post
 	 */
 	public void terminate() {
 		if (hasAWorld())
@@ -403,6 +412,8 @@ public class Projectile extends BallisticBody {
 	
 	/**
 	 * Method to remove a weapon.
+	 * 
+	 * @post | new.getWeapon() == null
 	 */
 	@Raw
 	void removeWeapon() {

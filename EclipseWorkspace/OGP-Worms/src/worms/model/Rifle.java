@@ -28,6 +28,7 @@ public class Rifle extends Weapon {
 	/**
 	 * Method to return the force a rifle projectile is fired with.
 	 * No formal return because this method is the implementation of an abstract method in the class "Weapon".
+	 * TODO in the class "Weapon there is no formal return because it is abstract. Which is it? This should have a formal return, because it actually return something, i think.
 	 */
 	public double getForce(int propulsionYield) {
 		return 1.5;

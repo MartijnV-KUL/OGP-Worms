@@ -12,7 +12,7 @@ public class ExpressionSine extends Expression {
 	@Override
 	public Type<Double> evaluate() {
 		Object val = getExpressions().get(0).evaluate().getValue();
-		if ( !(val instanceof Number) ) { //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+		if ( !(val instanceof Number) ) {
 			getRootProgram().typeErrorOccurred();
 			return null;
 		}

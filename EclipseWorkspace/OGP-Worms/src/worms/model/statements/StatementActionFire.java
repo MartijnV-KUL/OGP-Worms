@@ -15,7 +15,7 @@ public class StatementActionFire extends StatementAction {
 		Program program = getRootProgram();
 		Worm worm = program.getWorm();
 		Object val = getExpressions().get(0).evaluate().getValue(); 
-		if ( !(val instanceof Number) ) { //TODO dynamic-static type: which is checked here?
+		if ( !(val instanceof Number) ) {
 			program.typeErrorOccurred();
 			return;
 		}

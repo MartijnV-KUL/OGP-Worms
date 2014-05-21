@@ -14,12 +14,6 @@ public class ExpressionEqualTo extends Expression {
 		Object val1 = getExpressions().get(0).evaluate().getValue();
 		Object val2 = getExpressions().get(1).evaluate().getValue();
 		return new Type<Boolean>( val1 == val2 );
-		
-		
-//		if ( (val1 instanceof Number) && (val2 instanceof Number) ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
-//			return new Type<Boolean>( (double)val1 == (double)val2 );
-//		getRootProgram().typeErrorOccurred();
-//		return null;
 	}
 
 }

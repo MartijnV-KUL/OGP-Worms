@@ -3,6 +3,7 @@
 entity w;
 entity w2;
 entity o;
+double d;
 
 print getx self;
 print gety self;
@@ -12,6 +13,11 @@ print getap self;
 print getmaxap self;
 print gethp self;
 print getmaxhp self;
+
+d := 3.14159;
+print d;
+
+print(d*2);
 
 foreach(worm, w) {
 	if (sameteam(w)) {

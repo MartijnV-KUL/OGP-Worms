@@ -31,9 +31,9 @@ public class ExpressionGetX extends Expression {
 //		}
 		
 		
-		if ( val instanceof Worm ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+		if ( val instanceof Worm )
 			return new Type<Double>(((Worm)val).getX());
-		if ( val instanceof Food ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object"
+		if ( val instanceof Food )
 			return new Type<Double>(((Food)val).getX());
 		getRootProgram().typeErrorOccurred();
 		return null;

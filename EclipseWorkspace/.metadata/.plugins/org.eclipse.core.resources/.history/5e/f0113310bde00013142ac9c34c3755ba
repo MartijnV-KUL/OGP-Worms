@@ -1,0 +1,13 @@
+package worms.model;
+
+public class Entity {
+	
+	private Object obj;
+	
+	public Entity(Object obj) {
+		this.obj = obj;
+	}
+	
+	public getEntity
+
+}

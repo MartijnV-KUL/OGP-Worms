@@ -12,10 +12,11 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar	The name of a team must be valid at all times.
  * 			| isValidName(getName())
  * 
- * @invar	A team must can have a valid world as world.
- * 			| canHaveAsWorld(getWorld())
- * @invar	A team must can have a valid worm as worm.
- * 			| canHaveAsWorm(getWorms())
+ * @invar	A team must can have a valid world or null as world.
+ * 			| getWorld()==null || canHaveAsWorld(getWorld())
+ * @invar	If a team contains worms, they must be valid worms.
+ * 			| for (Worm w : getWorms)
+ * 			| 	canHaveAsWorm(w)
  * 
  * @author Martijn Vermaut, Niels Claes
  *
@@ -267,10 +268,13 @@ public class Team {
 	
 	/**
 	 * Method to remove all worms from the collection.
+	 * @effect	| for (Worm w : wormCollection)
+	 * 			| 	removeWorm(w);
+	 * TODO is this formal documentation correct?
 	 */
 	public void removeAllWorms() {
-		for ( Worm worm : wormCollection ) {
-			removeWorm(worm);
+		while (!wormCollection.isEmpty()) {
+			removeWorm(wormCollection.get(0));
 		}
 	}
 	
@@ -294,6 +298,7 @@ public class Team {
 	
 	/**
 	 * Method to terminate the team and all corresponding objects from the world.
+	 * TODO formal documentation
 	 */
 	public void terminate() {
 		if (hasAWorld()) {

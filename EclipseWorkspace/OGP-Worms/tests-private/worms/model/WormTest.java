@@ -15,27 +15,27 @@ import worms.util.Util;
  * @author Niels
  */
 public class WormTest {
-	
+
 // {{ Objects
-	
+
 	private static final double EPS = Util.DEFAULT_EPSILON;
-	
+
 	private static Worm worm;
-	
+
 	private static World world;
-	
+
 	//Initialisation of ballisticBody
-	private BallisticBody ballisticBody = new Worm(2, 3, Math.PI / 4, 1, "Testworm");
-	
+	private BallisticBody ballisticBody = new Worm(2, 2, Math.PI / 4, 1, "Testworm");
+
 	private Weapon bazooka = new Bazooka();
 	private Weapon rifle = new Rifle();
-	
+
 	private Food food = new Food(2, 2);
-	
+
 	private Team team = new Team("FirstTeam");
-	
+
 	private static Random random;
-	
+
 	/*	X X X X
 	 *  . . . .
 	 *  . . . .
@@ -44,51 +44,51 @@ public class WormTest {
 			{false, false, false, false}, {true,  true,  true,  true},
 			{true,  true,  true,  true }, {false, false, false, false}
 	};
-	
+
 	// }}
-	
+
 // {{ Setup
-	
+
 	@Before
 	public void Setup() {
-		worm = new Worm(2, 3, Math.PI / 4, 1, "Testworm");
+		worm = new Worm(2, 2, Math.PI / 4, 1, "Testworm");
 		random = new Random(7357);
 		world = new World(4, 4, passableMap, random);
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for constant values
-	
+
 	@Test
 	public void test_getMinimalRadius() {
 		assertEquals(0.25, worm.getMinimalRadius(), EPS);
 	}
-	
+
 	@Test
 	public void test_getDensity() {
 		assertEquals(1062, Worm.getDensity(), EPS);
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for position
-	
+
 	@Test
 	public void test_Xcoord() {
 		assertEquals(2, worm.getX(), EPS);
 	}
-	
+
 	@Test
 	public void test_Ycoord() {
-		assertEquals(3, worm.getY(), EPS);
+		assertEquals(2, worm.getY(), EPS);
 	}
-	
+
 	@Test
 	public void test_getDirection() {
 		assertEquals(Math.PI / 4, worm.getDirection(), EPS);
 	}
-	
+
 	@Test
 	public void test_setPosition_LegalCase() {			//This tests setX, setY and setDirection automatically.
 		worm.setPosition(3, 4, Math.PI);
@@ -96,7 +96,7 @@ public class WormTest {
 		assertEquals(4, worm.getY(), EPS);
 		assertEquals(Math.PI, worm.getDirection(), EPS);
 	}
-	
+
 	@Test
 	public void test_isValidX_LegalCase() {
 		ballisticBody.setX(2);
@@ -109,7 +109,7 @@ public class WormTest {
 	public void test_isValidX_isNaN() {
 		ballisticBody.setX(Double.NaN);		
 	}
-	
+
 	@Test
 	public void test_isValidY_LegalCAse() {
 		ballisticBody.setY(2);
@@ -122,7 +122,7 @@ public class WormTest {
 	public void test_isValidY_isNaN() {
 		ballisticBody.setY(Double.NaN);
 	}
-	
+
 	@Test
 	public void test_isValidDirection_LegalCase() {
 		ballisticBody.setDirection(Math.PI / 4);
@@ -130,31 +130,34 @@ public class WormTest {
 	@Test(expected = AssertionError.class)
 	public void test_isValidDirection_tooLow() {
 		ballisticBody.setDirection(- Math.PI);
+		assertNotEquals(ballisticBody.getDirection(), -Math.PI, EPS);
 	}
 	@Test(expected = AssertionError.class)
 	public void test_isValidDirection_tooHigh() {
 		ballisticBody.setDirection(5*Math.PI);
+		assertNotEquals(ballisticBody.getDirection(), 5*Math.PI, EPS);
 	}
 	@Test(expected = AssertionError.class)
 	public void test_isValidDirection_isNaN() {
 		ballisticBody.setDirection(Double.NaN);
+		assertNotEquals(ballisticBody.getDirection(), Double.NaN, EPS);
 	}
-	
+
 	// }}
 
 // {{ Tests for wormnames
-	
+
 	@Test
 	public void test_getName() {
 		assertEquals("Testworm", worm.getName());
 	}
-	
+
 	@Test
 	public void test_setName() {
 		worm.setName("Dummyworm");
 		assertEquals("Dummyworm", worm.getName());
 	}
-	
+
 	@Test
 	public void test_isValidName_LegalCase() {
 		worm.setName("James O'Dummy \"1");
@@ -171,22 +174,22 @@ public class WormTest {
 	public void test_isValidName_tooShort() {
 		worm.setName("W");
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for radius
-	
+
 	@Test
 	public void test_getRadius() {
 		assertEquals(1, worm.getRadius(), EPS);
 	}
-	
+
 	@Test
 	public void test_setRadius() {
 		worm.setRadius(2);
 		assertEquals(2, worm.getRadius(), EPS);
 	}
-	
+
 	@Test
 	public void test_isValidRadius_LegalCase() {
 		worm.setRadius(2);
@@ -199,30 +202,30 @@ public class WormTest {
 	public void test_isValidRadius_isNaN() {
 		worm.setRadius(Double.NaN);
 	}
-	
+
 	// }}
-	
+
 // {{ Test for mass
-	
+
 	@Test
 	public void test_getMass() {
 		assertEquals(4448.495197, worm.getMass(), EPS);
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for actionpoints
-	
+
 	@Test
 	public void test_getActionPoints() {
 		assertEquals(4448, worm.getActionPoints(), EPS);
 	}
-	
+
 	@Test
 	public void test_getMaxActionPoints() {
 		assertEquals(4448, worm.getMaxActionPoints(), EPS);
 	}
-	
+
 	@Test
 	public void test_setActionPoints_LegalCase() {			//The next 3 tests automatically test the method "isValidActionPoints"
 		worm.setActionPoints(250);
@@ -240,19 +243,19 @@ public class WormTest {
 	}
 
 	// }}
-	
+
 // {{ Tests for hitpoints & alive worms
-	
+
 	@Test
 	public void test_getHitPoints() {
 		assertEquals(4448, worm.getHitPoints(), EPS);
 	}
-	
+
 	@Test
 	public void test_getMaxHitPoints() {
 		assertEquals(4448, worm.getMaxHitPoints(), EPS);
 	}
-	
+
 	@Test
 	public void test_setHitPoints_LegalCase() {			//The next 3 tests automatically test the method "isValidHitPoints"
 		worm.setHitPoints(250);
@@ -270,7 +273,7 @@ public class WormTest {
 		worm.setWorld(world);
 		assertEquals(4448, worm.getHitPoints(), EPS);
 	}
-	
+
 	@Test
 	public void test_isAlive_LegalCase() {
 		worm.setHitPoints(50);
@@ -281,31 +284,31 @@ public class WormTest {
 		worm.setHitPoints(0);
 		assertFalse(worm.isAlive());
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for movement
-	
+
 	//Worm is placed at (2,3)
-	/*@Test(expected = ModelException.class)		//TODO takes some time
+	@Test(expected = ModelException.class)
 	public void test_move_noAPLeft() {
 		worm.setActionPoints(0);
-		worm.setWorld(world);
+		world.addWorm(worm);
 		worm.move();
-	}*/
-	
+	}
+
 	@Test
 	public void test_move_LegalCase() {
-		worm.setWorld(world);
+		world.addWorm(worm);
 		worm.setDirection(0);
 		worm.move();
 		assertEquals(3, worm.getX(), EPS);
-		assertEquals(3, worm.getY(), EPS);
+		assertEquals(2, worm.getY(), EPS);
 	}
 	@Test
 	public void testMoveVertical() {
 		worm = new Worm(1, 1.5, Math.PI / 2, 0.5, "Test");
-		worm.setWorld(world);
+		world.addWorm(worm);
 		worm.move();
 		assertEquals(1, worm.getX(), EPS);
 		assertEquals(2.0, worm.getY(), EPS);
@@ -319,21 +322,21 @@ public class WormTest {
 				{ true, true, false }, { true, true, false } }, random);
 		worm =  new Worm(1.5, 0.5, Math.PI / 2 - 10 * 0.0175, 0.5, "Test");
 		worm.setWorld(world);
-		
+
 		worm.move();
-		
+
 		assertEquals(1.5, worm.getX(), EPS);
 		assertEquals(1.0, worm.getY(), EPS);
 	}
 
-	
+
 	@Test
 	public void test_getMoveDistance() {
 		world =  new World(3.0, 2.0, new boolean[][] {
 				{ true, true, false }, { true, true, false } }, random);
 		worm =  new Worm(1.5, 0.5, Math.PI / 2 - 10 * 0.0175, 0.5, "Test");
 		worm.setWorld(world);
-		
+
 		assertEquals(0, worm.getMoveDistance()[0], EPS);	//Compares first value in double array.
 		assertEquals(0.5, worm.getMoveDistance()[1], EPS);	//Compares second value in double array.
 	}
@@ -342,8 +345,8 @@ public class WormTest {
 		double[] delta = {2.0, 3.0};										// slope is 0.982793723247329
 		assertEquals(4, worm.getActionPointCostMove(delta), EPS);		
 	}
-	
-/*	@Test					//TODO It takes a couple of minutes to check this test...
+
+	@Test
 	public void test_canMove_LegalCase() {
 		double[] delta = {2.0, 3.0};
 		worm.setActionPoints(worm.getActionPointCostMove(delta) + 1);
@@ -355,24 +358,24 @@ public class WormTest {
 		worm.setActionPoints(0);
 		worm.setWorld(world);
 		assertFalse(worm.canMove());
-	}*/
-	
+	}
+
 	// }}
-	
+
 // {{ Tests for turning
-	
+
 	@Test
 	public void test_turn() {
 		worm.turn(Math.PI / 4);
 		assertEquals(1.5707963267948966, worm.getDirection(), EPS);	// (Math.PI / 4 + Math.PI / 4) % (2*Math.PI) = 1.5707963267948966
 	}
-	
+
 	@Test
 	public void test_getActionPointCostTurn() {
 		assertEquals(8, Worm.getActionPointCostTurn(Math.PI / 4), EPS);
 		assertEquals(23, Worm.getActionPointCostTurn(3 * Math.PI / 4), EPS);
 	}
-	
+
 	@Test
 	public void test_canTurn_LegalCase() {
 		assertTrue(worm.canTurn(Math.PI));
@@ -392,24 +395,28 @@ public class WormTest {
 	}
 
 	// }}
-	
+
 // {{ Tests for jumping
-	
+
 	@Test
 	public void test_jump() {																	// . . . X
 		world = new World(4, 4, new boolean[][] {												// . . . X
 					{true, true, true, false}, {true, true, true, false},						// w . . X
 					{true, true, true, false}, {false, false, false, false} }, random);			// X X X X
-		worm.setWorld(world);
+		world.addWorm(worm);
 		worm.setPosition(0, 2, Math.PI / 4);
 		worm.jump(0.1);				// Timestep of 0.1 seconds, the method jumpTime(0.1) gives 0.5
 		assertEquals(0, worm.getActionPoints(), EPS);
 		assertEquals(1.5704233579764153, worm.getX(), EPS);
 		assertEquals(2.0291241079745263, worm.getY(), EPS);
 	}
-	
+
 	@Test
-	public void test_canJump_LegalCase() {
+	public void test_canJump_LegalCase() {																	// . . . X
+		world = new World(4, 4, new boolean[][] {												// . . . X
+				{true, true, true, false}, {true, true, true, false},						// w . . X
+				{true, true, true, false}, {false, false, false, false} }, random);			// X X X X
+		world.addWorm(worm);
 		worm.setDirection(Math.PI / 4);
 		assertTrue(worm.canJump());
 	}
@@ -418,11 +425,11 @@ public class WormTest {
 		worm.setActionPoints(0);
 		assertFalse(worm.canJump());
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for falling
-	
+
 	@Test
 	public void test_Fall() {
 		world = new World(3.0, 4.0, new boolean[][] {							// . X .
@@ -438,7 +445,7 @@ public class WormTest {
 		assertTrue("Worm must land at adjacent location",
 				Util.fuzzyBetween(1.5, 1.55, worm.getY(), EPS));
 	}
-	
+
 	@Test
 	public void test_canFall_LegalCase() {													// . . .
 		world = new World(3, 5, new boolean[][] {											// . w .
@@ -460,11 +467,11 @@ public class WormTest {
 		worm.setPosition(2, 2, Math.PI / 4);
 		assertFalse(worm.canFall());
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for shooting
-	
+
 	@Test
 	public void test_getEquippedWeaponRifle() {
 		worm.addNewWeapon(rifle);
@@ -477,7 +484,7 @@ public class WormTest {
 		worm.equipWeapon(bazooka);
 		assertEquals(bazooka, worm.getEquippedWeapon());
 	}
-	
+
 	@Test
 	public void test_equipNextWeapon() {
 		worm.addNewWeapon(rifle);
@@ -486,7 +493,7 @@ public class WormTest {
 		worm.equipNextWeapon();
 		assertEquals(bazooka, worm.getEquippedWeapon());
 	}
-	
+
 	@Test(expected = ModelException.class)
 	public void test_shoot_noAP() {
 		worm.setWorld(world);
@@ -502,30 +509,31 @@ public class WormTest {
 		worm.equipWeapon(rifle);
 		worm.shoot(50);
 	}
-	
+
 	@Test
 	/**
 	 * @note	The invalid cases does not have to be tested, as the methods "isValidDirection" and "isValidActionPoints" are already tested.
 	 */
 	public void canShoot_LegalCase() {
+		world.addWorm(worm);
 		assertTrue(worm.canShoot());
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for eating
-	
+
 	@Test
 	public void test_eat() {
 		worm.eat(food);
 		assertEquals(1.1, worm.getRadius(), EPS);
 		assertTrue(food.isTerminated());
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for world association
-	
+
 	@Test
 	public void test_setWorld_LegalCase() {
 		worm.setWorld(world);
@@ -545,11 +553,11 @@ public class WormTest {
 		worm.removeWorld();
 		assertEquals(null, worm.getWorld());
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for team association
-	
+
 	@Test
 	public void test_setTeam_LegalCase() {
 		worm.setTeam(team);
@@ -573,17 +581,17 @@ public class WormTest {
 		worm.removeTeam();
 		assertEquals(null, worm.getTeam());
 	}
-	
+
 	// }}
-	
+
 // {{ Tests for weapon association
-	
+
 	@Test
 	public void test_addNewWeapon() {
 		worm.addNewWeapon(bazooka);
 		assertTrue(worm.getWeapons().contains(bazooka));
 	}
-	
+
 	@Test
 	public void test_isValidWeapon_LegalCase() {
 		worm.addNewWeapon(rifle);
@@ -597,7 +605,7 @@ public class WormTest {
 		bazooka.terminate();
 		worm.addNewWeapon(bazooka);
 	}
-	
+
 	@Test
 	public void test_removeWeapon() {
 		worm.addNewWeapon(bazooka);
@@ -606,17 +614,17 @@ public class WormTest {
 		assertTrue(worm.getWeapons().contains(rifle));
 		assertFalse(worm.getWeapons().contains(bazooka));
 	}
-	
+
 	@Test
 	public void test_hasAsWeapon() {
 		worm.addNewWeapon(rifle);
 		assertTrue(worm.hasAsWeapon(rifle));
 	}
-	
+
 	// }}	
-	
+
 // {{ Test to get the teamname.
-	
+
 	@Test
 	public void test_getTeamName() {
 		worm.setTeam(team);

@@ -1,0 +1,38 @@
+//A program to test the expressions.
+
+entity w;
+entity w2;
+entity o;
+double d;
+
+print getx self;
+print gety self;
+print getradius self;
+print getdir self;
+print getap self;
+print getmaxap self;
+print gethp self;
+print getmaxhp self;
+
+d := 3.14159;
+print d;
+
+foreach(worm, w) {
+	if (sameteam(w)) {
+		print 100;
+	}
+}
+
+w2 := searchobj(0);
+if (isworm(w2)) {
+	print 200;
+}
+
+foreach(any, o) {
+	if(isworm(o)) {
+		print 300;
+	}
+	if (isfood(o)) {
+		print 400;
+	}
+}

@@ -1,5 +1,7 @@
 package worms.model.statements;
 
+import java.util.ArrayList;
+
 import worms.model.Expression;
 import worms.model.Statement;
 
@@ -14,11 +16,19 @@ public class StatementWhile extends Statement {
 	public void execute() {
 		if (!getRootProgram().continueExecution())
 			return;
-		if (getRootProgram().getCurrentLine() > getLine())
+		
+		ArrayList<Statement> allStatements = getAllStatements();
+		boolean cont = false;
+		for (Statement s : allStatements) {
+			if (s.getLine() >= getRootProgram().getCurrentLine())
+				cont = true;
+		}
+		if (!cont)
 			return;
-		//if (getRootProgram().getCurrentColumn() > getColumn())
-		//	return;
-		preExecute();
+		
+		if (getLine() > getRootProgram().getCurrentLine())
+			preExecute();
+		
 		Object val = getExpressions().get(0).evaluate().getValue();
 		if ( !(val instanceof Boolean) ) {
 			getProgram().typeErrorOccurred();

@@ -1,0 +1,417 @@
+package worms.model;
+
+import worms.model.ModelException;
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+
+/**
+ * A class to define the different aspects of a projectile.
+ * These include position, radius, direction and propulsionyield.
+ * 
+ * @invar	The propulsionyield a projectile has must be valid at all times.
+ * 			| isValidPropulsionYield(getPropulsionYield())
+ * 
+ * @invar	A projectile must have a valid weapon as weapon.
+ * 			| canHaveAsWeapon(getWeapon())
+ * @invar	A projectile must have a valid world as world.
+ * 			| canHaveAsWorld(getWorld())
+ * 
+ * @author Martijn Vermaut, Niels Claes
+ *
+ */
+public class Projectile extends BallisticBody {
+	
+	/**
+	 * Method to check if a worm is hit.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate.
+	 * @param 	y
+	 * 			The y-coordinate.
+	 * 
+	 * @return	The worm that is hit.
+	 * TODO formal doc
+	 */
+	public Worm wormHit(double x, double y) {
+		for ( Worm worm : getWorld().getAliveWorms() ) {
+			if ( World.isOverlapping(worm.getX(), worm.getY(), worm.getRadius(), x, y, getRadius()) )
+				return worm;
+		}
+		return null;
+	}
+	
+	@Override
+	/**
+	 * Method to calculate when a ballistic trajectory has ended.
+	 * 
+	 * @param	x
+	 * 			The x-coordinate.
+	 * @param	y
+	 * 			The y-coordinate.
+	 * 
+	 * @return	| if (wormHit(x,y) != null)
+	 * 			|	return true
+	 * 			| else
+	 * 			|	return super.ballisticTrajectoryHasEnded(x, y)
+	 * 			
+	 */
+	public boolean ballisticTrajectoryHasEnded(double x, double y) {
+		if (wormHit(x,y)!=null) {
+			return true;
+		}
+		return super.ballisticTrajectoryHasEnded(x, y);
+	}
+
+	@Override
+	/**
+	 * Method to calculate the force with which a projectile is fired.
+	 * 
+	 * @return	The force with which a projectile is fired.
+	 * 			| getWeapon().getForce(getPropulsionYield());
+	 */
+	protected double getJumpForce() {
+		return getWeapon().getForce(getPropulsionYield());
+	}
+
+
+	@Override
+	/**
+	 * Returns the mass of a projectile.
+	 * 
+	 * @return	The mass of a projectile.
+	 */
+	protected double getMass() {
+		return getWeapon().getProjectileMass();
+	}
+	
+	
+	
+	
+	
+	
+// {{ Constructors
+	
+	/**
+	 * Constructor for the Projectile class.
+	 */
+	public Projectile() {
+		this(0,0,0,0);
+	}
+	
+	/**
+	 * Constructor for the Projectile class.
+	 * 
+	 * @param 	x
+	 * 			The x-coordinate of the projectile.
+	 * @param 	y
+	 * 			The y-coordinate of the projectile.
+	 * @param 	direction
+	 * 			The direction of the projectile.
+	 * @param 	propulsionYield
+	 * 			The yield the projectile is fired with.
+	 * 
+	 * @effect	| setPosition(new position(x, y, direction))
+	 * @effect	| setPropulsionYield(propulsionYield)
+	 */
+	public Projectile(double x, double y, double direction, int propulsionYield) {
+		setPosition(x, y, direction);
+		setPropulsionYield(propulsionYield);
+	}
+	
+	// }}
+	
+// {{ Jump related methods
+	
+	@Override
+	/**
+	 * Method to let a ballistic body perform a jump.
+	 * 
+	 * @param	timeStep
+	 * 			The timestep with which the jump is calculated.
+	 * 
+	 * @effect	The position of the ballistic body is set to it's new coordinates.
+	 * 			| double[] newPos = jumpStep(jumpTime(timeStep))
+	 * 			| setPosition(newPos[0[, newPos[1], getDirection())
+	 * @effect	The ballistic body is terminated after performing the jump (a projectile in this case).
+	 * 			| terminate()
+	 * @throws	ModelException
+	 * 			Throws a ModelException if the ballistic body can not jump.
+	 * 			| if (!canJump())
+	 */
+	public void jump(double timeStep) throws ModelException {
+		if (!canJump())
+			throw new ModelException("Can't jump");
+		
+		double[] newPos = jumpStep(jumpTime(timeStep));
+		
+		//TODO update doc
+		Worm worm = wormHit(newPos[0],newPos[1]);
+		if (worm!=null) {
+			worm.setHitPoints(worm.getHitPoints()-getWeapon().getHitPointsDamage());
+		}
+		
+		terminate();
+	}
+	
+	@Override
+	/**
+	 * Checks if a projectile can jump.
+	 * 
+	 * @return	Always true.
+	 */
+	public boolean canJump() {
+		return true;
+	}
+	
+	// }}
+	
+// {{ Propulsion Yield
+	
+	private int propulsionYield;
+	
+	@Basic
+	/**
+	 * Basic inspector to get the propulsionyield.
+	 * 
+	 * @return	The propulsionyield.
+	 */
+	private int getPropulsionYield() {
+		return propulsionYield;
+	}
+	
+	/**
+	 * Method to set the propulsionyield to the given value if the given value is valid.
+	 * 
+	 * @param 	propulsionYield
+	 * 			The new propulsionyield.
+	 * 
+	 * @post	| new.getPropulsionYield() == propulsionYield()
+	 * @throws 	ModelException
+	 * 			if (!isValidPropulsionYield(propulsionYield))
+	 */
+	protected void setPropulsionYield(int propulsionYield) throws ModelException {
+		if (!isValidPropulsionYield(propulsionYield))
+			throw new ModelException("Invalid propulsion yield.");
+		this.propulsionYield = propulsionYield;
+	}
+	
+	/**
+	 * Method to check if the given propulsionyield is valid.
+	 * 
+	 * @param 	propulsionYield
+	 * 			The propulsionyield that has to be checked.
+	 * 
+	 * @return	| if (propulsionyield < 0)
+	 * 			|	return false
+	 * 			| if (propulsionyield > 100)
+	 *			|	return false
+	 *			| else
+	 *			| 	return true
+	 */
+	private static boolean isValidPropulsionYield(int propulsionYield) {
+		if (propulsionYield<0)
+			return false;
+		if (propulsionYield>100)
+			return false;
+		return true;
+	}
+	
+	// }}
+	
+// {{ Radius
+
+	/**
+	 * Method to get the radius of a projectile.
+	 * 
+	 * @return	The radius of a projectile.
+	 * 			| return getWeapon().getProjectileRadius()
+	 * @throws 	ModelException
+	 * 			Throws a modelexception if the projectile has no weapon assigned to it.
+	 * 			if (!hasAWeapon())
+	 * 
+	 */
+	public double getRadius() throws ModelException {
+		if (!hasAWeapon())
+			throw new ModelException("This projectile does not have a weapon assigned to it.");
+		return getWeapon().getProjectileRadius();
+	}
+	
+// }}
+	
+// {{ Terminated
+	
+	private boolean terminated;
+	
+	@Basic
+	/**
+	 * Returns the boolean-type terminated.
+	 * 
+	 * @return	this.terminated
+	 */
+	public boolean isTerminated() {
+		return terminated;
+	}
+	
+	/**
+	 * Method to terminate a projectile.
+	 */
+	public void terminate() {
+		if (hasAWorld())
+			getWorld().removeProjectile();
+		if (hasAWeapon())
+			getWeapon().removeProjectile();
+		terminated = true;
+	}
+	
+	// }}
+	
+// {{ World Association
+	
+	private World world;
+	
+	/**
+	 * Method to return the world.
+	 * 
+	 * @return	this.world
+	 */
+	@Basic
+	public World getWorld() {
+		return world;
+	}
+	
+	/**
+	 * Method to set the world.
+	 * 
+	 * @param 	world
+	 * 			The given world.
+	 * 
+	 * @post	|new.getWorld() == world
+	 * @throws 	ModelException
+	 * 			| if (!canHaveAsWorld(world))
+	 *			| if (hasAWorld())
+	 */
+	@Raw
+	void setWorld(World world) throws ModelException {
+		if (!canHaveAsWorld(world))
+			throw new ModelException("Invalid world specified.");
+		if (hasAWorld())
+			throw new ModelException("Already has a world.");
+		this.world = world;
+	}
+	
+	/**
+	 * Checks if the given world is valid.
+	 * 
+	 * @param 	world
+	 * 			The given world.
+	 * 
+	 * @return	| if (world == null)
+	 * 			|	return false
+	 * 			| if (world.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			|	return true
+	 */
+	private static boolean canHaveAsWorld(World world) {
+		if (world==null)
+			return false;
+		if (world.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if the world is not null.
+	 * 
+	 * @return	| return (!(world == null))
+	 */
+	public boolean hasAWorld() {
+		return(!(world==null));
+	}
+	
+	/**
+	 * Removes the current world.
+	 * 
+	 * @post	| new.getWorld() == null
+	 */
+	@Raw
+	void removeWorld() {
+		world = null;
+	}
+	
+	// }}
+	
+// {{ Weapon Association
+	
+	private Weapon weapon;
+	
+	/**
+	 * Returns the weapon associated with the projectile.
+	 * 
+	 * @return	this.weapon
+	 */
+	@Basic
+	public Weapon getWeapon() {
+		return weapon;
+	}
+
+	/**
+	 * Method to set the weapon to the given weapon.
+	 * 
+	 * @param 	weapon
+	 * 			The new weapon.
+	 * 
+	 * @post	| new.getWeapon() == weapon
+	 * @throws 	ModelException
+	 * 			| if (!canHaveAsWeapon(weapon))
+	 * 			| if (hasAWeapon())
+	 */
+	@Raw
+	void setWeapon(Weapon weapon) throws ModelException {
+		if (!canHaveAsWeapon(weapon))
+			throw new ModelException("Invalid weapon specified.");
+		if (hasAWeapon())
+			throw new ModelException("Already has a weapon.");
+		this.weapon = weapon;
+	}
+	
+	/**
+	 * Method to check the validity of the given weapon.
+	 * 
+	 * @param 	weapon
+	 * 			The weapon to check.
+	 * @return	| if (weapon == null)
+	 * 			|	return false
+	 * 			| if (weapon.isTerminated())
+	 * 			|	return false
+	 * 			| else
+	 * 			| return true
+	 */
+	private static boolean canHaveAsWeapon(Weapon weapon) {
+		if (weapon==null)
+			return false;
+		if (weapon.isTerminated())
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Checks if the weapon is equal to null.
+	 * 
+	 * @return	| return (!(weapon == null))
+	 */
+	public boolean hasAWeapon() {
+		return (!(weapon==null));
+	}
+	
+	/**
+	 * Method to remove a weapon.
+	 */
+	@Raw
+	void removeWeapon() {
+		weapon = null;
+	}
+	
+	
+	// }}
+}

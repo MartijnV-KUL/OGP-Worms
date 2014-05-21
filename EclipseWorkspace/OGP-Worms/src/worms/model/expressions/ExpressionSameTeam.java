@@ -12,8 +12,11 @@ public class ExpressionSameTeam extends Expression {
 
 	@Override
 	public Type<Boolean> evaluate() {
+		System.out.println(getExpressions());
+		System.out.println(getExpressions().get(0));
+		System.out.println(getExpressions().get(0).evaluate());
 		Object val = getExpressions().get(0).evaluate().getValue();
-		if ( val instanceof Worm ) //TODO static or dynamic type checked? should be dynamic type, because static type is "Object" 
+		if ( val instanceof Worm ) 
 			if (getRootProgram().getWorm().getTeam() == null) {	//Checker if there are no teams created
 				System.out.println("Team null, returning false.");
 				return new Type<Boolean>(false);

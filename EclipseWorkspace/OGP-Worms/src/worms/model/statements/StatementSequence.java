@@ -1,5 +1,6 @@
 package worms.model.statements;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import worms.model.Statement;
@@ -14,12 +15,19 @@ public class StatementSequence extends Statement {
 	public void execute() {
 		if (!getRootProgram().continueExecution())
 			return;
-		if (getRootProgram().getCurrentLine() > getLine())
-			return;
-		//if (getRootProgram().getCurrentColumn() > getColumn())
-		//	return;
 		
-		preExecute();
+		ArrayList<Statement> allStatements = getAllStatements();
+		boolean cont = false;
+		for (Statement s : allStatements) {
+			if (s.getLine() >= getRootProgram().getCurrentLine())
+				cont = true;
+		}
+		if (!cont)
+			return;
+		
+		if (getLine() > getRootProgram().getCurrentLine())
+			preExecute();
+		
 		for ( Statement s : getStatements() ) {
 			s.execute();
 		}

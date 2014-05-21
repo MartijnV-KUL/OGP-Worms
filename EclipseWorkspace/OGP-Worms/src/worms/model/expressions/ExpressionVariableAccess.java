@@ -16,17 +16,10 @@ public class ExpressionVariableAccess extends Expression {
 
 	@Override
 	public Type<?> evaluate() {
-		//TODO type.getValue() gives null for some reason.
-		//The written code works, but it's bad for expansion...
-//		System.out.println(type.getValue());
-//		if (getRootProgram().getVariable(variable).getValue().getClass() == type.getValue().getClass())
-//			return getRootProgram().getVariable(variable);
-		if (type.getValue() instanceof Double)
-			return getRootProgram().getVariable(variable);
-		if (type.getValue() instanceof Boolean)
-			return getRootProgram().getVariable(variable);
-		if (type instanceof Object)
-			return getRootProgram().getVariable(variable);			
+		// note: isAssignableFrom checks if the argument class extends the class it's called on.
+		// In this case, it checks if the class of the variable extends the class of the type object
+		if (type.getValue().getClass().isAssignableFrom(getRootProgram().getVariable(variable).getValue().getClass()))
+			return getRootProgram().getVariable(variable);		
 		getRootProgram().typeErrorOccurred();
 		return null;
 	}

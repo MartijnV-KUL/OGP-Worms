@@ -24,40 +24,23 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @invar	Every weapon a worm has must be a valid weapon.
  * 			| isValidWeapon(getWeapon())
  * 
- * @invar	Every worm must can have a valid team as team.
- * 			| canHaveAsTeam(getTeam())
- * @invar	Every worm must can have a valid world as world.
- * 			| canHaveAsWorld(getWorld())
+ * @invar	Every worm must can have a valid team or null as team.
+ * 			| getTeam()==null || canHaveAsTeam(getTeam())
+ * @invar	Every worm must can have a valid world or null as world.
+ * 			| getWorld()==null || canHaveAsWorld(getWorld())
  * 
  * @author Martijn Vermaut, Niels Claes
  */
 public class Worm extends BallisticBody {
 	
-	
-// Questions:
-//	-	Direction boundaries?
-//	-	Method isAdjacent => computations fast enough?
-//	-	Method getMoveDistance => computations fast enough?
-//	- 	StatementForEach => when interrupted, continue from last worm or again from the beginning?
-//	- 	Documentation of Statement classes?
-//	- 	Do we have to write our own worm program? If so, what's the complexity?
-//	- 	In StatementWhile (for example): Warning "Unchecked cast from Type<capture#2-of ?> to Type<Boolean>"
-//		=> What's Type<capture#2-of ?> and how to fix it?
-//	-	TypeErrorOccured => correct implementation?
-//	-	What to do with the columns of the program file? Loops take lines into account, not columns.
-//	-	Write testcases for worm programs or assume they are correct?
-//	-	UML diagram?
-//	-	Worms able to jump down?
-
-
 	/**
-	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
-	 * coördinate in meters, a direction in radians, a radius in meters and a name.
+	 * Constructor for the Worm class. Receives an x coordinate in meters, a y
+	 * coordinate in meters, a direction in radians, a radius in meters and a name.
 	 * 
 	 * @param 	x
-	 * 			The x coördinate expressed in meters.
+	 * 			The x coordinate expressed in meters.
 	 * @param 	y
-	 * 			The y coördinate expressed in meters.
+	 * 			The y coordinate expressed in meters.
 	 * @param 	direction
 	 * 			The direction expressed in radians.
 	 * @param 	radius
@@ -67,7 +50,7 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @pre		The given radius is valid.
 	 * 			| isValidRadius(radius)
-	 * @effect 	The X and Y coördinates and the direction of the worm are set to the given values in the class BallisticBody.
+	 * @effect 	The X and Y coordinates and the direction of the worm are set to the given values in the class BallisticBody.
 	 * 			| setPosition(x, y, direction)
 	 * @effect 	The radius of the worm is equal to the given value.
 	 * 			| setRadius(radius)
@@ -79,6 +62,10 @@ public class Worm extends BallisticBody {
 	 * 			| addNewWeapon(new Bazooka))
 	 * @effect	The first possible weapon is equipped.
 	 * 			| equipNextWeapon()
+	 * @post	The action points are set to their maximum value.
+	 * 			| new.getActionPoints() == new.getMaxActionPoints()
+	 * @post	The hit points are set to their maximum value.
+	 * 			| new.getHitPoints() == new.getMaxHitPoints()
 	 * @note	The setters in the corresponding classes will throw an exception if the given value is not valid.
 	 */
 	public Worm(double x, double y, double direction, double radius, String name) {
@@ -88,22 +75,24 @@ public class Worm extends BallisticBody {
 		addNewWeapon(new Rifle());
 		addNewWeapon(new Bazooka());
 		equipNextWeapon();
+		setHitPoints(getMaxHitPoints());
+		setActionPoints(getMaxActionPoints());
 	}
 	
 	/**
-	 * Constructor for the Worm class. Receives an x coördinate in meters, a y
-	 * coördinate in meters, a direction in radians and a name.
+	 * Constructor for the Worm class. Receives an x coordinate in meters, a y
+	 * coordinate in meters, a direction in radians and a name.
 	 * 
 	 * @param 	x
-	 * 			The x coördinate expressed in meters.
+	 * 			The x coordinate expressed in meters.
 	 * @param 	y
-	 * 			The y coördinate expressed in meters.
+	 * 			The y coordinate expressed in meters.
 	 * @param 	direction
 	 * 			The direction expressed in radians.
 	 * @param 	name
 	 * 			The name of the worm.
 	 * 
-	 * @effect 	The X and Y coördinates and the direction of the worm are set to the given values in the class BallisticBody.
+	 * @effect 	The X and Y coordinates and the direction of the worm are set to the given values in the class BallisticBody.
 	 * 			| setPosition(x, y, direction)
 	 * @effect 	The name of the worm is equal to the given string if it is valid.
 	 * 			| setName(name)
@@ -113,6 +102,10 @@ public class Worm extends BallisticBody {
 	 * 			| addNewWeapon(new Bazooka))
 	 * @effect	The first possible weapon is equipped.
 	 * 			| equipNextWeapon()
+	 * @post	The action points are set to their maximum value.
+	 * 			| new.getActionPoints() == new.getMaxActionPoints()
+	 * @post	The hit points are set to their maximum value.
+	 * 			| new.getHitPoints() == new.getMaxHitPoints()
 	 * @note	The setters in the corresponding classes will throw an exception if the given value is not valid.
 	 */
 	public Worm(double x, double y, double direction, String name) {
@@ -122,6 +115,8 @@ public class Worm extends BallisticBody {
 		addNewWeapon(new Rifle());
 		addNewWeapon(new Bazooka());
 		equipNextWeapon();
+		setHitPoints(getMaxHitPoints());
+		setActionPoints(getMaxActionPoints());
 	}
 
 	/**
@@ -152,6 +147,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the minimal radius of worms.
 	 * 
 	 * @return The minimal radius of worms.
+	 * TODO formal
 	 */
 	@Basic
 	@Immutable
@@ -163,6 +159,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the density of worms.
 	 * 
 	 * @return The density of worms.
+	 * TODO formal
 	 */
 	@Basic
 	@Immutable
@@ -179,6 +176,7 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @param	position
 	 * 			The position of the worm.
+	 * TODO post (position) & effect (eating)
 	 */
 	public void setPosition(double x, double y, double direction) {
 		super.setPosition(x, y, direction);
@@ -195,6 +193,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the name of the worm.
 	 * 
 	 * @return The name of the worm.
+	 * TODO formal
 	 */
 	@Basic
 	public String getName() {
@@ -257,6 +256,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the radius of the worm.
 	 * 
 	 * @return The radius of the worm.
+	 * TODO formal
 	 */
 	@Basic
 	public double getRadius() {
@@ -298,7 +298,7 @@ public class Worm extends BallisticBody {
 	 * 			The specified radius expressed in meters.
 	 * 
 	 * @return 	The radius must be at least getMinimalRadius().
-	 * 			| Return ( radius >= getMinimalRadius() )
+	 * 			| return ( radius >= getMinimalRadius() )
 	 */
 	private boolean isValidRadius(double radius) {
 		if (radius < getMinimalRadius())
@@ -333,6 +333,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the action points of the worm.
 	 * 
 	 * @return The action points of the worm.
+	 * TODO formal
 	 */
 	@Basic
 	public int getActionPoints() {
@@ -343,6 +344,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the maximum amount of action points of the worm.
 	 * 
 	 * @return	The maximum amount of action points of the worm.
+	 * TODO formal
 	 */
 	@Basic
 	public int getMaxActionPoints()	{
@@ -404,15 +406,13 @@ public class Worm extends BallisticBody {
 	 * 			The problem is solved by setting the maximum amount of actionpoints to the highest possible integer value in case the mass is
 	 * 			greater than Integer.MAX_VALUE.
 	 */
-	private void updateMaxActionPoints() {
-		double apFrac = 1;
-		if ( ! (getMaxActionPoints() == 0) )
-			apFrac = ( (double) getActionPoints() ) / ( (double) getMaxActionPoints() );
+	private void updateMaxActionPoints() {//TODO update doc. assignment says current ap should be unchanged
 		if ( getMass() > Integer.MAX_VALUE)
 			maxActionPoints = Integer.MAX_VALUE;
 		else
 			maxActionPoints = (int) Math.round(getMass());
-		setActionPoints( (int) Math.floor( getMaxActionPoints() * apFrac ) );
+		// If AP > maxAP, then this sets it to the maximum, since it is worked out in a total manner
+		setActionPoints(getActionPoints());
 	}
 
 	/**
@@ -439,6 +439,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the hitpoints of the worm.
 	 * 
 	 * @return	The hitpoints of the worm.
+	 * TODO formal
 	 */
 	@Basic
 	public int getHitPoints() {
@@ -449,6 +450,7 @@ public class Worm extends BallisticBody {
 	 * Basic inspector that returns the maximum amount of hitpoints of the worm.
 	 * 
 	 * @return	The maximum amount of hitpoints of the worm.
+	 * TODO formal
 	 */
 	@Basic
 	public int getMaxHitPoints() {
@@ -507,15 +509,12 @@ public class Worm extends BallisticBody {
 	 * 			The problem is solved by setting the maximum amount of hitpoints to the highest possible integer value in case the mass is
 	 * 			greater than Integer.MAX_VALUE.
 	 */
-	private void updateMaxHitPoints() {
-		double hpFrac = 1;
-		if (! (getMaxHitPoints() == 0) )
-			hpFrac = ( (double) getHitPoints() ) / ( (double) getMaxHitPoints() );
+	private void updateMaxHitPoints() {//TODO update doc. idem as AP. method has become simpler
 		if (getMass() > Integer.MAX_VALUE)
 			maxHitPoints = Integer.MAX_VALUE;
 		else
 			maxHitPoints = (int) Math.round(getMass());
-		setHitPoints ( (int) Math.floor( getMaxHitPoints() * hpFrac ) );
+		setHitPoints ( getHitPoints() );
 	}
 	
 	/**
@@ -587,6 +586,17 @@ public class Worm extends BallisticBody {
 	 * 			The result (output) is returned as an array of doubles. output[0] equals the new x-coordinate,
 	 * 			output[1] equals the new y-coordinate.
 	 * 			| return output
+	 * 
+	 * TODO formal documentation with sets. It should be done something like this
+	 * @return	
+	 * 			| { {dx1,dy1} | sqrt(dx1^2+dy1^2)<=getRadius() && atan(dy1/dx1)<getDirection()+0.7875 && getWorld().isAdjacent(getX()+dx1,getY()+dy1) }
+	 * 			| if (!isempty(XY))
+	 * 			| 	{ {dx,dy} | sqrt(dx^2+dy^2)-atan(dy/dx) >= sqrt(dx1^2+dy1^2)-atan(dy1/dx1) }
+	 * 			|	return { getX()+dx*cos(getDirection), getY()+dy*sin(getDirection() };
+	 * 			| else
+	 * 			| 	{ {dx2,dy2} | getWorld().isWithinBoundaries(getX()+dx2,getY()+dy2) && isPassable(getX()+dx2,getY()+dy2,0,getRadius()) }
+	 * 			|	{ {dx,dy} | sqrt(dx^2+dy^2) >= sqrt(dx2^2,dy2^2) }
+	 * 			|	return { getX()+dx*cos(getDirection), getY()+dy*sin(getDirection() };
 	 */
 	protected double[] getMoveDistance() {//TODO update doc?
 		
@@ -756,6 +766,8 @@ public class Worm extends BallisticBody {
 // {{ Jump
 	
 	@Override
+	//TODO documentation
+	//TODO formal return
 	protected double getJumpForce() {
 		return ((double)5*getActionPoints()) + (getMass()*World.getGravitationalAcceleration());
 	}
@@ -835,6 +847,10 @@ public class Worm extends BallisticBody {
 	public boolean canJump() {
 		if (getActionPoints() == 0)
 			return false;
+		if (!hasAWorld())//TODO update doc
+			return false;
+		if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))//TODO update doc
+			return false;
 		return true;
 	}
 	
@@ -887,12 +903,15 @@ public class Worm extends BallisticBody {
 					int newHitPoints = (int) (getHitPoints() - Math.floor(distanceFallen * 3));
 					//System.out.println("HP: " + newHitPoints);
 					//System.out.println("Distance fallen: " + distanceFallen);
-					if (newHitPoints > 0){
-						setHitPoints(newHitPoints);
-						//System.out.println("new HP: " + getHitPoints());
-					}
-					else
-						die();
+					setHitPoints(newHitPoints);
+//TODO the code is already checked in setHitpoints, right? so this isn't necessary anymore.
+//TODO update doc
+//					if (newHitPoints > 0){
+//						setHitPoints(newHitPoints);
+//						//System.out.println("new HP: " + getHitPoints());
+//					}
+//					else
+//						die();
 					break;
 				}
 			}
@@ -913,6 +932,8 @@ public class Worm extends BallisticBody {
 	public boolean canFall() {
 		if (!hasAWorld())
 			return false;
+		if (!hasAWorld())//TODO update doc
+			return false;
 		if ( getWorld().isAdjacent( getX(), getY(), getRadius() ) )
 			return false;
 		return true;
@@ -928,6 +949,7 @@ public class Worm extends BallisticBody {
 	 * Method to return the currently equipped weapon.
 	 * 
 	 * @return	The currently equipped weapon.
+	 * TODO formal
 	 */
 	public Weapon getEquippedWeapon() {
 		return equippedWeapon;
@@ -942,7 +964,7 @@ public class Worm extends BallisticBody {
 	 * 			Throws a modelexception if the worm doesn't have the specified weapon.
 	 * 			| if (!hasAsWeapon(weapon))
 	 * @post	The equipped weapon is set to the given weapon.
-	 * 			| new.getEquippedWeapon() == this.weapon
+	 * 			| new.getEquippedWeapon() == weapon
 	 */
 	public void equipWeapon(Weapon weapon) throws ModelException {
 		if (!hasAsWeapon(weapon))
@@ -955,6 +977,7 @@ public class Worm extends BallisticBody {
 	 * 
 	 * @effect	The next available weapon is equipped.
 	 * 			| equipWeapon(getWeapon().get(index))
+	 * TODO define index in formal doc
 	 * @note	The index is equal to the corresponding place in the array the weapon has.
 	 */
 	public void equipNextWeapon() {
@@ -978,6 +1001,7 @@ public class Worm extends BallisticBody {
 	 * @throws	ModelException
 	 * 			Throws a modelexception if the worm can not shoot.
 	 * 			if (!canShoot())
+	 *TODO post and/or effect
 	 */
 	public void shoot(int propulsionYield) throws ModelException {
 		if (!canShoot())
@@ -1001,6 +1025,8 @@ public class Worm extends BallisticBody {
 	public boolean canShoot() {
 		if (!isValidActionPoints(getActionPoints()-getEquippedWeapon().getActionPointsCost()))
 			return false;
+		if (!hasAWorld())//TODO update doc
+			return false;
 		if (!getWorld().isPassable(getX(), getY(), 0, getRadius()))
 			return false;
 		return true;
@@ -1014,6 +1040,8 @@ public class Worm extends BallisticBody {
 	 * Method to let a worm try to eat all the food.
 	 * 
 	 * @note	A worm is able to eat a foodobject if the two objects (worm and food) are overlapping.
+	 * 
+	 * TODO post and/or effect
 	 */
 	private void tryToEatAll() {
 		if (hasAWorld()) {
@@ -1054,6 +1082,7 @@ public class Worm extends BallisticBody {
 	 * Returns the current world.
 	 * 
 	 * @return	The current world.
+	 * TODO formal
 	 */
 	public World getWorld() {
 		return world;
@@ -1136,6 +1165,7 @@ public class Worm extends BallisticBody {
 	 * Returns the current team.
 	 * 
 	 * @return	The current team
+	 * TODO formal
 	 */
 	@Basic
 	public Team getTeam() {
@@ -1219,6 +1249,7 @@ public class Worm extends BallisticBody {
 	 * Returns the collection of weapons.
 	 * 
 	 * @return	The collection of weapons.
+	 * TODO formal
 	 */
 	@Basic
 	public ArrayList<Weapon> getWeapons() {
@@ -1292,9 +1323,15 @@ public class Worm extends BallisticBody {
 		weapon.removeWorm();
 		weaponCollection.remove(weapon);
 	}
-	
+
 	/**
 	 * Method to remove all weapons from the collection.
+	 * 
+	 * @effect	Removes each weapon object from the worm.
+	 * 			| for ( Weapon w : weaponCollection) )
+	 * 			| 	removeWeapon(w);
+	 * TODO is this formal documentation correct?
+	 * 
 	 */
 	private void removeAllWeapons() {
 		while (!weaponCollection.isEmpty()) {

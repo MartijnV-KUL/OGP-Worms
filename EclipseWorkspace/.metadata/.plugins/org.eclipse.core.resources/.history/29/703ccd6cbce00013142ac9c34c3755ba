@@ -1,0 +1,34 @@
+package worms.model.expressions;
+
+import worms.model.Expression;
+import worms.model.Type;
+
+public class ExpressionVariableAccess extends Expression {
+	
+	private String variable;
+	private Type<?> type;
+	
+	public ExpressionVariableAccess(int line, int column, String variable, Type<?> type) {
+		super(line, column);
+		this.variable = variable;
+		this.type = type;
+	}
+
+	@Override
+	public Type<?> evaluate() {
+		//TODO type.getValue() gives null for some reason.
+		//The written code works, but it's bad for expansion...
+//		System.out.println(type.getValue());
+		if (getRootProgram().getVariable(variable).getValue() instanceof (type.getValue().getClass()))
+			return getRootProgram().getVariable(variable);
+//		if (type.getValue() instanceof Double)
+//			return getRootProgram().getVariable(variable);
+//		if (type.getValue() instanceof Boolean)
+//			return getRootProgram().getVariable(variable);
+//		if (type instanceof Object)
+//			return getRootProgram().getVariable(variable);			
+		getRootProgram().typeErrorOccurred();
+		return null;
+	}
+
+}
