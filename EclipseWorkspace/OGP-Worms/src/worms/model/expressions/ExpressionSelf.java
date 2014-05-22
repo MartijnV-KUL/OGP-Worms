@@ -1,8 +1,8 @@
 package worms.model.expressions;
 
+import worms.model.Entity;
 import worms.model.Expression;
 import worms.model.Type;
-import worms.model.Worm;
 
 public class ExpressionSelf extends Expression {
 	
@@ -11,8 +11,8 @@ public class ExpressionSelf extends Expression {
 	}
 
 	@Override
-	public Type<Worm> evaluate() {
-		return new Type<Worm>(getRootProgram().getWorm());
+	public Type<Entity> evaluate() {
+		return new Type<Entity>(new Entity(getRootProgram().getWorm()));
 	}
 
 }

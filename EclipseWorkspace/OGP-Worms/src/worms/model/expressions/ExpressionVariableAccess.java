@@ -16,9 +16,9 @@ public class ExpressionVariableAccess extends Expression {
 
 	@Override
 	public Type<?> evaluate() {
-		/** @note	isAssignableFrom checks if the argument class extends the class it's called on.
+		/* @note	isAssignableFrom checks if the argument class extends the class it's called on.
 		* 			In this case, it checks if the class of the variable extends the class of the type object. */
-		if (type.getValue().getClass().isAssignableFrom(getRootProgram().getVariable(variable).getValue().getClass()))
+		if ( getRootProgram().getVariable(variable).getValue().getClass() == type.getValue().getClass() )
 			return getRootProgram().getVariable(variable);		
 		getRootProgram().typeErrorOccurred();
 		return null;

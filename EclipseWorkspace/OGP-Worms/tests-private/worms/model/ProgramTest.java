@@ -82,15 +82,15 @@ public class ProgramTest {
 	public void test_program2_execution() {
 		ParseOutcome<?> outcome = facade.parseProgram(program2, handler);
 		Program program = ((Success) outcome).getResult();
-		worm = facade.createWorm(world, 1, 2, Math.PI, 1, "Test", program);
+		worm = facade.createWorm(world, 1, 2, 0, 1, "Test", program);
 		
-		facade.addNewWorm(world, null);		//add first worm.
 		facade.addNewWorm(world, null);		//add second worm.
 		facade.addNewWorm(world, null);		//add third worm.
+		facade.addNewWorm(world, null);		//add fourth worm.
 		double oldOrientation = facade.getOrientation(worm);
 		facade.startGame(world);
 		double newOrientation = facade.getOrientation(worm);
-		assertEquals(oldOrientation + 3, newOrientation, EPS);
+		assertEquals(oldOrientation + 4, newOrientation, EPS);
 		assertNotEquals(worm, facade.getCurrentWorm(world));
 	}
 	

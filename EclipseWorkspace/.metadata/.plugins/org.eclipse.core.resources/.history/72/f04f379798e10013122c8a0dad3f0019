@@ -1,0 +1,28 @@
+package worms.model.statements;
+
+import worms.model.Expression;
+import worms.model.Statement;
+
+
+public class StatementAssignment extends Statement {
+	
+	private String variable;
+	
+	public StatementAssignment(int line, int column, String variable, Expression e) {
+		super(line, column, new Expression[] {e});
+		this.variable = variable;
+	}
+
+	@Override
+	public void execute() {
+		if (!getRootProgram().continueExecution())
+			return;
+		if (getRootProgram().getCurrentLine() > getLine())
+			return;
+		preExecute();
+		System.out.println(variable);
+		sysout(getExpressions().get(0).evaluate());
+		getRootProgram().assignVariable(variable, getExpressions().get(0).evaluate());
+	}
+
+}

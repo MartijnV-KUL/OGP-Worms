@@ -109,19 +109,6 @@ public class WeaponTest {
 	
 	// }}
 	
-//// {{ Tests for ammunition
-//	
-//	@Test
-//	public void test_setAmmunition_LegalCase() {
-//		weapon.setAmmunition(50);
-//	}
-//	@Test(expected = ModelException.class)
-//	public void test_setAmmunition_tooLow() {
-//		weapon.setAmmunition(-10);
-//	}
-//	
-//	// }}
-	
 /**
  * @note	The associations doesn't have to tested in this class. They are the same as in the World and Worm classes,
  * 			where they are already extensively tested.

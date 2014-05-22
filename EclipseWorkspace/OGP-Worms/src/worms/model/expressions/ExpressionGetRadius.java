@@ -1,5 +1,6 @@
 package worms.model.expressions;
 
+import worms.model.Entity;
 import worms.model.Expression;
 import worms.model.Food;
 import worms.model.Type;
@@ -14,10 +15,13 @@ public class ExpressionGetRadius extends Expression {
 	@Override
 	public Type<Double> evaluate() {
 		Object val = getExpressions().get(0).evaluate().getValue();
-		if ( val instanceof Worm )
-			return new Type<Double>(((Worm)val).getRadius());
-		if ( val instanceof Food )
-			return new Type<Double>(Food.getRadius());
+		if ( val instanceof Entity ) {
+			Object entity = ((Entity) val).getEntity();
+			if ( entity instanceof Worm )
+				return new Type<Double>(((Worm)entity).getRadius());
+			if ( entity instanceof Food )
+				return new Type<Double>(Food.getRadius());
+		}
 		getRootProgram().typeErrorOccurred();
 		return null;
 	}

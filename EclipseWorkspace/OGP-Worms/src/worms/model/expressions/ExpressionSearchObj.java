@@ -1,5 +1,6 @@
 package worms.model.expressions;
 
+import worms.model.Entity;
 import worms.model.Expression;
 import worms.model.Food;
 import worms.model.Type;
@@ -27,17 +28,17 @@ public class ExpressionSearchObj extends Expression {
 		while ( getStatement().getRootProgram().getWorm().getWorld().isWithinBoundaries(x,y) ) {
 			for ( Worm worm : getStatement().getRootProgram().getWorm().getWorld().getAliveWorms() ) {
 				if ( World.isOverlapping(worm.getX(), worm.getY(), worm.getRadius(), x, y, 0) )
-					return new Type<Worm>(worm);
+					return new Type<Entity>(new Entity(worm));
 			}
 			for (Food food : getStatement().getRootProgram().getWorm().getWorld().getFood()) {
 				if ( World.isOverlapping(food.getX(), food.getY(), Food.getRadius(), x, y, 0) )
-					return new Type<Food>(food);
+					return new Type<Entity>(new Entity(food));
 			}
 			x = x + resolution*Math.cos(angle);
 			y = y + resolution*Math.sin(angle);
 		}
 		System.out.println("The searchobject commando could not find any objects at a angle of " + (double)val + ".");
-		return new Type<Object>(new Object());
+		return new Type<Entity>(new Entity());
 		
 	}
 

@@ -40,6 +40,14 @@ public class StatementWhile extends Statement {
 			getStatements().get(0).execute();
 			getRootProgram().setCurrentLine(getLine());
 			getRootProgram().setCurrentColumn(getColumn());
+
+			// Update while-condition
+			val = getExpressions().get(0).evaluate().getValue();
+			if ( !(val instanceof Boolean) ) {
+				getProgram().typeErrorOccurred();
+				return;
+			}
+			
 		}
 	}
 

@@ -1,0 +1,8 @@
+//A file to test if the program continues after it has stopped.
+
+double i := 0;
+
+while(i < 2000) {
+	i := i + 1;
+	print i;
+}

@@ -1,0 +1,33 @@
+package worms.model.expressions;
+
+import worms.model.Entity;
+import worms.model.Expression;
+import worms.model.Type;
+import worms.model.Worm;
+
+public class ExpressionSameTeam extends Expression {
+	
+	public ExpressionSameTeam(int line, int column, Expression e) {
+		super(line,column,e);
+	}
+
+	@Override
+	public Type<Boolean> evaluate() {
+		Object val = getExpressions().get(0).evaluate().getValue();
+		System.out.println(vl);
+		if (val instanceof Entity) {
+			Object entity = ((Entity)val).getEntity();
+			if ( entity instanceof Worm ) 
+				if (getRootProgram().getWorm().getTeam() == null) {
+					System.out.println("Team null, returning false.");
+					return new Type<Boolean>(false);
+				}
+				else {
+					return new Type<Boolean>(getRootProgram().getWorm().getTeam() == ((Worm)entity).getTeam());
+				}
+		}
+		getRootProgram().typeErrorOccurred();
+		return null;
+	}
+
+}

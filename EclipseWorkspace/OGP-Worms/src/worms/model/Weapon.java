@@ -7,7 +7,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 /**
  * An abstract class that defines all different aspects of weapons.
  * This includes the name, force with which they are fired, the amount of damage they do, 
- * the amount of action points they cost to fire and the amount of ammunition each weapon has.
+ * and the amount of action points they cost to fire.
  * 
  * @invar	The mass of a projectile must be a valid mass at all times.
  * 			| isValidProjectileMass(getProjectileMass())
@@ -17,8 +17,6 @@ import be.kuleuven.cs.som.annotate.Raw;
  * 			| isValidHitPointsDamage(getHitPointsDamage())
  * @invar	The amount of actionpoints it costs to fire a weapon must be a valid amount.
  * 			| isValidActionPointsCost(getActionPointsCost())
- * @invar	The amount of ammunition a weapon has must be a valid amount.
- * 			| isValidAmmunition(getAmmunition())
  * 
  * @invar	Every weapon must can have a valid projectile or null as projectile.
  * 			| getProjectile()==null || canHaveAsProjectile(getProjectile())
